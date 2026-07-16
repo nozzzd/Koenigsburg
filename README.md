@@ -1,2 +1,2 @@
-# K-nigsburg
+# Koenigsburg
 Website for Jontop Civ event
