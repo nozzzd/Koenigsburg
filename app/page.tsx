@@ -15,17 +15,17 @@ const pillars = [
   {
     icon: ScrollText,
     title: "Citizenship",
-    text: "Petition through Discord or by written decree. Approved citizens are whitelisted on the server and welcomed within the walls.",
+    text: "Petition through Discord. Approved citizens are whitelisted on the website and welcomed within the walls.",
   },
   {
     icon: Landmark,
-    title: "The Realm",
-    text: "Claim land, raise keeps, and shape the districts of the free city — stone by stone, oath by oath.",
+    title: "The Nation",
+    text: "Claim land, build, and shape the districts of the free city — block by block.",
   },
   {
     icon: Crown,
     title: "The Council",
-    text: "Every petition is weighed in the great hall. When the council approves, the gates open — no further ceremony required.",
+    text: "Every petition is reviewed by the council. Once approved, you're free to enter the nation.",
   },
 ];
 
@@ -60,8 +60,7 @@ export default function LandingPage() {
             KÖNIGSBURG
           </h1>
           <p className="mt-6 max-w-xl text-balance text-slate-400">
-            A Minecraft civilization forged in stone and oath. Take the oath,
-            earn your citizenship, and build your legacy within the walls.
+            Built to last, bound by oath. Earn your citizenship and build your legacy.
           </p>
           <div className="mt-10 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-none sm:items-center sm:gap-4">
             <Link href="/login" className={heroCtaClass}>
@@ -75,7 +74,7 @@ export default function LandingPage() {
             className={`${outlineButtonClass} mt-6 w-full max-w-xs sm:w-auto`}
           >
             <Compass className="h-4 w-4" />
-            Which role are you? Take the Alignment Quiz
+            Which role suits you best? Take the Alignment Quiz!
           </Link>
 
           <Link

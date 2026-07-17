@@ -99,7 +99,7 @@ export default async function LoginPage({
       </Panel>
 
       <p className="mt-6 text-center text-xs text-slate-600">
-        Lost your KBRG code? Make a ticket in the discor
+        Lost your KBRG code? Make a ticket in the discord
       </p>
     </GateShell>
   );

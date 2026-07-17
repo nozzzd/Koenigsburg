@@ -114,7 +114,7 @@ async function handleVerify(interaction: Interaction) {
     }
     return ephemeral(
       `✅ Identity confirmed — **${player.minecraft_ign}** is now tied to your Discord account.\n\n` +
-        "Your petition still rests with the council. You'll receive the @Citizen role and your private key the moment an elder approves you."
+        "Your petition still awaits review by the council. You'll receive the @Citizen role and your private key the moment a council member approves you."
     );
   }
 

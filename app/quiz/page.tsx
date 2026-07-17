@@ -38,8 +38,8 @@ export default async function QuizPage() {
             ALIGNMENT QUIZ
           </h1>
           <p className="mt-4 max-w-md text-balance text-sm text-slate-400">
-            Sixteen questions stand between you and your calling. Answer honestly, and the Council
-            will tell you the role you were born to hold.
+            Answer merely sixteen questions to see which role suits you best! Make sure to answer
+            these questions truthfully, so we can assign you the best-suited role.
           </p>
         </section>
 

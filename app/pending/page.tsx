@@ -44,7 +44,7 @@ export default async function PendingPage({
               Your citizenship was revoked because you left the Königsburg Discord
               or no longer hold the{" "}
               <span className="font-semibold text-red-300">@Citizen</span> role.
-              Rejoin the server and ask an elder to restore your standing.
+              Rejoin the server and ask an admin to restore your citizenship.
             </p>
           </div>
         )}
@@ -52,9 +52,9 @@ export default async function PendingPage({
           <Hourglass className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" />
           <p>
             <span className="font-semibold text-slate-100">{player.minecraft_ign}</span>,
-            your petition rests before the council
-            {isManual ? "" : " and they have been notified through Discord"}. The gates
-            will open once an elder gives the word.
+            your petition is waiting to be reviewed
+            {isManual ? "" : " and they have been notified through Discord"}. The petition
+            will be approved or disapproved by a council member.
           </p>
         </div>
 
@@ -107,7 +107,7 @@ export default async function PendingPage({
           type="submit"
           className="text-xs text-slate-500 underline-offset-4 transition hover:text-slate-300 hover:underline"
         >
-          Leave the gatehouse (log out)
+          Log out
         </button>
       </form>
     </GateShell>
