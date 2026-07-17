@@ -5,7 +5,7 @@ import {
   GoldDivider,
   Panel,
   WordMark,
-  goldButtonClass,
+  heroCtaClass,
   outlineButtonClass,
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
@@ -59,23 +59,18 @@ export default function LandingPage() {
             A Minecraft civilization forged in stone and oath. Take the oath,
             earn your citizenship, and build your legacy within the walls.
           </p>
-          <div className="mt-10 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link href="/login" className={goldButtonClass}>
+          <div className="mt-10 flex flex-col items-center gap-4">
+            <Link href="/login" className={heroCtaClass}>
               Enter the Gates
             </Link>
-            <Link href="/apply" className={`${outlineButtonClass} w-full`}>
-              Apply for Citizenship
-            </Link>
+            <JoinDiscordButton />
           </div>
-          <div className="mt-4 flex w-full max-w-md flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <JoinDiscordButton className="w-full sm:w-auto" />
-            <Link
-              href="/showcase"
-              className="text-sm font-semibold text-slate-400 underline-offset-4 transition hover:text-gold-300 hover:underline"
-            >
-              Explore our Great Works →
-            </Link>
-          </div>
+          <Link
+            href="/showcase"
+            className="mt-6 text-sm font-semibold text-slate-500 underline-offset-4 transition hover:text-gold-300 hover:underline"
+          >
+            Explore our Great Works →
+          </Link>
         </section>
 
         <GoldDivider className="w-full max-w-3xl" />
