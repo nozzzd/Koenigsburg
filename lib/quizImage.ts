@@ -183,33 +183,35 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   // Kicker
   ctx.fillStyle = COLORS.gold500;
   ctx.font = display(12, "600");
-  tracked(ctx, "KÖNIGSBURG", rx, 112, 4);
+  tracked(ctx, "KÖNIGSBURG", rx, 104, 4);
 
   // "YOUR CALLING"
   ctx.fillStyle = COLORS.slate500;
   ctx.font = display(11, "600");
-  tracked(ctx, "YOUR CALLING", rx, 166, 3);
+  tracked(ctx, "YOUR CALLING", rx, 152, 3);
 
   // The role name, auto-fit so long words ("Roleplayer") never overflow.
-  let roleSize = 44;
+  const roleBaseline = 206;
+  let roleSize = 54;
   ctx.font = display(roleSize, "700");
-  while (ctx.measureText(topLabel).width > colW && roleSize > 24) {
+  while (ctx.measureText(topLabel).width > colW && roleSize > 28) {
     roleSize -= 2;
     ctx.font = display(roleSize, "700");
   }
-  const roleGrad = ctx.createLinearGradient(0, 212 - roleSize, 0, 212);
+  const roleGrad = ctx.createLinearGradient(0, roleBaseline - roleSize, 0, roleBaseline);
   roleGrad.addColorStop(0, COLORS.gold200);
   roleGrad.addColorStop(1, COLORS.gold500);
   ctx.fillStyle = roleGrad;
-  ctx.fillText(topLabel, rx, 212);
+  ctx.fillText(topLabel, rx, roleBaseline);
 
   // One-sentence descriptor, wrapped to the column.
   const blurb = ARCHETYPE_BY_KEY[topKey].blurb.split(".")[0] + ".";
   ctx.fillStyle = COLORS.slate400;
   ctx.font = sans(14, "400");
-  wrapText(ctx, blurb, rx, 242, colW, 20);
+  wrapText(ctx, blurb, rx, 240, colW, 20);
 
   // The site's signature divider: line — diamond — line.
+  const dividerY = 312.5;
   const midX = (rx + colRight) / 2;
   ctx.lineWidth = 1;
   const ruleL = ctx.createLinearGradient(rx, 0, midX - 10, 0);
@@ -217,47 +219,51 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   ruleL.addColorStop(1, "rgba(212,175,55,0.5)");
   ctx.strokeStyle = ruleL;
   ctx.beginPath();
-  ctx.moveTo(rx, 316.5);
-  ctx.lineTo(midX - 10, 316.5);
+  ctx.moveTo(rx, dividerY);
+  ctx.lineTo(midX - 10, dividerY);
   ctx.stroke();
   const ruleR = ctx.createLinearGradient(midX + 10, 0, colRight, 0);
   ruleR.addColorStop(0, "rgba(212,175,55,0.5)");
   ruleR.addColorStop(1, "rgba(212,175,55,0)");
   ctx.strokeStyle = ruleR;
   ctx.beginPath();
-  ctx.moveTo(midX + 10, 316.5);
-  ctx.lineTo(colRight, 316.5);
+  ctx.moveTo(midX + 10, dividerY);
+  ctx.lineTo(colRight, dividerY);
   ctx.stroke();
-  diamond(ctx, midX, 316.5, 3, COLORS.gold400);
+  diamond(ctx, midX, dividerY, 3, COLORS.gold400);
 
   // Ranked breakdown: numbered like a herald's roll, not fake percentages
   // (normalising against the top score made every card read "100%").
   ctx.fillStyle = COLORS.slate500;
   ctx.font = display(11, "600");
-  tracked(ctx, "STRONGEST TRAITS", rx, 348, 3);
+  tracked(ctx, "STRONGEST TRAITS", rx, 344, 3);
 
   const NUMERALS = ["I", "II", "III"];
-  let rowY = 382;
+  const rowStart = 380; // label baseline of the first row
+  const rowGap = 46;
   ranked.slice(0, 3).forEach((key, i) => {
     const v = Math.max(0, Math.min(1, scores[key] ?? 0));
+    const labelY = rowStart + i * rowGap;
 
-    // Rank chip: a small gold-edged diamond with the numeral inside.
-    diamond(ctx, rx + 8, rowY - 5, 8, "rgba(212,175,55,0.08)", "rgba(212,175,55,0.55)");
+    // Rank chip: a small gold-edged diamond with the numeral, vertically
+    // centred on the label's cap height so every row lines up identically.
+    const chipCY = labelY - 5;
+    diamond(ctx, rx + 8, chipCY, 8, "rgba(212,175,55,0.08)", "rgba(212,175,55,0.55)");
     ctx.fillStyle = COLORS.gold300;
     ctx.font = display(10, "700");
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(NUMERALS[i], rx + 8, rowY - 4);
+    ctx.fillText(NUMERALS[i], rx + 8, chipCY + 0.5);
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
 
     ctx.fillStyle = COLORS.slate300;
     ctx.font = sans(13, "600");
-    ctx.fillText(ARCHETYPE_BY_KEY[key].label, rx + 30, rowY);
+    ctx.fillText(ARCHETYPE_BY_KEY[key].label, rx + 30, labelY);
 
     const barX = rx + 30;
     const barW = colRight - barX;
-    const trackY = rowY + 10;
+    const trackY = labelY + 10;
     ctx.fillStyle = "rgba(148,163,184,0.14)";
     fillRoundRect(ctx, barX, trackY, barW, 5, 2.5);
     const fg = ctx.createLinearGradient(barX, 0, barX + barW, 0);
@@ -265,8 +271,6 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
     fg.addColorStop(1, COLORS.gold300);
     ctx.fillStyle = fg;
     fillRoundRect(ctx, barX, trackY, Math.max(5, barW * v), 5, 2.5);
-
-    rowY += 48;
   });
 
   // ── Bottom promo strip ────────────────────────────────────────────────────
@@ -279,16 +283,19 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   ctx.lineTo(W - 44, stripY);
   ctx.stroke();
 
+  // Both ends share one baseline and one size so they read as a matched pair.
+  const promoY = stripY + 28;
+  ctx.textBaseline = "alphabetic";
   ctx.fillStyle = COLORS.slate400;
-  ctx.font = sans(13, "500");
+  ctx.font = sans(14, "500");
   ctx.textAlign = "left";
-  ctx.fillText("Find your role in the realm", 44, stripY + 27);
+  ctx.fillText("Find your role in the realm", 44, promoY);
 
   // The address in plain gold sans; tracking a URL in a display serif garbles it.
   ctx.font = sans(14, "600");
   ctx.fillStyle = COLORS.gold300;
   ctx.textAlign = "right";
-  ctx.fillText(host || "take the alignment quiz", W - 44, stripY + 27);
+  ctx.fillText(host || "take the alignment quiz", W - 44, promoY);
   ctx.textAlign = "left";
 
   return canvas.toDataURL("image/png");
