@@ -19,14 +19,31 @@ export interface Player {
 let client: SupabaseClient | null = null;
 
 /**
+ * Normalize the project URL to just the origin. supabase-js appends
+ * `/rest/v1/...` itself, so a value pasted with a trailing slash or a
+ * `/rest/v1` suffix must be stripped or every request 404s ("Invalid path").
+ */
+function normalizeSupabaseUrl(raw: string): string {
+  return raw
+    .trim()
+    .replace(/\/+$/, "")
+    .replace(/\/rest\/v1$/, "")
+    .replace(/\/+$/, "");
+}
+
+/**
  * Service-role client — server only, bypasses RLS. Never expose to the browser
  * (the `server-only` import above makes bundling it client-side a build error).
  */
 export function getSupabase(): SupabaseClient {
   if (!client) {
-    client = createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
+    client = createClient(
+      normalizeSupabaseUrl(env("SUPABASE_URL")),
+      env("SUPABASE_SERVICE_ROLE_KEY"),
+      {
+        auth: { persistSession: false, autoRefreshToken: false },
+      }
+    );
   }
   return client;
 }
