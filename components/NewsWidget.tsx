@@ -1,10 +1,15 @@
+import { cache } from "react";
 import Link from "next/link";
 import { ArrowRight, Newspaper, Pin } from "lucide-react";
 import { getSupabase, type NewsPost } from "@/lib/supabase";
 import { Panel, navButtonClass } from "@/components/ui";
 
-/** Missing table (unmigrated) shouldn't break the dashboard — show empty. */
-async function getLatest(): Promise<NewsPost[]> {
+/**
+ * Missing table (unmigrated) shouldn't break the dashboard — show empty.
+ * cache() dedupes: the widget renders twice (desktop sidebar + mobile block),
+ * but only one query goes out per request.
+ */
+const getLatest = cache(async function getLatest(): Promise<NewsPost[]> {
   const { data, error } = await getSupabase()
     .from("news")
     .select("*")
@@ -17,14 +22,14 @@ async function getLatest(): Promise<NewsPost[]> {
     return [];
   }
   return data ?? [];
-}
+});
 
-export async function NewsWidget() {
+export async function NewsWidget({ className = "" }: { className?: string }) {
   const posts = await getLatest();
   const [lead, ...rest] = posts;
 
   return (
-    <Panel className="flex h-full flex-col overflow-hidden">
+    <Panel className={`flex flex-col overflow-hidden ${className}`}>
       <div className="flex items-center gap-2 border-b border-slate-800/80 px-5 py-4">
         <Newspaper className="h-4 w-4 text-gold-400" />
         <p className="font-display text-xs font-bold tracking-[0.3em] text-gold-400">
@@ -44,7 +49,7 @@ export async function NewsWidget() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col overflow-y-auto">
           {/* Lead story gets the room — image, headline, blurb. */}
           <Link href={`/portal/news/${lead.id}`} className="group block">
             {lead.image_url && (
