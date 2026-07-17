@@ -52,13 +52,14 @@ export default async function PortalPage() {
 
       <GoldDivider />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* The Herald sits on the left; on mobile it drops below the facts. */}
-        <aside className="order-last lg:order-first lg:col-span-1">
+      {/* The Herald is a proper left sidebar — a fixed column so it keeps its
+          width as the page grows, rather than a third of a narrow centre. */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,21rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)]">
+        <aside className="order-last lg:order-first">
           <NewsWidget />
         </aside>
 
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
             {facts.map(({ icon: Icon, label, value }) => (
               <Panel key={label} className="p-5">
