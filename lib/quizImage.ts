@@ -180,15 +180,19 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   const colW = colRight - rx;
   const topLabel = ARCHETYPE_BY_KEY[topKey].label;
 
-  // Kicker
+  // Small eyebrow naming the quiz, then the wordmark a touch larger under it.
+  ctx.fillStyle = COLORS.slate500;
+  ctx.font = display(9, "600");
+  tracked(ctx, "NATION ROLE ALIGNMENT TEST", rx, 80, 2.5);
+
   ctx.fillStyle = COLORS.gold500;
-  ctx.font = display(12, "600");
-  tracked(ctx, "KÖNIGSBURG", rx, 104, 4);
+  ctx.font = display(15, "700");
+  tracked(ctx, "KÖNIGSBURG", rx, 106, 4);
 
   // "YOUR CALLING"
   ctx.fillStyle = COLORS.slate500;
   ctx.font = display(11, "600");
-  tracked(ctx, "YOUR CALLING", rx, 152, 3);
+  tracked(ctx, "YOUR CALLING", rx, 154, 3);
 
   // The role name, auto-fit so long words ("Roleplayer") never overflow.
   const roleBaseline = 206;
@@ -275,7 +279,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
 
   // ── Bottom promo strip ────────────────────────────────────────────────────
   const host = siteHost();
-  const stripY = H - 54;
+  const stripY = H - 68;
   ctx.strokeStyle = "rgba(212,175,55,0.30)";
   ctx.lineWidth = 1;
   ctx.beginPath();
