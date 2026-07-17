@@ -6,6 +6,7 @@ import { getSupabase } from "@/lib/supabase";
 import { hasCitizenRoleCached } from "@/lib/discord";
 import { logout } from "@/actions/auth";
 import { WordMark } from "@/components/ui";
+import { SettingsDrawer } from "@/components/SettingsDrawer";
 
 /**
  * Route safeguard for everything under /portal:
@@ -62,6 +63,10 @@ export default async function PortalLayout({
               <Home className="h-4 w-4" />
               <span className="hidden sm:inline">Main page</span>
             </Link>
+            <SettingsDrawer
+              code={player.verification_code}
+              ign={player.minecraft_ign}
+            />
             <form action={logout}>
               <button
                 type="submit"
