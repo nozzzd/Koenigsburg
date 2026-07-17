@@ -1,4 +1,19 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+
+/** Decode a Supabase JWT key and read its `role` claim (no secret exposed). */
+function supabaseKeyRole(key?: string): string {
+  if (!key) return "MISSING";
+  if (!key.startsWith("eyJ")) return "non-JWT (new-format key — cannot inspect)";
+  try {
+    const payload = JSON.parse(
+      Buffer.from(key.split(".")[1], "base64").toString()
+    ) as { role?: string };
+    return payload.role ?? "unknown";
+  } catch {
+    return "undecodable";
+  }
+}
 
 /**
  * TEMPORARY diagnostic — reports whether the Discord/Supabase config works,
@@ -91,6 +106,57 @@ export async function GET() {
     }
   } catch (e) {
     report.citizenRole = { error: String(e) };
+  }
+
+  // 5. Supabase: is the key really the service_role, and can we read/write?
+  const supUrl = process.env.SUPABASE_URL;
+  const supKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  report.supabaseKeyRole = supabaseKeyRole(supKey);
+  report.supabaseKeyHint =
+    report.supabaseKeyRole === "service_role"
+      ? "Correct — this key bypasses RLS."
+      : "WRONG KEY — must be the service_role key, not anon/publishable.";
+
+  if (supUrl && supKey) {
+    try {
+      const supabase = createClient(supUrl, supKey, {
+        auth: { persistSession: false },
+      });
+      const read = await supabase.from("players").select("id").limit(1);
+      // Throwaway write to prove RLS/write access, then clean it up.
+      const testIgn = `_diag${Math.floor(Math.random() * 100000)}`;
+      const insert = await supabase
+        .from("players")
+        .insert({
+          minecraft_ign: testIgn,
+          discord_username: "diagnostic",
+          verification_code: `DIAG-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
+          status: "pending",
+          role: "guest",
+        })
+        .select("id")
+        .single();
+      if (insert.data) {
+        await supabase.from("players").delete().eq("id", insert.data.id);
+      }
+      report.supabase = {
+        read: {
+          ok: !read.error,
+          code: read.error?.code ?? null,
+          error: read.error?.message ?? null,
+        },
+        write: {
+          ok: !insert.error,
+          code: insert.error?.code ?? null,
+          error: insert.error?.message ?? null,
+          hint: insert.error
+            ? "Write FAILED — likely RLS (wrong key) or the schema was never applied."
+            : "Write works.",
+        },
+      };
+    } catch (e) {
+      report.supabase = { error: String(e) };
+    }
   }
 
   return NextResponse.json(report, { status: 200 });
