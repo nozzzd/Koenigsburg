@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSupabase } from "@/lib/supabase";
 
 /** Decode a Supabase JWT key and read its `role` claim (no secret exposed). */
 function supabaseKeyRole(key?: string): string {
@@ -181,6 +182,20 @@ export async function GET() {
         report.supabaseCleanedTest = { error: String(e) };
       }
     }
+  }
+
+  // 6. The REAL app client (with URL normalization) — this is what sign-in uses.
+  try {
+    const r = await getSupabase().from("players").select("id").limit(1);
+    report.appClientTest = {
+      ok: !r.error,
+      error: r.error?.message ?? null,
+      hint: r.error
+        ? "App DB path still broken."
+        : "App DB path WORKS — Discord sign-in and KBRG login will succeed.",
+    };
+  } catch (e) {
+    report.appClientTest = { error: String(e) };
   }
 
   return NextResponse.json(report, { status: 200 });
