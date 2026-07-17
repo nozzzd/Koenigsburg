@@ -16,6 +16,17 @@ export interface Player {
   created_at: string;
 }
 
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string | null;
+  builder: string | null;
+  tag: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
 let client: SupabaseClient | null = null;
 
 /**

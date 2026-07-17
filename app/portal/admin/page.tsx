@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Check, ScrollText, ShieldCheck } from "lucide-react";
+import { Check, ImageIcon, ScrollText, ShieldCheck, Users } from "lucide-react";
+import Link from "next/link";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { approvePlayer } from "@/actions/admin";
@@ -39,6 +40,35 @@ export default async function AdminPage() {
             : `${queue.length} petition${queue.length === 1 ? "" : "s"} await the council's word.`}{" "}
           Discord-linked applicants receive the @Citizen role automatically on approval.
         </p>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Link href="/portal/admin/members" className="block">
+          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                THE ROLL
+              </p>
+              <p className="mt-1 text-sm text-slate-400">
+                Every member — revoke or kick.
+              </p>
+            </div>
+            <Users className="h-5 w-5 text-gold-400" />
+          </Panel>
+        </Link>
+        <Link href="/portal/admin/showcase" className="block">
+          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                GREAT WORKS
+              </p>
+              <p className="mt-1 text-sm text-slate-400">
+                Curate the public showcase.
+              </p>
+            </div>
+            <ImageIcon className="h-5 w-5 text-gold-400" />
+          </Panel>
+        </Link>
       </div>
 
       <GoldDivider />

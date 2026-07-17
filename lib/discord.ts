@@ -76,6 +76,19 @@ export async function hasCitizenRole(discordUserId: string): Promise<boolean> {
   return roles?.includes(env("DISCORD_CITIZEN_ROLE_ID")) ?? false;
 }
 
+// Portal pages re-check citizenship on every load; cache briefly so a burst of
+// navigation doesn't spend a Discord API call per request.
+const roleCheckCache = new Map<string, { citizen: boolean; at: number }>();
+const ROLE_CACHE_TTL_MS = 60_000;
+
+export async function hasCitizenRoleCached(discordUserId: string): Promise<boolean> {
+  const hit = roleCheckCache.get(discordUserId);
+  if (hit && Date.now() - hit.at < ROLE_CACHE_TTL_MS) return hit.citizen;
+  const citizen = await hasCitizenRole(discordUserId);
+  roleCheckCache.set(discordUserId, { citizen, at: Date.now() });
+  return citizen;
+}
+
 /**
  * Assigns @Citizen via the bot. Requires Manage Roles and the bot's role
  * to sit above @Citizen in the guild's role hierarchy.
@@ -95,5 +108,25 @@ export async function assignCitizenRole(discordUserId: string): Promise<void> {
   );
   if (!res.ok) {
     throw new Error(`Discord role assignment failed (${res.status})`);
+  }
+}
+
+/** Strips @Citizen — used when a player renounces their citizenship. */
+export async function removeCitizenRole(discordUserId: string): Promise<void> {
+  const res = await fetch(
+    `${API}/guilds/${env("DISCORD_GUILD_ID")}/members/${discordUserId}/roles/${env(
+      "DISCORD_CITIZEN_ROLE_ID"
+    )}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+        "X-Audit-Log-Reason": "Koenigsburg portal: citizenship renounced",
+      },
+    }
+  );
+  // 404 = already gone (left the guild); nothing to strip.
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`Discord role removal failed (${res.status})`);
   }
 }

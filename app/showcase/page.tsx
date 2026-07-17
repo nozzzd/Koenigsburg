@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Hammer, ImageIcon } from "lucide-react";
-import { projects } from "@/content/projects";
+import { getSupabase, type Project } from "@/lib/supabase";
 import {
   Crest,
   GoldDivider,
@@ -12,13 +12,37 @@ import {
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
 
+// Served from cache and regenerated on demand when an admin edits a project
+// (revalidatePath in actions/projects.ts); this is the safety net in case a
+// build-time fetch ever came back empty.
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "Great Works",
   description:
     "The great works of Königsburg — cathedrals, harbors, and fortifications raised by our citizens. Join the realm and build your own legacy.",
 };
 
-export default function ShowcasePage() {
+/** Managed by admins at /portal/admin/showcase. */
+async function getProjects(): Promise<Project[]> {
+  const { data, error } = await getSupabase()
+    .from("projects")
+    .select("*")
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true })
+    .returns<Project[]>();
+  if (error) {
+    // Table missing (migration not run) or DB hiccup — show an empty gallery
+    // rather than taking the whole public page down.
+    console.error("Failed to load projects:", error);
+    return [];
+  }
+  return data ?? [];
+}
+
+export default async function ShowcasePage() {
+  const projects = await getProjects();
+
   return (
     <>
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
@@ -45,14 +69,29 @@ export default function ShowcasePage() {
 
         <GoldDivider className="w-full max-w-3xl" />
 
+        {projects.length === 0 && (
+          <section className="w-full py-16">
+            <Panel className="flex flex-col items-center gap-3 p-12 text-center">
+              <ImageIcon className="h-8 w-8 text-slate-600" strokeWidth={1.5} />
+              <p className="font-display text-sm font-bold tracking-widest text-slate-300">
+                THE CHRONICLE IS BEING WRITTEN
+              </p>
+              <p className="max-w-sm text-sm text-slate-500">
+                Our great works are being recorded. Join the Discord to see what
+                the realm is building right now.
+              </p>
+            </Panel>
+          </section>
+        )}
+
         <section className="grid w-full gap-5 py-12 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <Panel key={project.title} className="flex flex-col overflow-hidden">
+            <Panel key={project.id} className="flex flex-col overflow-hidden">
               <div className="relative aspect-video w-full overflow-hidden bg-slate-950">
-                {project.imageUrl ? (
+                {project.image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={project.imageUrl}
+                    src={project.image_url}
                     alt={project.title}
                     loading="lazy"
                     className="h-full w-full object-cover"

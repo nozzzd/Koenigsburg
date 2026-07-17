@@ -47,4 +47,5 @@ export async function approvePlayer(playerId: string): Promise<void> {
   }
 
   revalidatePath("/portal/admin");
+  revalidatePath("/portal/admin/members");
 }

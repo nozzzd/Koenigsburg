@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Hourglass, KeyRound } from "lucide-react";
+import { Hourglass, KeyRound, ShieldOff } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
 import { logout } from "@/actions/auth";
 import { Crest, GateShell, GoldDivider, Panel } from "@/components/ui";
@@ -8,11 +8,16 @@ import { CopyCode } from "@/components/CopyCode";
 
 export const metadata: Metadata = { title: "Awaiting the Council" };
 
-export default async function PendingPage() {
+export default async function PendingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ revoked?: string }>;
+}) {
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
   if (player.status === "active") redirect("/portal");
 
+  const { revoked } = await searchParams;
   const isManual = !player.discord_id;
 
   return (
@@ -20,7 +25,7 @@ export default async function PendingPage() {
       <div className="mb-8 flex flex-col items-center text-center">
         <Crest className="h-16 w-16" />
         <h1 className="mt-6 font-display text-2xl font-bold tracking-[0.2em] text-slate-100">
-          THE COUNCIL DELIBERATES
+          {revoked ? "YOUR SEAT IS VACATED" : "THE COUNCIL DELIBERATES"}
         </h1>
         <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-950/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-300">
           <span className="relative flex h-2 w-2">
@@ -32,6 +37,17 @@ export default async function PendingPage() {
       </div>
 
       <Panel className="space-y-5 p-6">
+        {revoked && (
+          <div className="flex items-start gap-3 rounded-lg border border-red-900/60 bg-red-950/40 px-4 py-3 text-sm text-red-200">
+            <ShieldOff className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+            <p className="leading-relaxed">
+              Your citizenship was revoked because you left the Königsburg Discord
+              or no longer hold the{" "}
+              <span className="font-semibold text-red-300">@Citizen</span> role.
+              Rejoin the server and ask an elder to restore your standing.
+            </p>
+          </div>
+        )}
         <div className="flex items-start gap-3 text-sm text-slate-300">
           <Hourglass className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" />
           <p>
