@@ -71,6 +71,12 @@ export function ErrorBanner({ message }: { message: string }) {
   );
 }
 
+/**
+ * Width of the portal frame — header and the dashboard shell share it so the
+ * nav buttons line up with the Herald and the content beneath them.
+ */
+export const SHELL = "mx-auto w-full max-w-[100rem]";
+
 export const inputClass =
   "w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-slate-100 placeholder:text-slate-600 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-400/25";
 
