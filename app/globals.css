@@ -21,3 +21,123 @@ body {
     radial-gradient(ellipse 60% 50% at 85% 110%, rgba(30, 41, 59, 0.55), transparent);
   background-attachment: fixed;
 }
+
+/* ── Light mode ─────────────────────────────────────────────────────────────
+   Dark is the default (no attribute). Tailwind v4 compiles every colour
+   utility to var(--color-*), so inverting the slate scale here re-themes the
+   whole site without touching a single component.
+   Gold is darkened instead of inverted — it must stay legible on white. */
+:root[data-theme="light"] {
+  --color-slate-50: #020617;
+  --color-slate-100: #0f172a;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-600: #94a3b8;
+  --color-slate-700: #cbd5e1;
+  --color-slate-800: #e2e8f0;
+  --color-slate-900: #f1f5f9;
+  --color-slate-950: #f8fafc;
+
+  --color-gold-100: #d4af37;
+  --color-gold-200: #b8962e;
+  --color-gold-300: #96761f;
+  --color-gold-400: #8a6d1f;
+  --color-gold-500: #755c1a;
+  --color-gold-600: #5c4a18;
+}
+
+:root[data-theme="light"] body {
+  background-color: #f4f6fa;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.16), transparent),
+    radial-gradient(ellipse 60% 50% at 85% 110%, rgba(148, 163, 184, 0.28), transparent);
+}
+
+/* Panel shadows are tuned for a dark page; soften them on white. */
+:root[data-theme="light"] .shadow-black\/40 {
+  --tw-shadow-color: rgb(15 23 42 / 0.08);
+}
+
+/* A gold button is gold in both themes — pinned so the palette can't invert
+   its dark ink text into unreadable white. */
+.btn-gold {
+  background-image: linear-gradient(to bottom, #e6cc74, #b8962e);
+  color: #0b0f1a;
+}
+
+.btn-gold:hover:not(:disabled) {
+  background-image: linear-gradient(to bottom, #f0dfa8, #d4af37);
+}
+
+/* ── Settings drawer ────────────────────────────────────────────────────────
+   A <dialog> flips display:none → block, which normally can't be transitioned.
+   @starting-style gives it an "entry" state to animate FROM, and the
+   allow-discrete transitions on display/overlay keep it mounted long enough to
+   animate back OUT on close. Result: it slides both ways, no JS timers. */
+.drawer {
+  translate: 100% 0;
+  transition:
+    translate 340ms cubic-bezier(0.32, 0.72, 0, 1),
+    display 340ms allow-discrete,
+    overlay 340ms allow-discrete;
+}
+
+.drawer[open] {
+  translate: 0 0;
+}
+
+@starting-style {
+  .drawer[open] {
+    translate: 100% 0;
+  }
+}
+
+.drawer::backdrop {
+  opacity: 0;
+  transition:
+    opacity 340ms ease,
+    display 340ms allow-discrete,
+    overlay 340ms allow-discrete;
+}
+
+.drawer[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .drawer[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* The panel's contents drift in just behind the drawer edge. */
+.drawer[open] .drawer-content > * {
+  animation: drawer-rise 420ms cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+.drawer[open] .drawer-content > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.drawer[open] .drawer-content > *:nth-child(3) {
+  animation-delay: 110ms;
+}
+
+@keyframes drawer-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer::backdrop {
+    transition-duration: 1ms;
+  }
+  .drawer[open] .drawer-content > * {
+    animation: none;
+  }
+}

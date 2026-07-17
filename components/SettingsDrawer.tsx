@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef } from "react";
-import { KeyRound, Settings, TriangleAlert, X } from "lucide-react";
+import { KeyRound, Palette, Settings, TriangleAlert, X } from "lucide-react";
 import { CopyCode } from "@/components/CopyCode";
 import { LeaveForm } from "@/components/forms/LeaveForm";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 /**
  * Settings as a right-hand slide-over, opened from the portal header.
@@ -31,9 +32,9 @@ export function SettingsDrawer({ code, ign }: { code: string; ign: string }) {
         onClick={(e) => {
           if (e.target === ref.current) ref.current?.close();
         }}
-        className="m-0 ml-auto h-dvh max-h-none w-full max-w-sm bg-transparent p-0 text-slate-200 backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+        className="drawer m-0 ml-auto h-dvh max-h-none w-full max-w-sm bg-transparent p-0 text-slate-200 backdrop:bg-black/70 backdrop:backdrop-blur-sm"
       >
-        <div className="flex h-full flex-col overflow-y-auto border-l border-slate-800 bg-slate-900 p-6">
+        <div className="drawer-content flex h-full flex-col overflow-y-auto border-l border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center justify-between">
             <p className="font-display text-sm font-bold tracking-[0.3em] text-gold-400">
               SETTINGS
@@ -46,6 +47,14 @@ export function SettingsDrawer({ code, ign }: { code: string; ign: string }) {
             >
               <X className="h-4 w-4" />
             </button>
+          </div>
+
+          <div className="mt-8 space-y-3">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+              <Palette className="h-4 w-4 text-gold-400" />
+              Appearance
+            </p>
+            <ThemeToggle />
           </div>
 
           <div className="mt-8 space-y-3">

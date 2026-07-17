@@ -1,7 +1,7 @@
 import { KeyRound, TriangleAlert } from "lucide-react";
 import { acknowledgeKey } from "@/actions/account";
 import { CopyCode } from "@/components/CopyCode";
-import { Panel } from "@/components/ui";
+import { Panel, goldButtonClass } from "@/components/ui";
 
 /**
  * Shown once, after approval, when the member is issued their private login
@@ -37,10 +37,7 @@ export function SaveKeyWarning({ code }: { code: string }) {
         </li>
       </ul>
       <form action={acknowledgeKey} className="mt-5">
-        <button
-          type="submit"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-gold-300 to-gold-500 px-4 py-2.5 font-display text-sm font-bold tracking-wider text-slate-950 transition hover:from-gold-200 hover:to-gold-400"
-        >
+        <button type="submit" className={goldButtonClass}>
           I have saved my key
         </button>
       </form>

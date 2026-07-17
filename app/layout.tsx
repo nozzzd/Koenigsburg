@@ -38,6 +38,18 @@ export default function RootLayout({
       lang="en"
       className={`${cinzel.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        {/*
+          Applies the saved theme before first paint. Without this, a light-mode
+          visitor gets a flash of the dark palette on every navigation. Dark is
+          the default, so only "light" needs an attribute.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('kbg-theme')==='light'){document.documentElement.dataset.theme='light'}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col font-sans text-slate-200">
         {children}
         <Analytics />

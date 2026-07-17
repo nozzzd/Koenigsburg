@@ -77,11 +77,11 @@ export const labelClass =
   "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400";
 
 export const goldButtonClass =
-  "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-b from-gold-300 to-gold-500 px-4 py-2.5 font-display text-sm font-bold tracking-wider text-slate-950 transition hover:from-gold-200 hover:to-gold-400 disabled:cursor-not-allowed disabled:opacity-60";
+  "btn-gold inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-display text-sm font-bold tracking-wider transition disabled:cursor-not-allowed disabled:opacity-60";
 
 export const outlineButtonClass =
   "inline-flex items-center justify-center gap-2 rounded-lg border border-gold-500/40 px-4 py-2.5 font-display text-sm font-bold tracking-wider text-gold-300 transition hover:border-gold-400 hover:bg-gold-400/10";
 
 /** Oversized primary call-to-action — the single dominant "join" button. */
 export const heroCtaClass =
-  "inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-b from-gold-300 to-gold-500 px-10 py-4 font-display text-base font-bold tracking-widest text-slate-950 shadow-lg shadow-gold-500/20 transition hover:from-gold-200 hover:to-gold-400 hover:shadow-gold-500/30";
+  "btn-gold inline-flex items-center justify-center gap-2.5 rounded-xl px-10 py-4 font-display text-base font-bold tracking-widest shadow-lg shadow-gold-500/20 transition hover:shadow-gold-500/30";
