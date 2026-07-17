@@ -1,4 +1,4 @@
-import { SHELL } from "@/components/ui";
+import { HALL_SHELL } from "@/components/ui";
 import { NewsWidget } from "@/components/NewsWidget";
 
 /**
@@ -17,8 +17,8 @@ export default function HallLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className={`${SHELL} flex flex-1`}>
-      <aside className="hidden shrink-0 px-5 py-8 lg:block lg:w-[22rem] xl:w-[25rem]">
+    <div className={`${HALL_SHELL} flex flex-1`}>
+      <aside className="hidden shrink-0 px-5 py-8 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]">
         <div className="sticky top-8">
           <NewsWidget className="h-[calc(100dvh-8rem)]" />
         </div>
@@ -30,7 +30,7 @@ export default function HallLayout({
 
       <div
         aria-hidden
-        className="hidden shrink-0 lg:block lg:w-[22rem] xl:w-[25rem]"
+        className="hidden shrink-0 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]"
       />
     </div>
   );

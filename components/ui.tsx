@@ -72,10 +72,17 @@ export function ErrorBanner({ message }: { message: string }) {
 }
 
 /**
- * Width of the portal frame — header and the dashboard shell share it so the
- * nav buttons line up with the Herald and the content beneath them.
+ * The header frame. Deliberately narrower than the hall body so the nav
+ * buttons stay in from the edge of a wide monitor — the Herald is allowed to
+ * reach further left than this.
  */
 export const SHELL = "mx-auto w-full max-w-[100rem]";
+
+/**
+ * The Citizen's Hall body. Wider than the header so the Herald can push out
+ * into the left gutter while the middle column stays screen-centred.
+ */
+export const HALL_SHELL = "mx-auto w-full max-w-[120rem]";
 
 export const inputClass =
   "w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-2.5 text-slate-100 placeholder:text-slate-600 outline-none transition focus:border-gold-400 focus:ring-2 focus:ring-gold-400/25";
