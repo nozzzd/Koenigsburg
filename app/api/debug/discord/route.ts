@@ -111,6 +111,10 @@ export async function GET() {
   // 5. Supabase: is the key really the service_role, and can we read/write?
   const supUrl = process.env.SUPABASE_URL;
   const supKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  report.supabaseUrl = supUrl ?? null; // not secret — ships in every Supabase frontend
+  const cleanedUrl = (supUrl ?? "").replace(/\/+$/, "").replace(/\/rest\/v1$/, "");
+  report.supabaseUrlCleaned = cleanedUrl;
+  report.supabaseUrlNeedsFix = cleanedUrl !== (supUrl ?? "");
   report.supabaseKeyRole = supabaseKeyRole(supKey);
   report.supabaseKeyHint =
     report.supabaseKeyRole === "service_role"
@@ -156,6 +160,26 @@ export async function GET() {
       };
     } catch (e) {
       report.supabase = { error: String(e) };
+    }
+
+    // If the URL looked malformed, prove the cleaned version works.
+    if (cleanedUrl && cleanedUrl !== supUrl) {
+      try {
+        const s2 = createClient(cleanedUrl, supKey, {
+          auth: { persistSession: false },
+        });
+        const r2 = await s2.from("players").select("id").limit(1);
+        report.supabaseCleanedTest = {
+          cleanedUrl,
+          ok: !r2.error,
+          error: r2.error?.message ?? null,
+          hint: r2.error
+            ? "Cleaned URL still fails — the problem is elsewhere."
+            : "FIX CONFIRMED: set SUPABASE_URL to the cleaned value above.",
+        };
+      } catch (e) {
+        report.supabaseCleanedTest = { error: String(e) };
+      }
     }
   }
 
