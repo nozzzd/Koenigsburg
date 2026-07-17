@@ -25,5 +25,4 @@ export async function acknowledgeKey(): Promise<void> {
   }
 
   revalidatePath("/portal");
-  revalidatePath("/portal/settings");
 }

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Settings, Shield } from "lucide-react";
+import { Home, LogOut, Shield } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
 import { getSupabase } from "@/lib/supabase";
 import { hasCitizenRoleCached } from "@/lib/discord";
@@ -56,11 +56,11 @@ export default async function PortalLayout({
               </Link>
             )}
             <Link
-              href="/portal/settings"
+              href="/"
               className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-200"
             >
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
+              <Home className="h-4 w-4" />
+              <span className="hidden sm:inline">Main page</span>
             </Link>
             <form action={logout}>
               <button
