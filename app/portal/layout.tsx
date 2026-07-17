@@ -5,7 +5,7 @@ import { getSessionPlayer } from "@/lib/session";
 import { getSupabase } from "@/lib/supabase";
 import { hasCitizenRoleCached } from "@/lib/discord";
 import { logout } from "@/actions/auth";
-import { WordMark } from "@/components/ui";
+import { WordMark, navButtonClass } from "@/components/ui";
 import { SettingsDrawer } from "@/components/SettingsDrawer";
 
 /**
@@ -46,20 +46,17 @@ export default async function PortalLayout({
       <header className="border-b border-slate-800/80 bg-slate-950/60 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-4 sm:gap-4 sm:px-6">
           <WordMark href="/portal" />
-          <nav className="flex items-center gap-3 sm:gap-4">
+          <nav className="flex items-center gap-2">
             {player.role === "admin" && (
               <Link
                 href="/portal/admin"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-400 transition hover:text-gold-300"
+                className={`${navButtonClass} border-gold-500/40 text-gold-400`}
               >
                 <Shield className="h-4 w-4" />
                 <span className="hidden sm:inline">Admin</span>
               </Link>
             )}
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-200"
-            >
+            <Link href="/" className={navButtonClass}>
               <Home className="h-4 w-4" />
               <span className="hidden sm:inline">Main page</span>
             </Link>
@@ -68,10 +65,7 @@ export default async function PortalLayout({
               ign={player.minecraft_ign}
             />
             <form action={logout}>
-              <button
-                type="submit"
-                className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-200"
-              >
+              <button type="submit" className={navButtonClass}>
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">Log out</span>
               </button>

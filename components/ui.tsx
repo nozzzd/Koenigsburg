@@ -86,3 +86,14 @@ export const outlineButtonClass =
 /** Oversized primary call-to-action — the single dominant "join" button. */
 export const heroCtaClass =
   "btn-gold pressable inline-flex items-center justify-center gap-2.5 rounded-xl px-10 py-4 font-display text-base font-bold tracking-widest shadow-lg shadow-gold-500/20 hover:shadow-xl hover:shadow-gold-500/30";
+
+/**
+ * Header / secondary buttons. Carries a visible border and fill at rest so it
+ * reads as a button before you hover it, then fills in on hover.
+ */
+export const navButtonClass =
+  "pressable inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1.5 text-sm font-semibold text-slate-400 hover:border-gold-500/50 hover:bg-slate-800 hover:text-gold-300 sm:px-3";
+
+/** Panels that are links — lift and lighten so they feel clickable. */
+export const cardLinkClass =
+  "pressable h-full hover:border-gold-500/50 hover:bg-slate-800/50 hover:shadow-xl hover:shadow-black/50";

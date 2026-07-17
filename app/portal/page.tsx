@@ -9,7 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
-import { GoldDivider, Panel } from "@/components/ui";
+import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SaveKeyWarning } from "@/components/SaveKeyWarning";
 import { NewsWidget } from "@/components/NewsWidget";
 
@@ -75,7 +75,7 @@ export default async function PortalPage() {
 
           {player.role === "admin" && (
             <Link href="/portal/admin" className="block">
-              <Panel className="flex items-center justify-between p-6 transition hover:border-gold-500/50">
+              <Panel className={`${cardLinkClass} flex items-center justify-between p-6`}>
                 <div>
                   <p className="font-display text-sm font-bold tracking-widest text-gold-300">
                     ADMIN CONTROL PANEL
@@ -84,7 +84,7 @@ export default async function PortalPage() {
                     The queue, the roll, the Herald, and the Great Works.
                   </p>
                 </div>
-                <Crown className="h-6 w-6 text-gold-400" />
+                <Crown className="h-6 w-6 shrink-0 text-gold-400" />
               </Panel>
             </Link>
           )}

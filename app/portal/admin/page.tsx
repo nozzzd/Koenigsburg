@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { approvePlayer } from "@/actions/admin";
-import { GoldDivider, Panel } from "@/components/ui";
+import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 import { RegisterCommandButton } from "@/components/admin/RegisterCommandButton";
 
@@ -45,7 +45,7 @@ export default async function AdminPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Link href="/portal/admin/news" className="block">
-          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
             <div>
               <p className="font-display text-sm font-bold tracking-widest text-gold-300">
                 THE HERALD
@@ -56,7 +56,7 @@ export default async function AdminPage() {
           </Panel>
         </Link>
         <Link href="/portal/admin/members" className="block">
-          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
             <div>
               <p className="font-display text-sm font-bold tracking-widest text-gold-300">
                 THE ROLL
@@ -69,7 +69,7 @@ export default async function AdminPage() {
           </Panel>
         </Link>
         <Link href="/portal/admin/showcase" className="block">
-          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
             <div>
               <p className="font-display text-sm font-bold tracking-widest text-gold-300">
                 GREAT WORKS

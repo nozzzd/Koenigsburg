@@ -5,6 +5,7 @@ import { KeyRound, Palette, Settings, TriangleAlert, X } from "lucide-react";
 import { CopyCode } from "@/components/CopyCode";
 import { LeaveForm } from "@/components/forms/LeaveForm";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { navButtonClass } from "@/components/ui";
 
 /**
  * Settings as a right-hand slide-over, opened from the portal header.
@@ -20,7 +21,7 @@ export function SettingsDrawer({ code, ign }: { code: string; ign: string }) {
       <button
         type="button"
         onClick={() => ref.current?.showModal()}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-400 transition hover:text-slate-200"
+        className={navButtonClass}
       >
         <Settings className="h-4 w-4" />
         <span className="hidden sm:inline">Settings</span>
