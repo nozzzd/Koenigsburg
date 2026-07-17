@@ -7,6 +7,7 @@ import { getSessionPlayer } from "@/lib/session";
 import { approvePlayer } from "@/actions/admin";
 import { GoldDivider, Panel } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
+import { RegisterCommandButton } from "@/components/admin/RegisterCommandButton";
 
 export const metadata: Metadata = { title: "Admin — Whitelisting Queue" };
 
@@ -71,6 +72,22 @@ export default async function AdminPage() {
         </Link>
       </div>
 
+      <Panel className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-display text-sm font-bold tracking-widest text-slate-200">
+            DISCORD BOT
+          </p>
+          <p className="mt-1 text-sm text-slate-400">
+            Members prove a signup code with{" "}
+            <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-xs text-gold-400">
+              /verify
+            </code>
+            . Run this once to install the command.
+          </p>
+        </div>
+        <RegisterCommandButton />
+      </Panel>
+
       <GoldDivider />
 
       {queue.length === 0 ? (
@@ -103,10 +120,11 @@ export default async function AdminPage() {
                         </span>
                         <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
                           <ScrollText className="h-3.5 w-3.5" />
-                          Verify in #immigration:{" "}
+                          Unverified — have them run{" "}
                           <code className="font-mono text-gold-400">
-                            {applicant.verification_code}
-                          </code>
+                            /verify {applicant.verification_code}
+                          </code>{" "}
+                          in Discord
                         </span>
                       </>
                     )}

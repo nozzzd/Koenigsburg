@@ -67,9 +67,13 @@ export default async function PendingPage({
           <CopyCode code={player.verification_code} />
           {isManual ? (
             <p className="text-sm leading-relaxed text-slate-400">
-              Copy this code and paste it into the{" "}
-              <span className="font-semibold text-gold-300">#immigration</span> channel on
-              our Discord to prove ownership. The council approves petitions from there.
+              In our Discord, run{" "}
+              <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-gold-300">
+                /verify
+              </code>{" "}
+              and paste this code. The bot confirms it&apos;s you{" "}
+              <span className="text-slate-200">privately</span> — only you can see the
+              reply. Never post it in a channel where others can read it.
             </p>
           ) : (
             <p className="text-sm leading-relaxed text-slate-400">
@@ -82,10 +86,9 @@ export default async function PendingPage({
               {isManual ? (
                 <>
                   This is a <span className="text-slate-200">signup code</span>, not a
-                  password — once you post it, treat it as public. The moment the
-                  council approves you, it is retired and you are given a{" "}
-                  <span className="text-slate-200">private login key</span> to save.
-                  It also lets you back into this page while you wait.
+                  password. Once the bot confirms you, it is retired and you are
+                  given a <span className="text-slate-200">private login key</span> to
+                  save. It also lets you back into this page while you wait.
                 </>
               ) : (
                 <>

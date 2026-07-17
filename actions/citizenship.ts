@@ -12,10 +12,19 @@ import type { ActionState } from "@/lib/forms";
  */
 export async function leaveKoenigsburg(
   _prev: ActionState,
-  _formData: FormData
+  formData: FormData
 ): Promise<ActionState> {
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
+
+  // Typed confirmation — enforced here, not just in the UI, so no stray click
+  // (or crafted request) can erase an account.
+  const confirmIgn = String(formData.get("confirm_ign") ?? "").trim();
+  if (confirmIgn !== player.minecraft_ign) {
+    return {
+      error: `Type your Minecraft name exactly — ${player.minecraft_ign} — to confirm.`,
+    };
+  }
 
   const supabase = getSupabase();
 

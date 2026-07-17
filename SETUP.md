@@ -23,7 +23,13 @@ locally and deployed on Vercel.
 
 1. Go to the [Discord Developer Portal](https://discord.com/developers/applications)
    and create an application (e.g. "Königsburg Portal").
-2. **OAuth2 tab:**
+2. **General Information tab:**
+   - Copy the **Public Key** → `DISCORD_PUBLIC_KEY` (verifies `/verify` slash-command requests)
+   - Set **Interactions Endpoint URL** to
+     `https://YOUR-VERCEL-DOMAIN/api/discord/interactions`, then **Save**.
+     Discord sends a signed test ping — it only saves if `DISCORD_PUBLIC_KEY`
+     is already set in Vercel and deployed, so do this step last.
+3. **OAuth2 tab:**
    - Copy the **Client ID** → `DISCORD_CLIENT_ID`
    - Reset/copy the **Client Secret** → `DISCORD_CLIENT_SECRET`
    - Under **Redirects**, add BOTH:

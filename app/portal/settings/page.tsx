@@ -61,12 +61,12 @@ export default async function SettingsPage() {
           would have to petition the council anew.
         </p>
         <details className="group mt-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5 text-sm font-semibold text-slate-400 transition hover:border-red-900 hover:text-red-300 [&::-webkit-details-marker]:hidden">
+          <summary className="ml-auto flex w-fit cursor-pointer list-none items-center gap-2 rounded-lg border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-500 transition hover:border-red-900 hover:text-red-300 [&::-webkit-details-marker]:hidden">
             <span>Leave Königsburg</span>
-            <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+            <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
           </summary>
           <div className="pt-4">
-            <LeaveForm />
+            <LeaveForm ign={player.minecraft_ign} />
           </div>
         </details>
       </Panel>
