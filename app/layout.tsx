@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -40,6 +41,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col font-sans text-slate-200">
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

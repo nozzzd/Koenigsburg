@@ -8,6 +8,7 @@ import {
   goldButtonClass,
   outlineButtonClass,
 } from "@/components/ui";
+import { JoinDiscordButton } from "@/components/DiscordButton";
 
 const pillars = [
   {
@@ -32,9 +33,17 @@ export default function LandingPage() {
     <>
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <WordMark />
-        <Link href="/login" className={outlineButtonClass}>
-          Enter
-        </Link>
+        <nav className="flex items-center gap-3">
+          <Link
+            href="/showcase"
+            className="hidden text-sm font-semibold text-slate-300 transition hover:text-gold-300 sm:block"
+          >
+            Great Works
+          </Link>
+          <Link href="/login" className={outlineButtonClass}>
+            Enter
+          </Link>
+        </nav>
       </header>
 
       <main className="flex flex-1 flex-col items-center px-6">
@@ -56,6 +65,15 @@ export default function LandingPage() {
             </Link>
             <Link href="/apply" className={`${outlineButtonClass} w-full`}>
               Apply for Citizenship
+            </Link>
+          </div>
+          <div className="mt-4 flex w-full max-w-md flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <JoinDiscordButton className="w-full sm:w-auto" />
+            <Link
+              href="/showcase"
+              className="text-sm font-semibold text-slate-400 underline-offset-4 transition hover:text-gold-300 hover:underline"
+            >
+              Explore our Great Works →
             </Link>
           </div>
         </section>
