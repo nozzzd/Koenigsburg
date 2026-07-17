@@ -40,7 +40,7 @@ export function QuizResult({
   async function download() {
     setSaving(true);
     try {
-      await downloadResultImage(result.scores, top);
+      await downloadResultImage(result, top);
     } catch (err) {
       console.error("Could not build the result image:", err);
     } finally {
