@@ -293,7 +293,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   ctx.fillStyle = COLORS.slate400;
   ctx.font = sans(14, "500");
   ctx.textAlign = "left";
-  ctx.fillText("Find your role in the realm", 44, promoY);
+  ctx.fillText("Find your role in the nation", 44, promoY);
 
   // The address in plain gold sans; tracking a URL in a display serif garbles it.
   ctx.font = sans(14, "600");

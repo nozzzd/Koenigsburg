@@ -25,7 +25,7 @@ SELECT * FROM (VALUES
      'The spiritual heart of the capital - flying buttresses, stained glass, and a bell tower that overlooks the whole valley.',
      'The Masons'' Guild', 'Landmark', 1),
     ('Königsburg Harbor',
-     'A working port district with warehouses, a lighthouse, and berths for the merchant fleet that keeps the realm supplied.',
+     'A working port district with warehouses, a lighthouse, and berths for the merchant fleet that keeps the nation supplied.',
      'House Meridian', 'Infrastructure', 2),
     ('The Old Walls',
      'Kilometers of hand-laid battlements and gatehouses that trace the original founding borders of the free city.',

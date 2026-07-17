@@ -59,7 +59,7 @@ export function NewsForm({ post }: { post?: NewsPost }) {
           required
           rows={8}
           defaultValue={post?.body ?? ""}
-          placeholder="Tell the realm what happened…"
+          placeholder="Tell the nation what happened…"
           className={`${inputClass} resize-y`}
         />
         <p className="mt-1.5 text-xs text-slate-500">

@@ -33,7 +33,7 @@ export const ARCHETYPES: Archetype[] = [
     key: "fighter",
     label: "Fighter",
     blurb:
-      "When war begins, you're among the first to answer the call. The realm looks to you to hold the wall and to ensure peace and security throughout the realm.",
+      "When war begins, you're among the first to answer the call. The nation looks to you to hold the wall and to ensure peace and security throughout the nation.",
   },
   {
     key: "gatherer",
@@ -45,7 +45,7 @@ export const ARCHETYPES: Archetype[] = [
     key: "roleplayer",
     label: "Roleplayer",
     blurb:
-      "You are the voice of the realm, its heralds and its stories. A nation is remembered for its people, and you give them their tale.",
+      "You are the voice of the nation, its heralds and its stories. A nation is remembered for its people, and you give them their tale.",
   },
   {
     key: "explorer",

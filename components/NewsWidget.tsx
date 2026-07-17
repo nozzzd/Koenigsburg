@@ -45,7 +45,7 @@ export async function NewsWidget({ className = "" }: { className?: string }) {
             ALL QUIET
           </p>
           <p className="max-w-[15rem] text-sm text-slate-600">
-            No dispatches from the realm just yet.
+            No dispatches from the nation just yet.
           </p>
         </div>
       ) : (

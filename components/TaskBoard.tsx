@@ -221,7 +221,7 @@ export function TaskBoard({
 
           {realm.length > 0 && (
             <>
-              <SectionHeading icon={Flag}>Goals of the realm</SectionHeading>
+              <SectionHeading icon={Flag}>Goals of the nation</SectionHeading>
               <ul>
                 {realm.map((task) => (
                   <TaskRow

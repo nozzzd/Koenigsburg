@@ -164,7 +164,7 @@ export default async function AdminPage() {
           <p className="font-display text-sm font-bold tracking-widest text-slate-300">
             THE QUEUE STANDS EMPTY
           </p>
-          <p className="text-sm text-slate-500">The realm rests easy tonight.</p>
+          <p className="text-sm text-slate-500">The nation rests easy tonight.</p>
         </Panel>
       ) : (
         <ul className="space-y-4">

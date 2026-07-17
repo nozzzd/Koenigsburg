@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s — Königsburg",
   },
   description:
-    "The gates of Königsburg — citizenship portal of the realm. Apply, be approved, and build within the walls.",
+    "The gates of Königsburg — citizenship portal of the nation. Apply, be approved, and build within the walls.",
 };
 
 export default function RootLayout({

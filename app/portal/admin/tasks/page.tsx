@@ -89,7 +89,7 @@ export default async function AdminTasksPage() {
         </h1>
         <p className="mt-2 text-sm text-slate-400">
           Every kind of task, from one place. Duties land on one member; team
-          tasks on a whole team; goals of the realm on everyone. Members can tick
+          tasks on a whole team; goals of the nation on everyone. Members can tick
           them off but can&apos;t remove them.
         </p>
       </div>
@@ -137,7 +137,7 @@ export default async function AdminTasksPage() {
         <Panel className="p-5">
           <p className="flex items-center gap-2 font-display text-sm font-bold tracking-widest text-gold-300">
             <Flag className="h-4 w-4" />
-            GOAL OF THE REALM
+            GOAL OF THE NATION
           </p>
           <div className="mt-4">
             <RealmGoalForm />
@@ -167,7 +167,7 @@ export default async function AdminTasksPage() {
                     {task.scope === "realm" ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-gold-500/40 bg-gold-400/10 px-2 py-0.5 text-xs font-semibold text-gold-300">
                         <Flag className="h-3 w-3" />
-                        Realm
+                        Nation
                       </span>
                     ) : task.scope === "team" ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-950/30 px-2 py-0.5 text-xs font-semibold text-sky-300">
