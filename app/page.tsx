@@ -9,6 +9,7 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
+import { SleepServersJoke } from "@/components/SleepServersJoke";
 
 const pillars = [
   {
@@ -86,6 +87,8 @@ export default function LandingPage() {
             </Panel>
           ))}
         </section>
+
+        <SleepServersJoke />
       </main>
 
       <footer className="pb-8 text-center text-xs tracking-widest text-slate-600">
