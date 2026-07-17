@@ -71,6 +71,19 @@ body {
   background-image: linear-gradient(to bottom, #f0dfa8, #d4af37);
 }
 
+/* Tailwind v4's reset dropped the old `cursor: pointer` on buttons, so they
+   were showing the plain arrow. Restore it everywhere in one place. */
+button:not(:disabled),
+[role="button"]:not(:disabled),
+summary,
+label:has(input[type="checkbox"]) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* ── Pressable ──────────────────────────────────────────────────────────────
    Lifts a touch on hover (with a slight overshoot, so it feels sprung rather
    than mechanical) and snaps down fast on press. These own their transition
