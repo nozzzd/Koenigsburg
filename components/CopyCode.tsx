@@ -24,7 +24,7 @@ export function CopyCode({ code }: { code: string }) {
       <button
         type="button"
         onClick={copy}
-        className="inline-flex items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-gold-400 hover:text-gold-300"
+        className="pressable inline-flex items-center gap-1.5 rounded-md border border-slate-700 px-2.5 py-1.5 text-xs font-semibold text-slate-300 hover:border-gold-400 hover:text-gold-300"
         aria-label="Copy verification code"
       >
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}

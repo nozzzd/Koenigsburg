@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Check, ImageIcon, ScrollText, ShieldCheck, Users } from "lucide-react";
+import { Check, ImageIcon, Newspaper, ScrollText, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
@@ -43,7 +43,18 @@ export default async function AdminPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Link href="/portal/admin/news" className="block">
+          <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                THE HERALD
+              </p>
+              <p className="mt-1 text-sm text-slate-400">Write news dispatches.</p>
+            </div>
+            <Newspaper className="h-5 w-5 shrink-0 text-gold-400" />
+          </Panel>
+        </Link>
         <Link href="/portal/admin/members" className="block">
           <Panel className="flex items-center justify-between p-5 transition hover:border-gold-500/50">
             <div>

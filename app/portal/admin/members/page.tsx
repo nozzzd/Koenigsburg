@@ -55,7 +55,7 @@ export default async function AdminMembersPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {stats.map(({ label, value }) => (
           <Panel key={label} className="p-4">
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">

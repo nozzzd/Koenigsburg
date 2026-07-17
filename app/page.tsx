@@ -9,6 +9,7 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
+import { ThemeToggleButton } from "@/components/ThemeToggle";
 import { SleepServersJoke } from "@/components/SleepServersJoke";
 
 const pillars = [
@@ -32,35 +33,38 @@ const pillars = [
 export default function LandingPage() {
   return (
     <>
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <WordMark />
-        <nav className="flex items-center gap-3">
+        <nav className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/showcase"
             className="hidden text-sm font-semibold text-slate-300 transition hover:text-gold-300 sm:block"
           >
             Great Works
           </Link>
+          <ThemeToggleButton />
           <Link href="/login" className={outlineButtonClass}>
             Enter
           </Link>
         </nav>
       </header>
 
-      <main className="flex flex-1 flex-col items-center px-6">
-        <section className="flex flex-col items-center pt-16 pb-14 text-center sm:pt-24">
-          <Crest className="h-20 w-20" />
-          <p className="mt-8 font-display text-xs font-semibold tracking-[0.5em] text-gold-500">
+      <main className="flex flex-1 flex-col items-center px-4 sm:px-6">
+        <section className="flex flex-col items-center pt-12 pb-14 text-center sm:pt-24">
+          <Crest className="h-16 w-16 sm:h-20 sm:w-20" />
+          <p className="mt-6 font-display text-[0.65rem] font-semibold tracking-[0.35em] text-gold-500 sm:mt-8 sm:text-xs sm:tracking-[0.5em]">
             THE FREE CITY OF
           </p>
-          <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-5xl font-bold tracking-[0.15em] text-transparent sm:text-7xl">
+          {/* Tracking + size scale down hard on phones — at 5xl with 0.15em
+              tracking this word is wider than a 375px viewport. */}
+          <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-[2rem] font-bold tracking-[0.06em] text-transparent sm:text-6xl sm:tracking-[0.15em] lg:text-7xl">
             KÖNIGSBURG
           </h1>
           <p className="mt-6 max-w-xl text-balance text-slate-400">
             A Minecraft civilization forged in stone and oath. Take the oath,
             earn your citizenship, and build your legacy within the walls.
           </p>
-          <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-10 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-none sm:items-center sm:gap-4">
             <Link href="/login" className={heroCtaClass}>
               Enter the Gates
             </Link>

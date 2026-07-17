@@ -13,7 +13,7 @@ function ConfirmButton({ disabled }: { disabled: boolean }) {
     <button
       type="submit"
       disabled={disabled || pending}
-      className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-800 bg-red-950/60 px-4 py-2 text-xs font-semibold tracking-wider text-red-300 transition hover:border-red-600 hover:bg-red-900/60 disabled:cursor-not-allowed disabled:border-slate-800 disabled:bg-transparent disabled:text-slate-600"
+      className="pressable inline-flex items-center justify-center gap-2 rounded-lg border border-red-800 bg-red-950/60 px-4 py-2 text-xs font-semibold tracking-wider text-red-300 hover:border-red-600 hover:bg-red-900/60 disabled:cursor-not-allowed disabled:border-slate-800 disabled:bg-transparent disabled:text-slate-600"
     >
       {pending ? (
         <Loader2 className="h-3.5 w-3.5 animate-spin" />

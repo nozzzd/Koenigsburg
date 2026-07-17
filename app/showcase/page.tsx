@@ -11,6 +11,7 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
+import { ThemeToggleButton } from "@/components/ThemeToggle";
 
 // Served from cache and regenerated on demand when an admin edits a project
 // (revalidatePath in actions/projects.ts); this is the safety net in case a
@@ -45,20 +46,23 @@ export default async function ShowcasePage() {
 
   return (
     <>
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <WordMark />
-        <Link href="/login" className={outlineButtonClass}>
-          Enter
-        </Link>
+        <nav className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggleButton />
+          <Link href="/login" className={outlineButtonClass}>
+            Enter
+          </Link>
+        </nav>
       </header>
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-6">
-        <section className="flex flex-col items-center pt-12 pb-10 text-center">
-          <Crest className="h-16 w-16" />
-          <p className="mt-6 font-display text-xs font-semibold tracking-[0.5em] text-gold-500">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center px-4 sm:px-6">
+        <section className="flex flex-col items-center pt-10 pb-10 text-center sm:pt-12">
+          <Crest className="h-14 w-14 sm:h-16 sm:w-16" />
+          <p className="mt-5 font-display text-[0.65rem] font-semibold tracking-[0.3em] text-gold-500 sm:mt-6 sm:text-xs sm:tracking-[0.5em]">
             THE GREAT WORKS OF
           </p>
-          <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-4xl font-bold tracking-[0.15em] text-transparent sm:text-6xl">
+          <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-[1.75rem] font-bold tracking-[0.06em] text-transparent sm:text-5xl sm:tracking-[0.15em] lg:text-6xl">
             KÖNIGSBURG
           </h1>
           <p className="mt-5 max-w-xl text-balance text-slate-400">

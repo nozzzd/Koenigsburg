@@ -11,6 +11,7 @@ import {
 import { getSessionPlayer } from "@/lib/session";
 import { GoldDivider, Panel } from "@/components/ui";
 import { SaveKeyWarning } from "@/components/SaveKeyWarning";
+import { NewsWidget } from "@/components/NewsWidget";
 
 export const metadata: Metadata = { title: "Citizen's Hall" };
 
@@ -51,36 +52,44 @@ export default async function PortalPage() {
 
       <GoldDivider />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {facts.map(({ icon: Icon, label, value }) => (
-          <Panel key={label} className="p-5">
-            <Icon className="h-5 w-5 text-gold-400" strokeWidth={1.5} />
-            <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {label}
-            </p>
-            <p className="mt-1 truncate font-semibold text-slate-100" title={value}>
-              {value}
-            </p>
-          </Panel>
-        ))}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* The Herald sits on the left; on mobile it drops below the facts. */}
+        <aside className="order-last lg:order-first lg:col-span-1">
+          <NewsWidget />
+        </aside>
+
+        <div className="space-y-6 lg:col-span-2">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {facts.map(({ icon: Icon, label, value }) => (
+              <Panel key={label} className="p-5">
+                <Icon className="h-5 w-5 text-gold-400" strokeWidth={1.5} />
+                <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  {label}
+                </p>
+                <p className="mt-1 truncate font-semibold text-slate-100" title={value}>
+                  {value}
+                </p>
+              </Panel>
+            ))}
+          </div>
+
+          {player.role === "admin" && (
+            <Link href="/portal/admin" className="block">
+              <Panel className="flex items-center justify-between p-6 transition hover:border-gold-500/50">
+                <div>
+                  <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                    ADMIN CONTROL PANEL
+                  </p>
+                  <p className="mt-1 text-sm text-slate-400">
+                    The queue, the roll, the Herald, and the Great Works.
+                  </p>
+                </div>
+                <Crown className="h-6 w-6 text-gold-400" />
+              </Panel>
+            </Link>
+          )}
+        </div>
       </div>
-
-      {player.role === "admin" && (
-        <Link href="/portal/admin" className="block">
-          <Panel className="flex items-center justify-between p-6 transition hover:border-gold-500/50">
-            <div>
-              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
-                ADMIN CONTROL PANEL
-              </p>
-              <p className="mt-1 text-sm text-slate-400">
-                Review the whitelisting queue and curate the Great Works.
-              </p>
-            </div>
-            <Crown className="h-6 w-6 text-gold-400" />
-          </Panel>
-        </Link>
-      )}
-
     </div>
   );
 }

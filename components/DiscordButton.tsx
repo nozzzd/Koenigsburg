@@ -16,7 +16,7 @@ export function DiscordButton({ children }: { children: ReactNode }) {
   return (
     <a
       href="/api/auth/discord"
-      className="inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4752c4]"
+      className="pressable inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4752c4]"
     >
       <DiscordMark className="h-5 w-5" />
       {children}
@@ -37,7 +37,7 @@ export function JoinDiscordButton({
       href={DISCORD_INVITE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center justify-center gap-2.5 rounded-lg bg-[#5865F2] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#4752c4] ${className}`}
+      className={`pressable inline-flex items-center justify-center gap-2.5 rounded-lg bg-[#5865F2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#4752c4] ${className}`}
     >
       <DiscordMark className="h-5 w-5" />
       {children}

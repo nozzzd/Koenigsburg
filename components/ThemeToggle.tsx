@@ -25,7 +25,7 @@ function applyTheme(theme: Theme) {
   }
 }
 
-export function ThemeToggle() {
+function useTheme() {
   const [theme, setTheme] = useState<Theme>("dark");
 
   // Read what the head script already applied, so the UI matches on mount.
@@ -37,6 +37,32 @@ export function ThemeToggle() {
     setTheme(next);
     applyTheme(next);
   }
+
+  return { theme, choose };
+}
+
+/** Compact icon toggle for page headers — shows the theme you'd switch TO. */
+export function ThemeToggleButton({ className = "" }: { className?: string }) {
+  const { theme, choose } = useTheme();
+  const next: Theme = theme === "dark" ? "light" : "dark";
+  const Icon = theme === "dark" ? Sun : Moon;
+
+  return (
+    <button
+      type="button"
+      onClick={() => choose(next)}
+      aria-label={`Switch to ${next} mode`}
+      title={`Switch to ${next} mode`}
+      className={`pressable inline-flex items-center justify-center rounded-lg border border-slate-800 p-2 text-slate-400 hover:border-gold-500/40 hover:text-gold-300 ${className}`}
+    >
+      <Icon className="h-4 w-4" />
+    </button>
+  );
+}
+
+/** Explicit two-option control for the settings drawer. */
+export function ThemeToggle() {
+  const { theme, choose } = useTheme();
 
   const options: { value: Theme; label: string; icon: typeof Moon }[] = [
     { value: "dark", label: "Dark", icon: Moon },

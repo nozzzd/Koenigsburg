@@ -11,7 +11,7 @@ const ROLE_LABEL: Record<Player["role"], string> = {
 };
 
 const actionButtonClass =
-  "inline-flex items-center justify-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold transition";
+  "pressable inline-flex items-center justify-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-semibold";
 
 /**
  * One member of the realm.

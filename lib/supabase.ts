@@ -34,6 +34,17 @@ export interface Project {
   created_at: string;
 }
 
+export interface NewsPost {
+  id: string;
+  title: string;
+  summary: string | null;
+  body: string;
+  image_url: string | null;
+  author: string | null;
+  pinned: boolean;
+  created_at: string;
+}
+
 let client: SupabaseClient | null = null;
 
 /**
