@@ -41,7 +41,7 @@ export default async function NewsPage() {
           The Herald
         </h1>
         <p className="mt-2 text-sm text-slate-400">
-          News of the realm, by order of the council.
+          News from the nation, by order of the council.
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export default async function NewsPage() {
         <Panel className="flex flex-col items-center gap-3 p-12 text-center">
           <Newspaper className="h-8 w-8 text-slate-600" strokeWidth={1.5} />
           <p className="font-display text-sm font-bold tracking-widest text-slate-300">
-            NO NEWS FROM THE REALM
+            NO NEWS FROM THE NATION
           </p>
           <p className="text-sm text-slate-500">
             The Herald has nothing to report just yet.

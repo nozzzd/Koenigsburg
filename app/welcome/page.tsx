@@ -24,7 +24,7 @@ export default async function WelcomePage() {
           THE GATES OPEN
         </h1>
         <p className="mt-2 text-sm text-slate-400">
-          The council recognizes you,{" "}
+          The nation awaits you,{" "}
           <span className="font-semibold text-gold-300">@{handoff.discordUsername}</span>.
         </p>
       </div>
@@ -34,7 +34,7 @@ export default async function WelcomePage() {
           <BadgeCheck className="h-4 w-4 shrink-0 text-gold-400" />
           <span className="text-slate-300">
             Your <span className="font-semibold text-gold-300">@Citizen</span> role is
-            confirmed. Declare your Minecraft name once to claim your seat.
+            confirmed. Declare your Minecraft name once to claim your citizenship.
           </span>
         </div>
         <WelcomeForm />

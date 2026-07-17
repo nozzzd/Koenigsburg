@@ -21,7 +21,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Great Works",
   description:
-    "The great works of Königsburg — cathedrals, harbors, and fortifications raised by our citizens. Join the realm and build your own legacy.",
+    "The great works of Königsburg raised by our citizens. Join the nation and build your own legacy.",
 };
 
 /** Managed by admins at /portal/admin/showcase. */
@@ -66,8 +66,8 @@ export default async function ShowcasePage() {
             KÖNIGSBURG
           </h1>
           <p className="mt-5 max-w-xl text-balance text-slate-400">
-            Every stone laid by a citizen of the realm. This is what we build
-            together — come raise your own monument within the walls.
+            Every block laid by a citizen of Königsburg. This is what we build
+            together!
           </p>
         </section>
 
@@ -78,11 +78,11 @@ export default async function ShowcasePage() {
             <Panel className="flex flex-col items-center gap-3 p-12 text-center">
               <ImageIcon className="h-8 w-8 text-slate-600" strokeWidth={1.5} />
               <p className="font-display text-sm font-bold tracking-widest text-slate-300">
-                THE CHRONICLE IS BEING WRITTEN
+                HISTORY IS BEING MADE
               </p>
               <p className="max-w-sm text-sm text-slate-500">
                 Our great works are being recorded. Join the Discord to see what
-                the realm is building right now.
+                our nation is working on now.
               </p>
             </Panel>
           </section>
@@ -137,8 +137,8 @@ export default async function ShowcasePage() {
             Seeking new builders
           </h2>
           <p className="mt-3 max-w-lg text-balance text-slate-400">
-            Königsburg grows with every citizen. Join our Discord to meet the
-            realm, or petition the council for citizenship and start building today.
+            Königsburg grows with every citizen. Join our Discord to meet our
+            people, or petition the council for citizenship and join us today.
           </p>
           <div className="mt-8 flex w-full max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
             <JoinDiscordButton className="w-full" />

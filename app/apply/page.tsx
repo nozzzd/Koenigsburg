@@ -50,7 +50,7 @@ export default async function ApplyPage({
         <p className="mt-2 text-sm text-slate-400">
           {handoff
             ? "Your Discord identity is verified. Declare your Minecraft name to file the petition."
-            : "Seek entry to the free city of Königsburg."}
+            : "Seek admission to the free city of Königsburg."}
         </p>
       </div>
 
