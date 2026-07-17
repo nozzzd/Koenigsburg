@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ClipboardList, Crown, Database, Flag, Trash2 } from "lucide-react";
-import { getSupabase, type Player, type Task } from "@/lib/supabase";
+import { ArrowLeft, ClipboardList, Crown, Database, Flag, Trash2, Users } from "lucide-react";
+import { getSupabase, type Player, type Task, type Team } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { deleteTask } from "@/actions/tasks";
 import { GoldDivider, Panel } from "@/components/ui";
 import { AssignTaskForm, RealmGoalForm } from "@/components/forms/AssignTaskForm";
+import { AssignTeamTaskForm } from "@/components/forms/TeamForms";
 
 export const metadata: Metadata = { title: "Admin — The Ledger" };
 
@@ -15,21 +16,24 @@ export default async function AdminTasksPage() {
   if (!player || player.role !== "admin") redirect("/portal");
 
   const supabase = getSupabase();
-  const [{ data: taskRows, error }, { data: memberRows }] = await Promise.all([
-    supabase
-      .from("tasks")
-      .select("*")
-      .neq("scope", "personal") // members' own to-dos are their business
-      .order("done", { ascending: true })
-      .order("created_at", { ascending: false })
-      .returns<Task[]>(),
-    supabase
-      .from("players")
-      .select("*")
-      .eq("status", "active")
-      .order("minecraft_ign", { ascending: true })
-      .returns<Player[]>(),
-  ]);
+  const [{ data: taskRows, error }, { data: memberRows }, { data: teamRows }] =
+    await Promise.all([
+      supabase
+        .from("tasks")
+        .select("*")
+        .neq("scope", "personal") // members' own to-dos are their business
+        .order("done", { ascending: true })
+        .order("created_at", { ascending: false })
+        .returns<Task[]>(),
+      supabase
+        .from("players")
+        .select("*")
+        .eq("status", "active")
+        .order("minecraft_ign", { ascending: true })
+        .returns<Player[]>(),
+      // Teams may not exist yet (006 unmigrated) — tolerate the error.
+      supabase.from("teams").select("*").order("name").returns<Team[]>(),
+    ]);
 
   // The table won't exist until the migration is run — say so instead of crashing.
   if (error) {
@@ -60,8 +64,11 @@ export default async function AdminTasksPage() {
 
   const tasks = taskRows ?? [];
   const members = memberRows ?? [];
+  const teams = teamRows ?? [];
   const byId = new Map(members.map((m) => [m.id, m]));
+  const byTeam = new Map(teams.map((t) => [t.id, t]));
   const assigned = tasks.filter((t) => t.scope === "assigned");
+  const team = tasks.filter((t) => t.scope === "team");
   const realm = tasks.filter((t) => t.scope === "realm");
 
   return (
@@ -81,14 +88,15 @@ export default async function AdminTasksPage() {
           Ledger
         </h1>
         <p className="mt-2 text-sm text-slate-400">
-          Duties land on one member&apos;s dashboard; goals of the realm land on
-          everyone&apos;s. Members can tick them off but can&apos;t remove them.
+          Every kind of task, from one place. Duties land on one member; team
+          tasks on a whole team; goals of the realm on everyone. Members can tick
+          them off but can&apos;t remove them.
         </p>
       </div>
 
       <GoldDivider />
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <Panel className="p-5">
           <p className="flex items-center gap-2 font-display text-sm font-bold tracking-widest text-gold-300">
             <Crown className="h-4 w-4" />
@@ -99,6 +107,29 @@ export default async function AdminTasksPage() {
               <p className="text-sm text-slate-500">No active members yet.</p>
             ) : (
               <AssignTaskForm members={members} />
+            )}
+          </div>
+        </Panel>
+
+        <Panel className="p-5">
+          <p className="flex items-center gap-2 font-display text-sm font-bold tracking-widest text-gold-300">
+            <Users className="h-4 w-4" />
+            TEAM TASK
+          </p>
+          <div className="mt-4">
+            {teams.length === 0 ? (
+              <p className="text-sm text-slate-500">
+                No teams yet.{" "}
+                <Link
+                  href="/portal/admin/teams"
+                  className="font-semibold text-gold-400 hover:text-gold-300"
+                >
+                  Found one
+                </Link>{" "}
+                first.
+              </p>
+            ) : (
+              <AssignTeamTaskForm teams={teams} />
             )}
           </div>
         </Panel>
@@ -128,7 +159,7 @@ export default async function AdminTasksPage() {
         </Panel>
       ) : (
         <ul className="space-y-3">
-          {[...realm, ...assigned].map((task) => (
+          {[...realm, ...team, ...assigned].map((task) => (
             <li key={task.id}>
               <Panel className="flex items-center justify-between gap-4 p-4">
                 <div className="min-w-0">
@@ -137,6 +168,11 @@ export default async function AdminTasksPage() {
                       <span className="inline-flex items-center gap-1 rounded-full border border-gold-500/40 bg-gold-400/10 px-2 py-0.5 text-xs font-semibold text-gold-300">
                         <Flag className="h-3 w-3" />
                         Realm
+                      </span>
+                    ) : task.scope === "team" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-950/30 px-2 py-0.5 text-xs font-semibold text-sky-300">
+                        <Users className="h-3 w-3" />
+                        {byTeam.get(task.team_id ?? "")?.name ?? "Team"}
                       </span>
                     ) : (
                       <span className="rounded-full border border-indigo-500/40 px-2 py-0.5 text-xs font-semibold text-indigo-300">

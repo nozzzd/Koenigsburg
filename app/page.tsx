@@ -10,7 +10,6 @@ import {
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
-import { SleepServersJoke } from "@/components/SleepServersJoke";
 
 const pillars = [
   {
@@ -91,8 +90,6 @@ export default function LandingPage() {
             </Panel>
           ))}
         </section>
-
-        <SleepServersJoke />
       </main>
 
       <footer className="pb-8 text-center text-xs tracking-widest text-slate-600">

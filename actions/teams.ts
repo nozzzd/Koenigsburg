@@ -126,26 +126,20 @@ export async function deleteTeam(teamId: string): Promise<void> {
 }
 
 /** Add a member; assigns the Discord role if the team has one. */
-export async function addTeamMember(
-  _prev: ActionState,
-  formData: FormData
-): Promise<ActionState> {
+export async function addTeamMemberById(teamId: string, playerId: string): Promise<void> {
   await requireAdmin();
-  const teamId = String(formData.get("team_id") ?? "");
-  const playerId = String(formData.get("player_id") ?? "");
-  if (!teamId || !playerId) return { error: "Choose a member to add." };
+  if (!teamId || !playerId) throw new Error("Missing team or member");
 
   const supabase = getSupabase();
   const team = await loadTeam(teamId);
 
   const { error } = await supabase
     .from("team_members")
-    .insert({ team_id: teamId, player_id: playerId });
-  if (error) {
-    if (error.code === "23505") return { error: "They're already on this team." };
-    console.error("addTeamMember failed:", error);
-    return { error: "Could not add them. Please try again." };
-  }
+    .upsert(
+      { team_id: teamId, player_id: playerId },
+      { onConflict: "team_id,player_id", ignoreDuplicates: true }
+    );
+  if (error) throw new Error(`Could not add them: ${error.message}`);
 
   if (team.discord_role_id) {
     const { data: player } = await supabase
@@ -164,7 +158,6 @@ export async function addTeamMember(
   }
 
   refresh();
-  return null;
 }
 
 /** Remove a member; strips the Discord role if the team has one. */

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { createTeam, addTeamMember, assignTeamTask } from "@/actions/teams";
+import { createTeam, assignTeamTask } from "@/actions/teams";
 import type { Player, Team } from "@/lib/supabase";
 import type { ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
@@ -77,41 +77,6 @@ export function CreateTeamForm() {
         </label>
       </div>
       <SubmitButton>Found the team</SubmitButton>
-    </form>
-  );
-}
-
-export function AddTeamMemberForm({
-  teamId,
-  members,
-}: {
-  teamId: string;
-  members: Player[];
-}) {
-  const [state, action] = useActionState<ActionState, FormData>(addTeamMember, null);
-
-  return (
-    <form action={action} className="flex flex-col gap-2 sm:flex-row">
-      <input type="hidden" name="team_id" value={teamId} />
-      {state?.error && (
-        <p className="text-xs text-red-400 sm:order-last sm:self-center">{state.error}</p>
-      )}
-      <select
-        name="player_id"
-        required
-        defaultValue=""
-        className={`${inputClass} flex-1`}
-      >
-        <option value="" disabled>
-          Add a member…
-        </option>
-        {members.map((m) => (
-          <option key={m.id} value={m.id}>
-            {m.minecraft_ign}
-          </option>
-        ))}
-      </select>
-      <SubmitButton>Add</SubmitButton>
     </form>
   );
 }

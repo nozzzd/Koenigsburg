@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Database, Hash, Users, X } from "lucide-react";
+import { ArrowLeft, ClipboardList, Database, Users, X } from "lucide-react";
 import { getSupabase, type Player, type Team } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
-import { deleteTeam, removeTeamMember } from "@/actions/teams";
+import { deleteTeam } from "@/actions/teams";
 import { GoldDivider, Panel } from "@/components/ui";
-import {
-  AddTeamMemberForm,
-  AssignTeamTaskForm,
-  CreateTeamForm,
-} from "@/components/forms/TeamForms";
+import { CreateTeamForm } from "@/components/forms/TeamForms";
+import { TeamRoster } from "@/components/TeamRoster";
 
 export const metadata: Metadata = { title: "Admin — Teams" };
 
@@ -109,18 +106,21 @@ export default async function AdminTeamsPage() {
           </div>
         </Panel>
 
-        <Panel className="p-5">
+        <Panel className="flex flex-col justify-center p-5">
           <p className="flex items-center gap-2 font-display text-sm font-bold tracking-widest text-gold-300">
-            <Hash className="h-4 w-4" />
-            ASSIGN A TEAM TASK
+            <ClipboardList className="h-4 w-4" />
+            TEAM TASKS
           </p>
-          <div className="mt-4">
-            {teams.length === 0 ? (
-              <p className="text-sm text-slate-500">Found a team first.</p>
-            ) : (
-              <AssignTeamTaskForm teams={teams} />
-            )}
-          </div>
+          <p className="mt-2 text-sm text-slate-400">
+            Assign a task to a whole team from{" "}
+            <Link
+              href="/portal/admin/tasks"
+              className="font-semibold text-gold-400 hover:text-gold-300"
+            >
+              the Ledger
+            </Link>
+            , where every kind of task is managed together.
+          </p>
         </Panel>
       </div>
 
@@ -138,8 +138,6 @@ export default async function AdminTeamsPage() {
         <ul className="space-y-4">
           {teams.map((team) => {
             const roster = byTeam.get(team.id) ?? [];
-            const rosterIds = new Set(roster.map((m) => m.id));
-            const available = allMembers.filter((m) => !rosterIds.has(m.id));
             return (
               <li key={team.id}>
                 <Panel className="p-5">
@@ -162,6 +160,9 @@ export default async function AdminTeamsPage() {
                             Website-only
                           </span>
                         )}
+                        <span className="text-xs text-slate-600">
+                          {roster.length} member{roster.length === 1 ? "" : "s"}
+                        </span>
                       </div>
                       {team.description && (
                         <p className="mt-1 text-sm text-slate-400">{team.description}</p>
@@ -178,35 +179,14 @@ export default async function AdminTeamsPage() {
                     </form>
                   </div>
 
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {roster.length === 0 ? (
-                      <p className="text-xs text-slate-600">No members yet.</p>
-                    ) : (
-                      roster.map((m) => (
-                        <span
-                          key={m.id}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-950/60 py-0.5 pl-2.5 pr-1 text-xs text-slate-300"
-                        >
-                          {m.minecraft_ign}
-                          <form action={removeTeamMember.bind(null, team.id, m.id)}>
-                            <button
-                              type="submit"
-                              aria-label={`Remove ${m.minecraft_ign}`}
-                              className="rounded-full p-0.5 text-slate-600 transition hover:text-red-400"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </form>
-                        </span>
-                      ))
-                    )}
+                  {/* Click a name to add/remove — instant, searchable. */}
+                  <div className="mt-4">
+                    <TeamRoster
+                      teamId={team.id}
+                      allMembers={allMembers}
+                      memberIds={roster.map((m) => m.id)}
+                    />
                   </div>
-
-                  {available.length > 0 && (
-                    <div className="mt-4">
-                      <AddTeamMemberForm teamId={team.id} members={available} />
-                    </div>
-                  )}
                 </Panel>
               </li>
             );
