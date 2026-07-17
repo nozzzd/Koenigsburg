@@ -140,6 +140,82 @@ export async function isVerifyCommandRegistered(): Promise<boolean> {
   return registered;
 }
 
+/** Converts a #rrggbb hex string to the integer Discord expects (0 = none). */
+function hexToInt(hex?: string | null): number {
+  if (!hex) return 0;
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  return m ? parseInt(m[1], 16) : 0;
+}
+
+/** Creates a guild role for a team; returns its id. */
+export async function createGuildRole(name: string, color?: string | null): Promise<string> {
+  const res = await fetch(`${API}/guilds/${env("DISCORD_GUILD_ID")}/roles`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+      "Content-Type": "application/json",
+      "X-Audit-Log-Reason": "Koenigsburg portal: team created",
+    },
+    body: JSON.stringify({ name, color: hexToInt(color), mentionable: true }),
+  });
+  if (!res.ok) {
+    throw new Error(`Discord role creation failed (${res.status})`);
+  }
+  const role = (await res.json()) as { id: string };
+  return role.id;
+}
+
+/** Deletes a guild role. 404 is fine — already gone. */
+export async function deleteGuildRole(roleId: string): Promise<void> {
+  const res = await fetch(
+    `${API}/guilds/${env("DISCORD_GUILD_ID")}/roles/${roleId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+        "X-Audit-Log-Reason": "Koenigsburg portal: team disbanded",
+      },
+    }
+  );
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`Discord role deletion failed (${res.status})`);
+  }
+}
+
+/** Assigns an arbitrary role to a member (team membership). 404 = not in guild. */
+export async function addMemberRole(discordUserId: string, roleId: string): Promise<void> {
+  const res = await fetch(
+    `${API}/guilds/${env("DISCORD_GUILD_ID")}/members/${discordUserId}/roles/${roleId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+        "X-Audit-Log-Reason": "Koenigsburg portal: joined team",
+      },
+    }
+  );
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`Discord role add failed (${res.status})`);
+  }
+}
+
+/** Strips an arbitrary role from a member. 404 = already gone. */
+export async function removeMemberRole(discordUserId: string, roleId: string): Promise<void> {
+  const res = await fetch(
+    `${API}/guilds/${env("DISCORD_GUILD_ID")}/members/${discordUserId}/roles/${roleId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+        "X-Audit-Log-Reason": "Koenigsburg portal: left team",
+      },
+    }
+  );
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`Discord role remove failed (${res.status})`);
+  }
+}
+
 /** Strips @Citizen — used when a player renounces their citizenship. */
 export async function removeCitizenRole(discordUserId: string): Promise<void> {
   const res = await fetch(

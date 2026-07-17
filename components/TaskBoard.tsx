@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useOptimistic, useRef, useState } from "react";
-import { Check, ClipboardList, Crown, Flag, Plus, X } from "lucide-react";
+import { Check, ClipboardList, Crown, Flag, Plus, Users, X } from "lucide-react";
 import type { Task } from "@/lib/supabase";
 import { addPersonalTask, deleteTask, toggleTask } from "@/actions/tasks";
 import { Panel } from "@/components/ui";
@@ -140,6 +140,7 @@ export function TaskBoard({
           title,
           scope: "personal",
           player_id: playerId,
+          team_id: null,
           assigned_by: null,
           done: false,
           created_at: new Date().toISOString(),
@@ -151,6 +152,7 @@ export function TaskBoard({
   }
 
   const assigned = optimistic.filter((t) => t.scope === "assigned");
+  const team = optimistic.filter((t) => t.scope === "team");
   const realm = optimistic.filter((t) => t.scope === "realm");
   const personal = optimistic.filter((t) => t.scope === "personal");
   const openCount = optimistic.filter((t) => !t.done).length;
@@ -188,6 +190,23 @@ export function TaskBoard({
                 {assigned.map((task) => (
                   // Only elders may remove a duty — otherwise "assigned" would
                   // mean nothing.
+                  <TaskRow
+                    key={task.id}
+                    task={task}
+                    canDelete={isAdmin}
+                    onToggle={onToggle}
+                    onDelete={onDelete}
+                  />
+                ))}
+              </ul>
+            </>
+          )}
+
+          {team.length > 0 && (
+            <>
+              <SectionHeading icon={Users}>Your teams</SectionHeading>
+              <ul>
+                {team.map((task) => (
                   <TaskRow
                     key={task.id}
                     task={task}

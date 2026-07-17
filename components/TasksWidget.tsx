@@ -8,10 +8,25 @@ import { TaskBoard } from "@/components/TaskBoard";
  * empty ledger rather than breaking the dashboard.
  */
 const getTasks = cache(async function getTasks(playerId: string): Promise<Task[]> {
-  const { data, error } = await getSupabase()
+  const supabase = getSupabase();
+
+  // The teams this player belongs to — their team tasks show on the Ledger too.
+  const { data: memberships } = await supabase
+    .from("team_members")
+    .select("team_id")
+    .eq("player_id", playerId);
+  const teamIds = (memberships ?? []).map((m) => m.team_id as string);
+
+  // player's own + assigned + realm goals + tasks for any of their teams
+  const filters = [`player_id.eq.${playerId}`, "scope.eq.realm"];
+  if (teamIds.length > 0) {
+    filters.push(`team_id.in.(${teamIds.join(",")})`);
+  }
+
+  const { data, error } = await supabase
     .from("tasks")
     .select("*")
-    .or(`player_id.eq.${playerId},scope.eq.realm`)
+    .or(filters.join(","))
     .order("done", { ascending: true })
     .order("created_at", { ascending: true })
     .returns<Task[]>();

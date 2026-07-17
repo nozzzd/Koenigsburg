@@ -62,9 +62,21 @@ export async function addPersonalTask(
   return null;
 }
 
+/** Is this player a member of the given team? */
+async function inTeam(playerId: string, teamId: string): Promise<boolean> {
+  const { data } = await getSupabase()
+    .from("team_members")
+    .select("team_id")
+    .eq("team_id", teamId)
+    .eq("player_id", playerId)
+    .maybeSingle();
+  return Boolean(data);
+}
+
 /**
  * Tick a task off.
  *   personal / assigned → the member whose list it's on
+ *   team                → any member of that team
  *   realm               → elders only
  */
 export async function toggleTask(id: string): Promise<void> {
@@ -72,8 +84,11 @@ export async function toggleTask(id: string): Promise<void> {
   if (!me) redirect("/login");
 
   const task = await loadTask(id);
-  const mine = task.player_id === me.id;
-  const canToggle = mine || (task.scope === "realm" && isAdmin(me));
+  let canToggle = task.player_id === me.id;
+  if (!canToggle && task.scope === "realm" && isAdmin(me)) canToggle = true;
+  if (!canToggle && task.scope === "team" && task.team_id) {
+    canToggle = isAdmin(me) || (await inTeam(me.id, task.team_id));
+  }
   if (!canToggle) throw new Error("Not authorized");
 
   const { error } = await getSupabase()

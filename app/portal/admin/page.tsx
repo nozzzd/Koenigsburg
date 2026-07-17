@@ -7,6 +7,7 @@ import {
   Newspaper,
   ScrollText,
   ShieldCheck,
+  Swords,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -61,7 +62,18 @@ export default async function AdminPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Link href="/portal/admin/teams" className="block">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                TEAMS
+              </p>
+              <p className="mt-1 text-sm text-slate-400">Guilds & Discord roles.</p>
+            </div>
+            <Swords className="h-5 w-5 shrink-0 text-gold-400" />
+          </Panel>
+        </Link>
         <Link href="/portal/admin/tasks" className="block">
           <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
             <div>

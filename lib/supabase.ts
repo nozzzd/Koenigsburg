@@ -34,17 +34,35 @@ export interface Project {
   created_at: string;
 }
 
-export type TaskScope = "personal" | "assigned" | "realm";
+export type TaskScope = "personal" | "assigned" | "realm" | "team";
 
 export interface Task {
   id: string;
   title: string;
   scope: TaskScope;
-  /** Whose list it sits on; null for realm-wide goals. */
+  /** Whose list it sits on; null for realm-wide and team goals. */
   player_id: string | null;
+  /** Set for team tasks — the task shows on every member of this team. */
+  team_id: string | null;
   assigned_by: string | null;
   done: boolean;
   created_at: string;
+}
+
+export interface Team {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string | null;
+  /** NULL for website-only teams. */
+  discord_role_id: string | null;
+  created_at: string;
+}
+
+export interface TeamMember {
+  team_id: string;
+  player_id: string;
+  joined_at: string;
 }
 
 export interface NewsPost {
