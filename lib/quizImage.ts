@@ -214,30 +214,62 @@ export function buildResultImage(scores: Record<ArchetypeKey, number>, topKey: A
     ctx.fill();
   });
 
-  // ── Footer: subtle self-promo ─────────────────────────────────────────────
+  // ── Footer: the advertising banner ────────────────────────────────────────
+  // A gold-outlined call-to-action panel — the whole point of a shareable image
+  // is that whoever sees it knows where to take the quiz.
   const host = siteHost();
   ctx.textAlign = "center";
-  // divider diamond
-  ctx.save();
-  ctx.translate(W / 2, 792);
-  ctx.rotate(Math.PI / 4);
-  ctx.fillStyle = COLORS.gold400;
-  ctx.fillRect(-4, -4, 8, 8);
-  ctx.restore();
 
-  ctx.fillStyle = COLORS.slate300;
-  ctx.font = font(16, "700");
+  const bx = 44;
+  const bw = W - bx * 2;
+  const by = 722;
+  const bh = 138;
+
+  // Panel: faint gold wash + gold border, so it reads as a distinct banner.
+  roundRect(ctx, bx, by, bw, bh, 18);
+  ctx.fillStyle = "rgba(212,175,55,0.08)";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgba(212,175,55,0.55)";
+  ctx.stroke();
+
+  // Headline
+  const headGrad = ctx.createLinearGradient(0, by + 30, 0, by + 68);
+  headGrad.addColorStop(0, COLORS.gold200);
+  headGrad.addColorStop(1, COLORS.gold400);
+  ctx.fillStyle = headGrad;
+  ctx.font = font(30, "700");
   ctx.save();
   ctx.letterSpacing = "1px";
-  ctx.fillText("Which role are you?", W / 2, 838);
+  ctx.fillText("WHICH ROLE ARE YOU?", W / 2, by + 52);
   ctx.restore();
 
-  ctx.fillStyle = COLORS.slate500;
-  ctx.font = "500 13px Georgia, serif";
-  const promo = host
-    ? `Take the Nation Role Alignment Quiz · ${host}`
-    : "Take the Nation Role Alignment Quiz at Königsburg";
-  ctx.fillText(promo, W / 2, 862);
+  // Sub-line
+  ctx.fillStyle = COLORS.slate300;
+  ctx.font = font(15, "600");
+  ctx.save();
+  ctx.letterSpacing = "2px";
+  ctx.fillText("TAKE THE NATION ROLE ALIGNMENT QUIZ", W / 2, by + 82);
+  ctx.restore();
+
+  // The address, in a bright gold pill — the clear call to action.
+  const addr = host || "join Königsburg";
+  ctx.font = font(17, "700");
+  const addrW = ctx.measureText(addr).width;
+  const pillW = addrW + 44;
+  const pillH = 34;
+  const pillX = (W - pillW) / 2;
+  const pillY = by + bh - 46;
+  roundRect(ctx, pillX, pillY, pillW, pillH, pillH / 2);
+  const pillGrad = ctx.createLinearGradient(0, pillY, 0, pillY + pillH);
+  pillGrad.addColorStop(0, COLORS.gold300);
+  pillGrad.addColorStop(1, COLORS.gold500);
+  ctx.fillStyle = pillGrad;
+  ctx.fill();
+  ctx.fillStyle = COLORS.ink;
+  ctx.textBaseline = "middle";
+  ctx.fillText(addr, W / 2, pillY + pillH / 2 + 1);
+  ctx.textBaseline = "alphabetic";
 
   return canvas.toDataURL("image/png");
 }
