@@ -1,6 +1,8 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { env } from "@/lib/env";
+import { clearCommandCache } from "@/lib/discord";
 import { getSessionPlayer } from "@/lib/session";
 import type { ResultState } from "@/lib/forms";
 
@@ -49,6 +51,9 @@ export async function registerDiscordCommands(): Promise<ResultState> {
       return { error: `Discord rejected it (${res.status}). ${detail.slice(0, 160)}` };
     }
 
+    // Setup is done — drop the cached "not registered" so the panel vanishes.
+    clearCommandCache();
+    revalidatePath("/portal/admin");
     return { ok: "/verify is registered — try it in your Discord server." };
   } catch (err) {
     console.error("Command registration threw:", err);

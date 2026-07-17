@@ -111,6 +111,35 @@ export async function assignCitizenRole(discordUserId: string): Promise<void> {
   }
 }
 
+// Whether /verify is installed. Cached so the admin page doesn't hit Discord
+// on every load — it's a one-time setup step that then never changes.
+let commandCache: { registered: boolean; at: number } | null = null;
+const COMMAND_CACHE_TTL_MS = 5 * 60_000;
+
+export function clearCommandCache() {
+  commandCache = null;
+}
+
+export async function isVerifyCommandRegistered(): Promise<boolean> {
+  if (commandCache && Date.now() - commandCache.at < COMMAND_CACHE_TTL_MS) {
+    return commandCache.registered;
+  }
+  const res = await fetch(
+    `${API}/applications/${env("DISCORD_CLIENT_ID")}/guilds/${env(
+      "DISCORD_GUILD_ID"
+    )}/commands`,
+    {
+      headers: { Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}` },
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) throw new Error(`Command lookup failed (${res.status})`);
+  const commands = (await res.json()) as { name: string }[];
+  const registered = commands.some((c) => c.name === "verify");
+  commandCache = { registered, at: Date.now() };
+  return registered;
+}
+
 /** Strips @Citizen — used when a player renounces their citizenship. */
 export async function removeCitizenRole(discordUserId: string): Promise<void> {
   const res = await fetch(

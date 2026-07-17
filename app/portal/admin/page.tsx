@@ -4,6 +4,7 @@ import { Check, ImageIcon, Newspaper, ScrollText, ShieldCheck, Users } from "luc
 import Link from "next/link";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
+import { isVerifyCommandRegistered } from "@/lib/discord";
 import { approvePlayer } from "@/actions/admin";
 import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
@@ -24,6 +25,15 @@ export default async function AdminPage() {
 
   if (error) {
     throw new Error(`Failed to load the whitelisting queue: ${error.message}`);
+  }
+
+  // One-time setup: hide the installer once /verify exists. Fail OPEN — if the
+  // check errors, show it, since that's exactly when you'd need to run it.
+  let verifyInstalled = false;
+  try {
+    verifyInstalled = await isVerifyCommandRegistered();
+  } catch (err) {
+    console.error("Could not check /verify registration:", err);
   }
 
   return (
@@ -83,21 +93,23 @@ export default async function AdminPage() {
         </Link>
       </div>
 
-      <Panel className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-display text-sm font-bold tracking-widest text-slate-200">
-            DISCORD BOT
-          </p>
-          <p className="mt-1 text-sm text-slate-400">
-            Members prove a signup code with{" "}
-            <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-xs text-gold-400">
-              /verify
-            </code>
-            . Run this once to install the command.
-          </p>
-        </div>
-        <RegisterCommandButton />
-      </Panel>
+      {!verifyInstalled && (
+        <Panel className="flex flex-col gap-3 border-amber-900/50 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-display text-sm font-bold tracking-widest text-amber-300">
+              SETUP — INSTALL /VERIFY
+            </p>
+            <p className="mt-1 text-sm text-slate-400">
+              Members prove a signup code with{" "}
+              <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-xs text-gold-400">
+                /verify
+              </code>
+              . Run this once; this panel disappears when it&apos;s installed.
+            </p>
+          </div>
+          <RegisterCommandButton />
+        </Panel>
+      )}
 
       <GoldDivider />
 
