@@ -3,7 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
-import { createGuildRole, deleteGuildRole, removeMemberRole } from "@/lib/discord";
+import {
+  createGuildRole,
+  deleteGuildRole,
+  editGuildRole,
+  removeMemberRole,
+} from "@/lib/discord";
 import { joinTeam, loadTeam } from "@/lib/teams";
 import type { ActionState } from "@/lib/forms";
 
@@ -69,6 +74,53 @@ export async function createTeam(
     if (error.code === "23505") return { error: "A team with that name already exists." };
     console.error("createTeam failed:", error);
     return { error: "Could not create the team. Please try again." };
+  }
+
+  refresh();
+  return null;
+}
+
+/**
+ * Rename / re-describe / recolour a team. If it mirrors a Discord role, the
+ * role's name and colour are updated too (best-effort — the website is the
+ * source of truth, so a Discord failure doesn't roll back the DB change).
+ */
+export async function updateTeam(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const id = String(formData.get("team_id") ?? "");
+  if (!id) return { error: "Missing team." };
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim() || null;
+  const color = String(formData.get("color") ?? "").trim() || null;
+
+  if (name.length < 2 || name.length > 80) {
+    return { error: "Give the team a name (2–80 characters)." };
+  }
+
+  const team = await loadTeam(id);
+
+  const { error } = await getSupabase()
+    .from("teams")
+    .update({ name, description, color })
+    .eq("id", id);
+
+  if (error) {
+    if (error.code === "23505") return { error: "A team with that name already exists." };
+    console.error("updateTeam failed:", error);
+    return { error: "Could not save the changes. Please try again." };
+  }
+
+  // Keep the linked Discord role in step with the new name/colour.
+  if (team.discord_role_id) {
+    try {
+      await editGuildRole(team.discord_role_id, { name, color });
+    } catch (err) {
+      console.error("Team saved but its Discord role edit failed:", err);
+    }
   }
 
   refresh();

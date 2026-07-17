@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { createTeam, assignTeamTask } from "@/actions/teams";
+import { createTeam, assignTeamTask, updateTeam } from "@/actions/teams";
 import type { Player, Team } from "@/lib/supabase";
 import type { ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
@@ -77,6 +77,64 @@ export function CreateTeamForm() {
         </label>
       </div>
       <SubmitButton>Found the team</SubmitButton>
+    </form>
+  );
+}
+
+/** Rename / re-describe / recolour an existing team. Prefilled from the team. */
+export function EditTeamForm({ team }: { team: Team }) {
+  const [state, action] = useActionState<ActionState, FormData>(updateTeam, null);
+
+  return (
+    <form action={action} className="space-y-4">
+      <input type="hidden" name="team_id" value={team.id} />
+      {state?.error && <ErrorBanner message={state.error} />}
+      <div>
+        <label htmlFor={`edit-name-${team.id}`} className={labelClass}>
+          Team name
+        </label>
+        <input
+          id={`edit-name-${team.id}`}
+          name="name"
+          required
+          maxLength={80}
+          defaultValue={team.name}
+          className={inputClass}
+        />
+      </div>
+      <div>
+        <label htmlFor={`edit-desc-${team.id}`} className={labelClass}>
+          Description
+        </label>
+        <input
+          id={`edit-desc-${team.id}`}
+          name="description"
+          maxLength={300}
+          defaultValue={team.description ?? ""}
+          placeholder="Keepers of stone and mortar"
+          className={inputClass}
+        />
+      </div>
+      <div className="flex items-end gap-4">
+        <div>
+          <label htmlFor={`edit-color-${team.id}`} className={labelClass}>
+            Colour
+          </label>
+          <input
+            id={`edit-color-${team.id}`}
+            name="color"
+            type="color"
+            defaultValue={team.color ?? "#d4af37"}
+            className="h-10 w-16 cursor-pointer rounded-lg border border-slate-700 bg-slate-950/60"
+          />
+        </div>
+        {team.discord_role_id && (
+          <p className="flex-1 pb-1 text-xs text-slate-500">
+            The linked Discord role is renamed and recoloured to match.
+          </p>
+        )}
+      </div>
+      <SubmitButton>Save changes</SubmitButton>
     </form>
   );
 }

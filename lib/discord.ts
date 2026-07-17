@@ -165,6 +165,30 @@ export async function createGuildRole(name: string, color?: string | null): Prom
   return role.id;
 }
 
+/** Renames / recolours an existing guild role. 404 is fine — role is gone. */
+export async function editGuildRole(
+  roleId: string,
+  fields: { name?: string; color?: string | null }
+): Promise<void> {
+  const body: Record<string, unknown> = {};
+  if (fields.name !== undefined) body.name = fields.name;
+  if (fields.color !== undefined) body.color = hexToInt(fields.color);
+  if (Object.keys(body).length === 0) return;
+
+  const res = await fetch(`${API}/guilds/${env("DISCORD_GUILD_ID")}/roles/${roleId}`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+      "Content-Type": "application/json",
+      "X-Audit-Log-Reason": "Koenigsburg portal: team edited",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok && res.status !== 404) {
+    throw new Error(`Discord role edit failed (${res.status})`);
+  }
+}
+
 /** Deletes a guild role. 404 is fine — already gone. */
 export async function deleteGuildRole(roleId: string): Promise<void> {
   const res = await fetch(

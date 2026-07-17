@@ -21,9 +21,15 @@ const NATION_AVERAGE: Record<ArchetypeKey, number> = {
   statesman: 0.5,
 };
 
-const SIZE = 320;
-const CENTER = SIZE / 2;
-const RADIUS = 118; // leaves room for labels inside the viewBox
+// The canvas is wider than the plot so the side labels ("Statesman",
+// "Gatherer") have room and never clip. The chart itself is centred in it.
+const PAD_X = 78; // horizontal room for side labels
+const PAD_Y = 30; // vertical room for top/bottom labels
+const RADIUS = 108;
+const CX = PAD_X + RADIUS;
+const CY = PAD_Y + RADIUS;
+const WIDTH = CX * 2;
+const HEIGHT = CY * 2;
 const RINGS = 4;
 
 const AXES = ARCHETYPES.map((a, i) => {
@@ -34,7 +40,7 @@ const AXES = ARCHETYPES.map((a, i) => {
 
 function point(value: number, cos: number, sin: number) {
   const r = RADIUS * Math.max(0, Math.min(1, value));
-  return { x: CENTER + r * cos, y: CENTER + r * sin };
+  return { x: CX + r * cos, y: CY + r * sin };
 }
 
 function polygon(scores: Record<ArchetypeKey, number>) {
@@ -54,8 +60,8 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
   const rings = Array.from({ length: RINGS }, (_, i) => {
     const ringRadius = (RADIUS * (i + 1)) / RINGS;
     const pts = AXES.map((axis) => {
-      const x = CENTER + ringRadius * axis.cos;
-      const y = CENTER + ringRadius * axis.sin;
+      const x = CX + ringRadius * axis.cos;
+      const y = CY + ringRadius * axis.sin;
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     }).join(" ");
     return pts;
@@ -63,8 +69,8 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
 
   return (
     <svg
-      viewBox={`0 0 ${SIZE} ${SIZE}`}
-      className="mx-auto h-auto w-full max-w-sm"
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      className="mx-auto h-auto w-full max-w-md"
       role="img"
       aria-label="Your role alignment across the six archetypes"
     >
@@ -83,14 +89,14 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
       {/* Spokes + labels */}
       {AXES.map((axis) => {
         const end = point(1, axis.cos, axis.sin);
-        const label = point(1.2, axis.cos, axis.sin);
+        const label = point(1.14, axis.cos, axis.sin);
         // Nudge labels so they don't collide with the outer ring.
         const anchor = Math.abs(axis.cos) < 0.3 ? "middle" : axis.cos > 0 ? "start" : "end";
         return (
           <g key={axis.key}>
             <line
-              x1={CENTER}
-              y1={CENTER}
+              x1={CX}
+              y1={CY}
               x2={end.x}
               y2={end.y}
               stroke="var(--color-slate-700)"

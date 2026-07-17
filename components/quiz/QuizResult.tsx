@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { RotateCcw } from "lucide-react";
+import { Download, Loader2, RotateCcw } from "lucide-react";
 import {
   ARCHETYPE_BY_KEY,
   type ArchetypeKey,
   type QuizResult as QuizResultData,
 } from "@/lib/quiz";
+import { downloadResultImage } from "@/lib/quizImage";
 import { GoldDivider, Panel, heroCtaClass, outlineButtonClass } from "@/components/ui";
 import { RadarChart } from "./RadarChart";
 
@@ -34,6 +36,18 @@ export function QuizResult({
   const topArch = ARCHETYPE_BY_KEY[top];
   const topIsMapped = mappedRoles.includes(top);
 
+  const [saving, setSaving] = useState(false);
+  async function download() {
+    setSaving(true);
+    try {
+      await downloadResultImage(result.scores, top);
+    } catch (err) {
+      console.error("Could not build the result image:", err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <div className="page-in space-y-8">
       <div className="text-center">
@@ -53,6 +67,21 @@ export function QuizResult({
 
       <Panel className="p-6">
         <RadarChart scores={result.scores} />
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={download}
+            disabled={saving}
+            className={`${outlineButtonClass} !px-5 !py-2 !text-xs disabled:opacity-60`}
+          >
+            {saving ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Download className="h-3.5 w-3.5" />
+            )}
+            {saving ? "Preparing image…" : "Download your result"}
+          </button>
+        </div>
       </Panel>
 
       <div>

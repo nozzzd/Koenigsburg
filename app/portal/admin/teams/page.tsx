@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, ClipboardList, Database, Users, X } from "lucide-react";
+import { ArrowLeft, ClipboardList, Database, Pencil, Users, X } from "lucide-react";
 import { getSupabase, type Player, type Team } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { deleteTeam } from "@/actions/teams";
 import { GoldDivider, Panel } from "@/components/ui";
-import { CreateTeamForm } from "@/components/forms/TeamForms";
+import { CreateTeamForm, EditTeamForm } from "@/components/forms/TeamForms";
 import { TeamRoster } from "@/components/TeamRoster";
 
 export const metadata: Metadata = { title: "Admin — Teams" };
@@ -178,6 +178,17 @@ export default async function AdminTeamsPage() {
                       </button>
                     </form>
                   </div>
+
+                  {/* Rename / recolour — collapsible so it doesn't clutter the card. */}
+                  <details className="mt-4 group">
+                    <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-gold-300 [&::-webkit-details-marker]:hidden">
+                      <Pencil className="h-3.5 w-3.5" />
+                      Edit name, description &amp; colour
+                    </summary>
+                    <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+                      <EditTeamForm team={team} />
+                    </div>
+                  </details>
 
                   {/* Click a name to add/remove — instant, searchable. */}
                   <div className="mt-4">
