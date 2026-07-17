@@ -65,41 +65,52 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   const { scores, ranked } = result;
   const S = 2;
   const W = 760;
-  const H = 620;
+  const H = 560;
   const canvas = document.createElement("canvas");
   canvas.width = W * S;
   canvas.height = H * S;
   const ctx = canvas.getContext("2d")!;
   ctx.scale(S, S);
 
-  // Background: deep slate with a single off-centre gold glow (top-left, over
-  // the chart) — asymmetric on purpose, not a centred halo.
-  const bg = ctx.createLinearGradient(0, 0, W, H);
+  // Backdrop: plain deep slate. No gold wash behind the chart — gold at low
+  // alpha over navy reads as muddy olive; the gold lives in linework instead.
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, COLORS.bg1);
   bg.addColorStop(1, COLORS.bg0);
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  const glow = ctx.createRadialGradient(250, 300, 30, 250, 300, 380);
-  glow.addColorStop(0, "rgba(212,175,55,0.10)");
-  glow.addColorStop(1, "rgba(212,175,55,0)");
-  ctx.fillStyle = glow;
-  ctx.fillRect(0, 0, W, H);
-
-  // Hairline gold frame just inside the edge — a printed-card touch.
-  ctx.strokeStyle = "rgba(212,175,55,0.22)";
+  // Certificate frame: a firm outer hairline, a whisper of an inner one, and
+  // a small diamond pinned at each corner.
   ctx.lineWidth = 1;
+  ctx.strokeStyle = "rgba(212,175,55,0.30)";
   ctx.strokeRect(18.5, 18.5, W - 37, H - 37);
+  ctx.strokeStyle = "rgba(212,175,55,0.10)";
+  ctx.strokeRect(24.5, 24.5, W - 49, H - 49);
+  for (const [dx, dy] of [
+    [18, 18],
+    [W - 18, 18],
+    [18, H - 18],
+    [W - 18, H - 18],
+  ] as const) {
+    diamond(ctx, dx, dy, 3, COLORS.gold500);
+  }
 
-  // ── Left: the radar chart, sized as the hero ──────────────────────────────
+  // ── Left: the radar chart ─────────────────────────────────────────────────
   const cx = 250;
-  const cy = 330;
-  const radius = 170;
+  const cy = 265;
+  const radius = 140;
   const rings = 4;
 
+  // Data points clamp to the ring; label anchors must NOT (a label at 1.18
+  // would silently snap back onto the ring and collide with the vertices).
   const at = (v: number, cos: number, sin: number) => ({
     x: cx + radius * Math.max(0, Math.min(1, v)) * cos,
     y: cy + radius * Math.max(0, Math.min(1, v)) * sin,
+  });
+  const anchor = (v: number, cos: number, sin: number) => ({
+    x: cx + radius * v * cos,
+    y: cy + radius * v * sin,
   });
 
   for (let i = 1; i <= rings; i++) {
@@ -112,13 +123,15 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
       else ctx.lineTo(x, y);
     });
     ctx.closePath();
-    ctx.strokeStyle = COLORS.gridFaint;
+    // The outermost ring gets a whisper of gold so the chart has a rim.
+    ctx.strokeStyle = i === rings ? "rgba(212,175,55,0.25)" : COLORS.gridFaint;
     ctx.lineWidth = 1;
     ctx.stroke();
   }
 
-  // Spokes + labels
-  ctx.font = display(13, "700");
+  // Spokes + labels. Side labels sit closer in than the poles so the long
+  // words ("Statesman", "Gatherer") stay clear of the frame and the column.
+  ctx.font = display(11, "600");
   ctx.fillStyle = COLORS.slate400;
   AXES.forEach((axis) => {
     const end = at(1, axis.cos, axis.sin);
@@ -129,16 +142,16 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    const lbl = at(1.17, axis.cos, axis.sin);
-    ctx.textAlign =
-      Math.abs(axis.cos) < 0.3 ? "center" : axis.cos > 0 ? "left" : "right";
+    const isPole = Math.abs(axis.cos) < 0.3;
+    const lbl = anchor(isPole ? 1.18 : 1.13, axis.cos, axis.sin);
+    ctx.textAlign = isPole ? "center" : axis.cos > 0 ? "left" : "right";
     ctx.textBaseline = "middle";
     ctx.fillText(axis.label, lbl.x, lbl.y);
   });
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
 
-  // The player's shape — no "nation average" ghost polygon (that was clutter).
+  // The player's shape: flat translucent gold, like the site's own chart.
   ctx.beginPath();
   AXES.forEach((axis, j) => {
     const p = at(scores[axis.key] ?? 0, axis.cos, axis.sin);
@@ -146,10 +159,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
     else ctx.lineTo(p.x, p.y);
   });
   ctx.closePath();
-  const fill = ctx.createRadialGradient(cx, cy, 10, cx, cy, radius);
-  fill.addColorStop(0, "rgba(212,175,55,0.30)");
-  fill.addColorStop(1, "rgba(212,175,55,0.12)");
-  ctx.fillStyle = fill;
+  ctx.fillStyle = "rgba(212,175,55,0.18)";
   ctx.fill();
   ctx.strokeStyle = COLORS.gold400;
   ctx.lineWidth = 2.5;
@@ -164,79 +174,104 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
     ctx.fill();
   });
 
-  // ── Right column: standing + rankings (left-aligned, real content) ─────────
-  const rx = 470; // right column left edge
+  // ── Right column ──────────────────────────────────────────────────────────
+  const rx = 470;
+  const colRight = W - 44;
+  const colW = colRight - rx;
   const topLabel = ARCHETYPE_BY_KEY[topKey].label;
 
   // Kicker
   ctx.fillStyle = COLORS.gold500;
   ctx.font = display(12, "600");
-  tracked(ctx, "KÖNIGSBURG", rx, 84, 4);
+  tracked(ctx, "KÖNIGSBURG", rx, 112, 4);
 
   // "YOUR CALLING"
   ctx.fillStyle = COLORS.slate500;
   ctx.font = display(11, "600");
-  tracked(ctx, "YOUR CALLING", rx, 124, 3);
+  tracked(ctx, "YOUR CALLING", rx, 166, 3);
 
-  // The role — big, gold, the focal point
-  ctx.font = display(46, "700");
-  const roleGrad = ctx.createLinearGradient(rx, 140, rx, 180);
+  // The role name, auto-fit so long words ("Roleplayer") never overflow.
+  let roleSize = 44;
+  ctx.font = display(roleSize, "700");
+  while (ctx.measureText(topLabel).width > colW && roleSize > 24) {
+    roleSize -= 2;
+    ctx.font = display(roleSize, "700");
+  }
+  const roleGrad = ctx.createLinearGradient(0, 212 - roleSize, 0, 212);
   roleGrad.addColorStop(0, COLORS.gold200);
   roleGrad.addColorStop(1, COLORS.gold500);
   ctx.fillStyle = roleGrad;
-  ctx.fillText(topLabel, rx, 168);
+  ctx.fillText(topLabel, rx, 212);
 
-  // One-line descriptor (first clause of the blurb), wrapped to the column.
+  // One-sentence descriptor, wrapped to the column.
   const blurb = ARCHETYPE_BY_KEY[topKey].blurb.split(".")[0] + ".";
   ctx.fillStyle = COLORS.slate400;
   ctx.font = sans(14, "400");
-  wrapText(ctx, blurb, rx, 200, W - rx - 44, 20);
+  wrapText(ctx, blurb, rx, 242, colW, 20);
 
-  // Gold rule under the intro
-  ctx.strokeStyle = "rgba(212,175,55,0.35)";
+  // The site's signature divider: line — diamond — line.
+  const midX = (rx + colRight) / 2;
   ctx.lineWidth = 1;
+  const ruleL = ctx.createLinearGradient(rx, 0, midX - 10, 0);
+  ruleL.addColorStop(0, "rgba(212,175,55,0)");
+  ruleL.addColorStop(1, "rgba(212,175,55,0.5)");
+  ctx.strokeStyle = ruleL;
   ctx.beginPath();
-  ctx.moveTo(rx, 262);
-  ctx.lineTo(W - 44, 262);
+  ctx.moveTo(rx, 316.5);
+  ctx.lineTo(midX - 10, 316.5);
   ctx.stroke();
+  const ruleR = ctx.createLinearGradient(midX + 10, 0, colRight, 0);
+  ruleR.addColorStop(0, "rgba(212,175,55,0.5)");
+  ruleR.addColorStop(1, "rgba(212,175,55,0)");
+  ctx.strokeStyle = ruleR;
+  ctx.beginPath();
+  ctx.moveTo(midX + 10, 316.5);
+  ctx.lineTo(colRight, 316.5);
+  ctx.stroke();
+  diamond(ctx, midX, 316.5, 3, COLORS.gold400);
 
-  // Ranked breakdown — the three strongest axes, as labelled bars.
+  // Ranked breakdown: numbered like a herald's roll, not fake percentages
+  // (normalising against the top score made every card read "100%").
   ctx.fillStyle = COLORS.slate500;
   ctx.font = display(11, "600");
-  tracked(ctx, "STRONGEST TRAITS", rx, 292, 3);
+  tracked(ctx, "STRONGEST TRAITS", rx, 348, 3);
 
-  const barX = rx;
-  const barW = W - rx - 44;
-  let by = 314;
-  ranked.slice(0, 3).forEach((key) => {
+  const NUMERALS = ["I", "II", "III"];
+  let rowY = 382;
+  ranked.slice(0, 3).forEach((key, i) => {
     const v = Math.max(0, Math.min(1, scores[key] ?? 0));
-    const label = ARCHETYPE_BY_KEY[key].label;
+
+    // Rank chip: a small gold-edged diamond with the numeral inside.
+    diamond(ctx, rx + 8, rowY - 5, 8, "rgba(212,175,55,0.08)", "rgba(212,175,55,0.55)");
+    ctx.fillStyle = COLORS.gold300;
+    ctx.font = display(10, "700");
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(NUMERALS[i], rx + 8, rowY - 4);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
 
     ctx.fillStyle = COLORS.slate300;
     ctx.font = sans(13, "600");
-    ctx.textAlign = "left";
-    ctx.fillText(label, barX, by);
-    ctx.fillStyle = COLORS.slate500;
-    ctx.textAlign = "right";
-    ctx.fillText(`${Math.round(v * 100)}%`, barX + barW, by);
-    ctx.textAlign = "left";
+    ctx.fillText(ARCHETYPE_BY_KEY[key].label, rx + 30, rowY);
 
-    // track + fill
-    const trackY = by + 8;
-    ctx.fillStyle = "rgba(148,163,184,0.15)";
-    fillRoundRect(ctx, barX, trackY, barW, 6, 3);
+    const barX = rx + 30;
+    const barW = colRight - barX;
+    const trackY = rowY + 10;
+    ctx.fillStyle = "rgba(148,163,184,0.14)";
+    fillRoundRect(ctx, barX, trackY, barW, 5, 2.5);
     const fg = ctx.createLinearGradient(barX, 0, barX + barW, 0);
     fg.addColorStop(0, COLORS.gold500);
     fg.addColorStop(1, COLORS.gold300);
     ctx.fillStyle = fg;
-    fillRoundRect(ctx, barX, trackY, Math.max(6, barW * v), 6, 3);
+    fillRoundRect(ctx, barX, trackY, Math.max(5, barW * v), 5, 2.5);
 
-    by += 46;
+    rowY += 48;
   });
 
-  // ── Bottom promo strip: a thin gold rule, wordmark left, URL right ─────────
+  // ── Bottom promo strip ────────────────────────────────────────────────────
   const host = siteHost();
-  const stripY = H - 62;
+  const stripY = H - 54;
   ctx.strokeStyle = "rgba(212,175,55,0.30)";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -244,21 +279,43 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   ctx.lineTo(W - 44, stripY);
   ctx.stroke();
 
-  // Left: the invitation
   ctx.fillStyle = COLORS.slate400;
-  ctx.font = sans(14, "500");
+  ctx.font = sans(13, "500");
   ctx.textAlign = "left";
-  ctx.fillText("Find your role in the realm", 44, stripY + 30);
+  ctx.fillText("Find your role in the realm", 44, stripY + 27);
 
-  // Right: the address in gold. Plain (untracked) sans so dots and the umlaut
-  // render cleanly — a URL letter-spaced in a display serif came out garbled.
-  ctx.font = sans(15, "600");
+  // The address in plain gold sans; tracking a URL in a display serif garbles it.
+  ctx.font = sans(14, "600");
   ctx.fillStyle = COLORS.gold300;
   ctx.textAlign = "right";
-  ctx.fillText(host || "take the alignment quiz", W - 44, stripY + 30);
+  ctx.fillText(host || "take the alignment quiz", W - 44, stripY + 27);
   ctx.textAlign = "left";
 
   return canvas.toDataURL("image/png");
+}
+
+/** A small rotated square — the site's diamond motif. */
+function diamond(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  r: number,
+  fill?: string,
+  stroke?: string
+) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(Math.PI / 4);
+  if (fill) {
+    ctx.fillStyle = fill;
+    ctx.fillRect(-r, -r, r * 2, r * 2);
+  }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-r + 0.5, -r + 0.5, r * 2 - 1, r * 2 - 1);
+  }
+  ctx.restore();
 }
 
 /** Word-wrap helper for the sans descriptor line. */

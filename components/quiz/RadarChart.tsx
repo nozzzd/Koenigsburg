@@ -43,6 +43,12 @@ function point(value: number, cos: number, sin: number) {
   return { x: CX + r * cos, y: CY + r * sin };
 }
 
+/** Unclamped — for label anchors beyond the outer ring. point() would snap a
+ *  1.14-radius label back onto the ring, right on top of a maxed vertex. */
+function anchorPoint(value: number, cos: number, sin: number) {
+  return { x: CX + RADIUS * value * cos, y: CY + RADIUS * value * sin };
+}
+
 function polygon(scores: Record<ArchetypeKey, number>) {
   return AXES.map((axis) => {
     const p = point(scores[axis.key] ?? 0, axis.cos, axis.sin);
@@ -89,7 +95,7 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
       {/* Spokes + labels */}
       {AXES.map((axis) => {
         const end = point(1, axis.cos, axis.sin);
-        const label = point(1.14, axis.cos, axis.sin);
+        const label = anchorPoint(1.14, axis.cos, axis.sin);
         // Nudge labels so they don't collide with the outer ring.
         const anchor = Math.abs(axis.cos) < 0.3 ? "middle" : axis.cos > 0 ? "start" : "end";
         return (

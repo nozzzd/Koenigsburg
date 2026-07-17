@@ -41,7 +41,7 @@ export default async function LoginPage({
           ENTER THE GATES
         </h1>
         <p className="mt-2 text-sm text-slate-400">
-          Choose how you&apos;ll enter the realm, traveler.
+          Choose how you&apos;ll enter the nation, traveler.
         </p>
       </div>
 
@@ -71,7 +71,7 @@ export default async function LoginPage({
               Apply for Citizenship
             </Link>
             <p className="text-center text-xs text-slate-500">
-              New to the realm? Begin your petition to the council.
+              New to the nation? Begin your petition to the council.
             </p>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default async function LoginPage({
       </Panel>
 
       <p className="mt-6 text-center text-xs text-slate-600">
-        Lost your KBRG code? Seek an elder in the Discord.
+        Lost your KBRG code? Make a ticket in the discor
       </p>
     </GateShell>
   );

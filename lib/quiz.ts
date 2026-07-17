@@ -27,19 +27,19 @@ export const ARCHETYPES: Archetype[] = [
     key: "builder",
     label: "Builder",
     blurb:
-      "You raise the keeps and wonders that make a nation worth defending. Stone by stone, you shape what everyone else calls home.",
+      "You raise the builds and wonders that make a nation worth defending. Stone by stone, you shape what everyone else calls home.",
   },
   {
     key: "fighter",
     label: "Fighter",
     blurb:
-      "Front line, first into the breach. When the war drums sound, the realm looks to you to hold the wall and win the field.",
+      "When war begins, you're among the first to answer the call. The realm looks to you to hold the wall and to ensure peace and security throughout the realm.",
   },
   {
     key: "gatherer",
     label: "Gatherer",
     blurb:
-      "No nation marches on an empty stockpile. You keep the warehouses full and the forges fed, come feast or siege.",
+      "Every thriving nation depends on a steady supply of resources. You keep the warehouses full and the people fed.",
   },
   {
     key: "roleplayer",
@@ -51,7 +51,7 @@ export const ARCHETYPES: Archetype[] = [
     key: "explorer",
     label: "Explorer",
     blurb:
-      "The map's edge is a starting line to you. You chart the unknown, find what others miss, and bring the frontier home.",
+      "Beyond every horizon lies another opportunity. You discover new lands, resources, and points of interest.",
   },
   {
     key: "statesman",
@@ -81,76 +81,76 @@ export interface Question {
 export const QUESTIONS: Question[] = [
   {
     id: 1,
-    prompt: "An unknown scout approaches your borders. How do you respond?",
+    prompt: "An unknown player approaches your borders. How do you respond?",
     answers: [
-      { text: "Greet them and offer a trade agreement.", weights: { statesman: 2, roleplayer: 1 } },
-      { text: "Draw your sword and secure the perimeter.", weights: { fighter: 2, explorer: 1 } },
+      { text: "Greet them and exchange some items.", weights: { statesman: 2, gatherer: 1 } },
+      { text: "Ask them where they come from and ensure they pose no threat.", weights: { fighter: 2, explorer: 1 } },
       {
-        text: "Observe from the high walls you spent hours perfecting.",
-        weights: { builder: 2, gatherer: 1 },
+        text: "Give them a tour around your nation's main attractions.",
+        weights: { builder: 2, roleplayer: 1 },
       },
       {
-        text: "Ignore them. Those crops won't harvest themselves.",
+        text: "Ignore them. I've got work to do.",
         weights: { gatherer: 2, builder: 1 },
       },
     ],
   },
   {
     id: 2,
-    prompt: "The nation strikes rich iron. What's your first thought?",
+    prompt: "Your nation has mined more ores than any other nation. What's your first thought?",
     answers: [
       {
-        text: "Time to forge a proper set of armour and a blade.",
+        text: "Time to craft a proper set of armour, tools and weapons.",
         weights: { fighter: 2, builder: 1 },
       },
       {
-        text: "Stockpile it. We'll need reserves for everything ahead.",
+        text: "Stockpile them. We'll need those resources for other things.",
         weights: { gatherer: 2, statesman: 1 },
       },
       {
-        text: "Perfect, now I can finish the grand hall's framework.",
+        text: "Perfect, now I can finally craft all the lanterns I need.",
         weights: { builder: 2, gatherer: 1 },
       },
       {
-        text: "We should negotiate a supply deal with a neighbouring nation.",
+        text: "We should use our wealth to trade with other nations.",
         weights: { statesman: 2, roleplayer: 1 },
       },
     ],
   },
   {
     id: 3,
-    prompt: "A festival is being planned inside the walls. Your role?",
+    prompt: "A festival is being planned inside your nation. Your role?",
     answers: [
       {
         text: "Design and decorate the grounds so it's unforgettable.",
         weights: { builder: 2, roleplayer: 1 },
       },
       {
-        text: "Play the herald and give the opening speech in character.",
+        text: "Represent your nation and give the opening speech in character.",
         weights: { roleplayer: 2, statesman: 1 },
       },
-      { text: "Run security so no rival crashes the party.", weights: { fighter: 2, explorer: 1 } },
+      { text: "Run security and check for traps.", weights: { fighter: 2, explorer: 1 } },
       {
-        text: "Gather the feast. Food, drink, and supplies for all.",
+        text: "Gather food, drinks, and supplies for all.",
         weights: { gatherer: 2, builder: 1 },
       },
     ],
   },
   {
     id: 4,
-    prompt: "War drums sound from a rival nation. Where are you?",
+    prompt: "A rival nation has just declared war. Where are you?",
     answers: [
-      { text: "Front line, first into the breach.", weights: { fighter: 2, explorer: 1 } },
+      { text: "I answer the call and get ready to defend my nation.", weights: { fighter: 2, explorer: 1 } },
       {
-        text: "In the council tent, brokering an alliance to even the odds.",
+        text: "Reaching out to other nations, brokering an alliance to even the odds.",
         weights: { statesman: 2, roleplayer: 1 },
       },
       {
-        text: "Fortifying the walls and building the defences overnight.",
+        text: "Crafting weapons and setting up traps.",
         weights: { builder: 2, fighter: 1 },
       },
       {
-        text: "Stockpiling arrows, potions, and rations for the siege.",
+        text: "Stockpiling arrows, golden apples, and food for the siege.",
         weights: { gatherer: 2, statesman: 1 },
       },
     ],
@@ -160,11 +160,11 @@ export const QUESTIONS: Question[] = [
     prompt: "You get a rare day with nothing assigned. You spend it...",
     answers: [
       {
-        text: "Wandering far past the map's edge to see what's out there.",
+        text: "Wandering far past your nations borders to see what's out there.",
         weights: { explorer: 2, gatherer: 1 },
       },
       {
-        text: "Perfecting a build I've been sketching in my head.",
+        text: "Perfecting a build I've been working on.",
         weights: { builder: 2, roleplayer: 1 },
       },
       {
@@ -186,32 +186,32 @@ export const QUESTIONS: Question[] = [
         weights: { statesman: 2, fighter: 1 },
       },
       {
-        text: "Back the candidate whose story fits the nation best.",
+        text: "Back the candidate whose skills fits the nation best.",
         weights: { roleplayer: 2, statesman: 1 },
       },
       {
-        text: "Don't care who leads, as long as the walls keep rising.",
+        text: "Don't care who leads, as long as the buildings get finished.",
         weights: { builder: 2, gatherer: 1 },
       },
       {
-        text: "Vote quickly and get back out into the wilds.",
+        text: "Vote quickly and get back to exploring.",
         weights: { explorer: 2, gatherer: 1 },
       },
     ],
   },
   {
     id: 7,
-    prompt: "A monster nest is discovered near the settlement. You...",
+    prompt: "A deep dark cave biome is discovered nearby. You...",
     answers: [
-      { text: "Rally a party and clear it out tonight.", weights: { fighter: 2, explorer: 1 } },
+      { text: "Rally a party to fight the Warden.", weights: { fighter: 2, roleplayer: 1 } },
       {
-        text: "Map the surrounding caves while you're down there.",
+        text: "Explore the cave and check for unique items and resources.",
         weights: { explorer: 2, gatherer: 1 },
       },
-      { text: "Wall it off and reroute the road around it.", weights: { builder: 2, statesman: 1 } },
+      { text: "Stay away from it.", weights: { builder: 2, statesman: 1 } },
       {
-        text: "Harvest whatever drops and materials it leaves behind.",
-        weights: { gatherer: 2, fighter: 1 },
+        text: "Summon the Warden and name it \"Rising Lava\".",
+        weights: { roleplayer: 2, fighter: 1 },
       },
     ],
   },
@@ -219,8 +219,8 @@ export const QUESTIONS: Question[] = [
     id: 8,
     prompt: "What's the first structure a good nation builds?",
     answers: [
-      { text: "A defensible keep and walls.", weights: { fighter: 2, builder: 1 } },
-      { text: "Warehouses and farms to sustain everyone.", weights: { gatherer: 2, builder: 1 } },
+      { text: "A defensible fort and walls.", weights: { fighter: 2, builder: 1 } },
+      { text: "A quartermaster building and farms to sustain everyone.", weights: { gatherer: 2, builder: 1 } },
       { text: "A grand town hall worthy of the nation's name.", weights: { builder: 2, statesman: 1 } },
       {
         text: "A tavern and market where people actually gather.",
@@ -246,21 +246,21 @@ export const QUESTIONS: Question[] = [
   },
   {
     id: 10,
-    prompt: "A merchant offers a mysterious sealed map. You...",
+    prompt: "A foreign player offers a mysterious written book. You...",
     answers: [
-      { text: "Buy it instantly and set out at dawn.", weights: { explorer: 2, gatherer: 1 } },
+      { text: "Buy it instantly and read the contents of said book.", weights: { explorer: 2, gatherer: 1 } },
       { text: "Haggle hard, then resell it for profit.", weights: { statesman: 2, gatherer: 1 } },
       { text: "Ask what tale it tells before deciding.", weights: { roleplayer: 2, explorer: 1 } },
-      { text: "Pass. I've got a build to finish.", weights: { builder: 2, fighter: 1 } },
+      { text: "Pass. I've got other business to do.", weights: { builder: 2, fighter: 1 } },
     ],
   },
   {
     id: 11,
-    prompt: "The stockpile is running low before winter. You...",
+    prompt: "Your nation can't keep up with its resource demand. You...",
     answers: [
       { text: "Organize a mass gathering expedition.", weights: { gatherer: 2, statesman: 1 } },
       { text: "Range far out to find untapped resources.", weights: { explorer: 2, gatherer: 1 } },
-      { text: "Raid a rival's supplies to make up the gap.", weights: { fighter: 2, explorer: 1 } },
+      { text: "Raid a rival nation's supplies to make up for it.", weights: { fighter: 2, explorer: 1 } },
       {
         text: "Ration what we have and plan distribution fairly.",
         weights: { statesman: 2, builder: 1 },
@@ -274,20 +274,20 @@ export const QUESTIONS: Question[] = [
       { text: "The one who built its greatest monuments.", weights: { builder: 2, roleplayer: 1 } },
       { text: "The champion who never lost a battle.", weights: { fighter: 2, explorer: 1 } },
       { text: "The statesman who kept the peace.", weights: { statesman: 2, roleplayer: 1 } },
-      { text: "The explorer who charted the unknown.", weights: { explorer: 2, gatherer: 1 } },
+      { text: "The explorer who has visited every nation.", weights: { explorer: 2, gatherer: 1 } },
     ],
   },
   {
     id: 13,
-    prompt: "A newcomer asks how they can help. You tell them to...",
+    prompt: "A new citizen has been around for a few days. What would make you think they're doing a great job?",
     answers: [
-      { text: "Grab a pickaxe. We always need more materials.", weights: { gatherer: 2, builder: 1 } },
-      { text: "Train up. Strong arms defend the realm.", weights: { fighter: 2, statesman: 1 } },
+      { text: "They've gathered a lot of supplies.", weights: { gatherer: 2, builder: 1 } },
+      { text: "They've scared off felons and kept the peace.", weights: { fighter: 2, statesman: 1 } },
       {
-        text: "Learn the lore and find their place in the story.",
+        text: "They have integrated well into the community and created funny stories.",
         weights: { roleplayer: 2, statesman: 1 },
       },
-      { text: "Scout the frontier and report what they find.", weights: { explorer: 2, fighter: 1 } },
+      { text: "They've uncovered interesting locations and new resources.", weights: { explorer: 2, fighter: 1 } },
     ],
   },
   {
@@ -295,35 +295,35 @@ export const QUESTIONS: Question[] = [
     prompt: "Your ideal base location is...",
     answers: [
       {
-        text: "A flat plain with room for a sprawling city.",
+        text: "A flat plain with room for a majestic city.",
         weights: { builder: 2, statesman: 1 },
       },
-      { text: "A hidden valley near unexplored frontier.", weights: { explorer: 2, gatherer: 1 } },
+      { text: "A hidden valley near a massive cave system.", weights: { explorer: 2, gatherer: 1 } },
       {
         text: "A resource-rich biome with everything on hand.",
         weights: { gatherer: 2, builder: 1 },
       },
-      { text: "A defensible ridge overlooking the approach.", weights: { fighter: 2, builder: 1 } },
+      { text: "Hanging above a volcano crater.", weights: { fighter: 2, builder: 1 } },
     ],
   },
   {
     id: 15,
-    prompt: "The council votes on a risky expansion. You...",
+    prompt: "A proposal for a large undertaking is on the table. Your first question is:",
     answers: [
-      { text: "Champion it. Fortune favours the bold.", weights: { explorer: 2, fighter: 1 } },
-      { text: "Weigh the costs and argue the sensible case.", weights: { statesman: 2, builder: 1 } },
-      { text: "Ask if we can even supply it first.", weights: { gatherer: 2, statesman: 1 } },
+      { text: "What could we gain from this?", weights: { explorer: 2, fighter: 1 } },
+      { text: "Is this the right decision?", weights: { statesman: 2, builder: 1 } },
+      { text: "Do we actually have the resources for it?", weights: { gatherer: 2, statesman: 1 } },
       {
-        text: "Care most about whether it makes for a good story.",
+        text: "Will this make the nation more engaging?",
         weights: { roleplayer: 2, explorer: 1 },
       },
     ],
   },
   {
     id: 16,
-    prompt: "In one word, your nation's strength is its...",
+    prompt: "In few words, your nation's strength is its...",
     answers: [
-      { text: "Walls and wonders.", weights: { builder: 2, gatherer: 1 } },
+      { text: "Builds and wonders.", weights: { builder: 2, gatherer: 1 } },
       { text: "Army.", weights: { fighter: 2, explorer: 1 } },
       { text: "People and their stories.", weights: { roleplayer: 2, statesman: 1 } },
       { text: "Diplomacy and order.", weights: { statesman: 2, builder: 1 } },
