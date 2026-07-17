@@ -80,7 +80,7 @@ export default function LandingPage() {
 
         <GoldDivider className="w-full max-w-3xl" />
 
-        <section className="grid w-full max-w-5xl gap-4 py-14 sm:grid-cols-3">
+        <section className="stagger grid w-full max-w-5xl gap-4 py-14 sm:grid-cols-3">
           {pillars.map(({ icon: Icon, title, text }) => (
             <Panel key={title} className="p-6">
               <Icon className="h-6 w-6 text-gold-400" strokeWidth={1.5} />

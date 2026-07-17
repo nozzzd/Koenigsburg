@@ -52,7 +52,7 @@ export default async function PortalPage() {
 
       <GoldDivider />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="stagger grid gap-4 sm:grid-cols-2">
         {facts.map(({ icon: Icon, label, value }) => (
           <Panel key={label} className="p-5">
             <Icon className="h-5 w-5 text-gold-400" strokeWidth={1.5} />

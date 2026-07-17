@@ -88,7 +88,7 @@ export default async function ShowcasePage() {
           </section>
         )}
 
-        <section className="grid w-full gap-5 py-12 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="stagger grid w-full gap-5 py-12 sm:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <Panel key={project.id} className="flex flex-col overflow-hidden">
               <div className="relative aspect-video w-full overflow-hidden bg-slate-950">

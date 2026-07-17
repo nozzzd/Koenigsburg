@@ -105,6 +105,103 @@ body {
   }
 }
 
+/* ── Accordions ─────────────────────────────────────────────────────────────
+   <details> snaps open because the browser flips its content between
+   display states. interpolate-size lets height:auto be animated, and
+   ::details-content is the box to animate. Where unsupported, it simply opens
+   instantly as before — no worse than today. */
+:root {
+  interpolate-size: allow-keywords;
+}
+
+details::details-content {
+  block-size: 0;
+  overflow: clip;
+  opacity: 0;
+  transition:
+    block-size 280ms cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 220ms ease,
+    content-visibility 280ms allow-discrete;
+}
+
+details[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+/* ── Entrances ──────────────────────────────────────────────────────────────
+   `backwards` holds the from-state during the delay, so staggered items don't
+   flash at full opacity before their turn. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.page-in {
+  animation: rise 380ms cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+.stagger > * {
+  animation: rise 420ms cubic-bezier(0.32, 0.72, 0, 1) backwards;
+}
+
+.stagger > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+/* Images fade up rather than popping in as they decode. */
+img {
+  animation: image-in 500ms ease backwards;
+}
+
+@keyframes image-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ── Focus ──────────────────────────────────────────────────────────────────
+   Keyboard users get a clear gold ring; mouse users never see it. */
+:where(a, button, input, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold-400);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--color-gold-400);
+  color: #0b0f1a;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  details::details-content {
+    transition-duration: 1ms;
+  }
+  .page-in,
+  .stagger > *,
+  img {
+    animation: none;
+  }
+}
+
 /* ── Settings drawer ────────────────────────────────────────────────────────
    A <dialog> flips display:none → block, which normally can't be transitioned.
    @starting-style gives it an "entry" state to animate FROM, and the

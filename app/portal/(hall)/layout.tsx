@@ -19,12 +19,12 @@ export default function HallLayout({
   return (
     <div className={`${HALL_SHELL} flex flex-1`}>
       <aside className="hidden shrink-0 px-5 py-8 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]">
-        <div className="sticky top-8">
+        <div className="page-in sticky top-8">
           <NewsWidget className="h-[calc(100dvh-8rem)]" />
         </div>
       </aside>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+      <main className="page-in mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
         {children}
       </main>
 
