@@ -1,24 +1,31 @@
+import { redirect } from "next/navigation";
+import { getSessionPlayer } from "@/lib/session";
 import { HALL_SHELL } from "@/components/ui";
 import { NewsWidget } from "@/components/NewsWidget";
+import { TasksWidget } from "@/components/TasksWidget";
 
 /**
- * The Citizen's Hall only — the Herald board lives here, not in the shared
- * portal layout, so it never shows up on the admin or newsletter pages.
+ * The Citizen's Hall only — the two boards live here, not in the shared portal
+ * layout, so they never show up on the admin or newsletter pages.
  *
- * The empty right-hand column is deliberate: it mirrors the Herald's width so
- * the middle column lands on the TRUE centre of the screen. Without it,
- * mx-auto only centres within the space left over beside the sidebar, which
- * drags the content off-centre.
+ * The Herald (left) and the Ledger (right) are equal-width columns, which is
+ * also what keeps the middle on the TRUE centre of the screen: mx-auto alone
+ * would only centre within the space left beside a single sidebar.
  *
- * Hidden below lg — the dashboard renders the Herald inline on phones instead
- * (cache() dedupes, so it's still one query).
+ * Both are hidden below lg — the dashboard renders them inline on phones
+ * instead (cache() dedupes, so it's still one query each).
  */
-export default function HallLayout({
+export default async function HallLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const player = await getSessionPlayer();
+  if (!player) redirect("/login");
+
+  const columnClass = "hidden shrink-0 py-8 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]";
+
   return (
     <div className={`${HALL_SHELL} flex flex-1`}>
-      <aside className="hidden shrink-0 px-5 py-8 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]">
+      <aside className={`${columnClass} pl-5 pr-5`}>
         <div className="page-in sticky top-8">
           <NewsWidget className="h-[calc(100dvh-8rem)]" />
         </div>
@@ -28,10 +35,15 @@ export default function HallLayout({
         {children}
       </main>
 
-      <div
-        aria-hidden
-        className="hidden shrink-0 lg:block lg:w-[20rem] xl:w-[24rem] 2xl:w-[28rem]"
-      />
+      <aside className={`${columnClass} pl-5 pr-5`}>
+        <div className="page-in sticky top-8">
+          <TasksWidget
+            playerId={player.id}
+            isAdmin={player.role === "admin"}
+            className="h-[calc(100dvh-8rem)]"
+          />
+        </div>
+      </aside>
     </div>
   );
 }

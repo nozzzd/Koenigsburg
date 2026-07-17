@@ -34,6 +34,19 @@ export interface Project {
   created_at: string;
 }
 
+export type TaskScope = "personal" | "assigned" | "realm";
+
+export interface Task {
+  id: string;
+  title: string;
+  scope: TaskScope;
+  /** Whose list it sits on; null for realm-wide goals. */
+  player_id: string | null;
+  assigned_by: string | null;
+  done: boolean;
+  created_at: string;
+}
+
 export interface NewsPost {
   id: string;
   title: string;

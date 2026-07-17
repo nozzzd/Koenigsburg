@@ -12,6 +12,7 @@ import { getSessionPlayer } from "@/lib/session";
 import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SaveKeyWarning } from "@/components/SaveKeyWarning";
 import { NewsWidget } from "@/components/NewsWidget";
+import { TasksWidget } from "@/components/TasksWidget";
 
 export const metadata: Metadata = { title: "Citizen's Hall" };
 
@@ -82,7 +83,12 @@ export default async function PortalPage() {
         </Link>
       )}
 
-      {/* Phones have no sidebar — the Herald rides along at the bottom. */}
+      {/* Phones have no sidebars — both boards ride along at the bottom. */}
+      <TasksWidget
+        playerId={player.id}
+        isAdmin={player.role === "admin"}
+        className="lg:hidden"
+      />
       <NewsWidget className="lg:hidden" />
     </div>
   );
