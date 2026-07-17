@@ -10,9 +10,16 @@ export interface Player {
   minecraft_ign: string;
   discord_id: string | null;
   discord_username: string;
+  /**
+   * Pre-approval: the public signup code, posted in #immigration to prove
+   * ownership. On approval it is rotated, so the posted value dies and this
+   * becomes the member's PRIVATE login key. Never display it publicly.
+   */
   verification_code: string;
   status: PlayerStatus;
   role: PlayerRole;
+  /** False until they confirm they've written down their login key. */
+  key_saved: boolean;
   created_at: string;
 }
 

@@ -62,7 +62,7 @@ export default async function PendingPage({
 
         <div className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-            Your Verification Code
+            {isManual ? "Your Signup Code" : "Your Temporary Code"}
           </p>
           <CopyCode code={player.verification_code} />
           {isManual ? (
@@ -79,9 +79,21 @@ export default async function PendingPage({
           <div className="flex items-start gap-2.5 rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-3 text-xs leading-relaxed text-slate-400">
             <KeyRound className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-400" />
             <span>
-              This code is also your <span className="text-slate-200">permanent key</span>.
-              If your session is ever lost, return through the login page with your
-              Minecraft name and this code. Keep it safe and secret.
+              {isManual ? (
+                <>
+                  This is a <span className="text-slate-200">signup code</span>, not a
+                  password — once you post it, treat it as public. The moment the
+                  council approves you, it is retired and you are given a{" "}
+                  <span className="text-slate-200">private login key</span> to save.
+                  It also lets you back into this page while you wait.
+                </>
+              ) : (
+                <>
+                  This code lets you back into this page while you wait. Once the
+                  council approves you, it is replaced by a{" "}
+                  <span className="text-slate-200">private login key</span> to save.
+                </>
+              )}
             </span>
           </div>
         </div>

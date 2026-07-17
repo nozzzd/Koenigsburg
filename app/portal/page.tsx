@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
 import { GoldDivider, Panel } from "@/components/ui";
+import { SaveKeyWarning } from "@/components/SaveKeyWarning";
 
 export const metadata: Metadata = { title: "Citizen's Hall" };
 
@@ -47,6 +48,8 @@ export default async function PortalPage() {
           <UserRound className="h-4 w-4 text-slate-500" />@{player.discord_username}
         </p>
       </div>
+
+      {!player.key_saved && <SaveKeyWarning code={player.verification_code} />}
 
       <GoldDivider />
 
