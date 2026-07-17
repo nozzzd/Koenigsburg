@@ -6,11 +6,12 @@ import { IGN_HINT, type ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 
-export function ManualSignupForm() {
+export function ManualSignupForm({ pendingTeamId }: { pendingTeamId?: string | null }) {
   const [state, action] = useActionState<ActionState, FormData>(manualSignup, null);
 
   return (
     <form action={action} className="space-y-4">
+      {pendingTeamId && <input type="hidden" name="pending_team_id" value={pendingTeamId} />}
       {state?.error && <ErrorBanner message={state.error} />}
       <div>
         <label htmlFor="signup-ign" className={labelClass}>

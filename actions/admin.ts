@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { assignCitizenRole } from "@/lib/discord";
+import { joinTeam } from "@/lib/teams";
 import { generateVerificationCode } from "@/lib/codes";
 
 /**
@@ -62,6 +63,21 @@ export async function approvePlayer(playerId: string): Promise<void> {
           err
         );
       }
+    }
+
+    // Honor the team they elected from the alignment quiz, then clear it so a
+    // later re-approval can't re-add them. Best-effort: a failed join never
+    // undoes the approval.
+    if (target.pending_team_id) {
+      try {
+        await joinTeam(target.pending_team_id, target.id);
+      } catch (err) {
+        console.error(
+          `Approved ${target.minecraft_ign} but their quiz team join failed:`,
+          err
+        );
+      }
+      await supabase.from("players").update({ pending_team_id: null }).eq("id", target.id);
     }
   }
 

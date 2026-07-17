@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, Landmark, ScrollText } from "lucide-react";
+import { Compass, Crown, Landmark, ScrollText } from "lucide-react";
 import {
   Crest,
   GoldDivider,
@@ -69,9 +69,18 @@ export default function LandingPage() {
             </Link>
             <JoinDiscordButton />
           </div>
+
+          <Link
+            href="/quiz"
+            className={`${outlineButtonClass} mt-6 w-full max-w-xs sm:w-auto`}
+          >
+            <Compass className="h-4 w-4" />
+            Which role are you? Take the Alignment Quiz
+          </Link>
+
           <Link
             href="/showcase"
-            className="mt-6 text-sm font-semibold text-slate-500 underline-offset-4 transition hover:text-gold-300 hover:underline"
+            className="mt-5 text-sm font-semibold text-slate-500 underline-offset-4 transition hover:text-gold-300 hover:underline"
           >
             Explore our Great Works →
           </Link>

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import {
   Check,
   ClipboardList,
+  Compass,
   ImageIcon,
   Newspaper,
   ScrollText,
@@ -120,6 +121,19 @@ export default async function AdminPage() {
               </p>
             </div>
             <ImageIcon className="h-5 w-5 text-gold-400" />
+          </Panel>
+        </Link>
+        <Link href="/portal/admin/quiz" className="block">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                QUIZ ROLES
+              </p>
+              <p className="mt-1 text-sm text-slate-400">
+                Map alignments to teams.
+              </p>
+            </div>
+            <Compass className="h-5 w-5 shrink-0 text-gold-400" />
           </Panel>
         </Link>
       </div>

@@ -20,6 +20,11 @@ export interface Player {
   role: PlayerRole;
   /** False until they confirm they've written down their login key. */
   key_saved: boolean;
+  /**
+   * Team a pending recruit elected via the alignment quiz. Applied and cleared
+   * on approval; NULL for normal signups.
+   */
+  pending_team_id: string | null;
   created_at: string;
 }
 
@@ -63,6 +68,13 @@ export interface TeamMember {
   team_id: string;
   player_id: string;
   joined_at: string;
+}
+
+/** Admin-set mapping of a quiz archetype (e.g. "builder") to a real team. */
+export interface QuizRoleMap {
+  archetype: string;
+  team_id: string;
+  updated_at: string;
 }
 
 export interface NewsPost {

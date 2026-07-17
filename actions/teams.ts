@@ -1,14 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSupabase, type Player, type Team } from "@/lib/supabase";
+import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
-import {
-  addMemberRole,
-  createGuildRole,
-  deleteGuildRole,
-  removeMemberRole,
-} from "@/lib/discord";
+import { createGuildRole, deleteGuildRole, removeMemberRole } from "@/lib/discord";
+import { joinTeam, loadTeam } from "@/lib/teams";
 import type { ActionState } from "@/lib/forms";
 
 async function requireAdmin() {
@@ -17,16 +13,6 @@ async function requireAdmin() {
     throw new Error("Not authorized");
   }
   return me;
-}
-
-async function loadTeam(id: string): Promise<Team> {
-  const { data } = await getSupabase()
-    .from("teams")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle<Team>();
-  if (!data) throw new Error("Team not found");
-  return data;
 }
 
 function refresh() {
@@ -125,38 +111,10 @@ export async function deleteTeam(teamId: string): Promise<void> {
   refresh();
 }
 
-/** Add a member; assigns the Discord role if the team has one. */
+/** Add a member; assigns the Discord role if the team has one. Admin-only. */
 export async function addTeamMemberById(teamId: string, playerId: string): Promise<void> {
   await requireAdmin();
-  if (!teamId || !playerId) throw new Error("Missing team or member");
-
-  const supabase = getSupabase();
-  const team = await loadTeam(teamId);
-
-  const { error } = await supabase
-    .from("team_members")
-    .upsert(
-      { team_id: teamId, player_id: playerId },
-      { onConflict: "team_id,player_id", ignoreDuplicates: true }
-    );
-  if (error) throw new Error(`Could not add them: ${error.message}`);
-
-  if (team.discord_role_id) {
-    const { data: player } = await supabase
-      .from("players")
-      .select("discord_id")
-      .eq("id", playerId)
-      .maybeSingle<Pick<Player, "discord_id">>();
-    if (player?.discord_id) {
-      try {
-        await addMemberRole(player.discord_id, team.discord_role_id);
-      } catch (err) {
-        // Membership stands; the role can be added by hand.
-        console.error("Failed to assign team Discord role:", err);
-      }
-    }
-  }
-
+  await joinTeam(teamId, playerId);
   refresh();
 }
 

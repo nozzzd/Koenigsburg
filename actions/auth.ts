@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getSupabase, type Player, type PlayerRole, type PlayerStatus } from "@/lib/supabase";
+import { joinTeam } from "@/lib/teams";
 import { generateVerificationCode } from "@/lib/codes";
 import { IGN_HINT, IGN_PATTERN, type ActionState } from "@/lib/forms";
 import {
@@ -16,12 +17,30 @@ function readIgn(formData: FormData): string | null {
   return IGN_PATTERN.test(ign) ? ign : null;
 }
 
+/**
+ * The team a quiz-driven recruit elected, re-validated server-side: the form
+ * only ever carries a team id chosen by the apply page (which resolved it from
+ * a mapped archetype), but we never trust the client — confirm the team still
+ * exists before persisting it. Returns null for a normal signup or a stale id.
+ */
+async function readPendingTeamId(formData: FormData): Promise<string | null> {
+  const raw = String(formData.get("pending_team_id") ?? "").trim();
+  if (!raw) return null;
+  const { data } = await getSupabase()
+    .from("teams")
+    .select("id")
+    .eq("id", raw)
+    .maybeSingle<{ id: string }>();
+  return data?.id ?? null;
+}
+
 type InsertFields = {
   minecraft_ign: string;
   discord_username: string;
   discord_id?: string;
   status: PlayerStatus;
   role: PlayerRole;
+  pending_team_id?: string | null;
 };
 
 type InsertResult = { player: Player } | { error: string };
@@ -71,6 +90,7 @@ export async function manualSignup(
     discord_username: discordUsername,
     status: "pending",
     role: "guest",
+    pending_team_id: await readPendingTeamId(formData),
   });
   if ("error" in result) return result;
 
@@ -96,6 +116,7 @@ export async function submitApplication(
     discord_username: handoff.discordUsername,
     status: "pending",
     role: "guest",
+    pending_team_id: await readPendingTeamId(formData),
   });
   if ("error" in result) return result;
 
@@ -124,6 +145,17 @@ export async function completeCitizenSetup(
     role: "citizen",
   });
   if ("error" in result) return result;
+
+  // An instant citizen is already active, so any elected team is applied now
+  // rather than waiting on an approval that never comes.
+  const teamId = await readPendingTeamId(formData);
+  if (teamId) {
+    try {
+      await joinTeam(teamId, result.player.id);
+    } catch (err) {
+      console.error("Could not add new citizen to their elected team:", err);
+    }
+  }
 
   await clearDiscordHandoff();
   await createSession(result.player.id);
