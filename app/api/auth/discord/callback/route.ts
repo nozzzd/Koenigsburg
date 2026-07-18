@@ -1,6 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { exchangeCode, fetchDiscordUser, hasCitizenRole, type DiscordUser } from "@/lib/discord";
+import {
+  addGuildMember,
+  exchangeCode,
+  fetchDiscordUser,
+  hasCitizenRole,
+  type DiscordUser,
+} from "@/lib/discord";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { createSession, setDiscordHandoff } from "@/lib/session";
 
@@ -24,12 +30,22 @@ export async function GET(request: NextRequest) {
   }
 
   let discordUser: DiscordUser;
+  let accessToken: string;
   try {
-    const accessToken = await exchangeCode(code);
+    accessToken = await exchangeCode(code);
     discordUser = await fetchDiscordUser(accessToken);
   } catch (err) {
     console.error("Discord OAuth failed:", err);
     return redirectTo("/login?error=discord");
+  }
+
+  // Signing in now MEANS joining: drop them into the server with the consent
+  // their guilds.join scope granted. Best-effort — a failure (bot missing the
+  // Create Instant Invite permission, or a hiccup) must never block sign-in.
+  try {
+    await addGuildMember(discordUser.id, accessToken);
+  } catch (err) {
+    console.error(`Could not auto-add ${discordUser.username} to the guild:`, err);
   }
 
   const { data: existing } = await getSupabase()

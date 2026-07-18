@@ -18,7 +18,9 @@ export function oauthAuthorizeUrl(state: string): string {
     client_id: env("DISCORD_CLIENT_ID"),
     response_type: "code",
     redirect_uri: oauthRedirectUri(),
-    scope: "identify",
+    // identify: read who they are. guilds.join: lets the bot drop them straight
+    // into the server on sign-in, so signing up actually means joining Discord.
+    scope: "identify guilds.join",
     state,
   });
   return `https://discord.com/oauth2/authorize?${params}`;
@@ -52,6 +54,34 @@ export async function fetchDiscordUser(accessToken: string): Promise<DiscordUser
     throw new Error(`Discord /users/@me failed (${res.status})`);
   }
   return (await res.json()) as DiscordUser;
+}
+
+/**
+ * Add the user to the guild using their OAuth access token (which carries their
+ * consent via the guilds.join scope) plus the bot's authority. Returns true if
+ * they were just added, false if they were already in the server (204) — both
+ * are success. Requires the bot to have the "Create Instant Invite" permission.
+ * Throws only on a real failure so callers can log and carry on.
+ */
+export async function addGuildMember(
+  discordUserId: string,
+  accessToken: string
+): Promise<boolean> {
+  const res = await fetch(
+    `${API}/guilds/${env("DISCORD_GUILD_ID")}/members/${discordUserId}`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ access_token: accessToken }),
+    }
+  );
+  // 201 = added, 204 = already a member. Anything else is a genuine failure.
+  if (res.status === 201) return true;
+  if (res.status === 204) return false;
+  throw new Error(`Discord guild join failed (${res.status})`);
 }
 
 /** Role IDs of the guild member, or null if they aren't in the guild. */
