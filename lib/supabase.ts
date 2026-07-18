@@ -106,6 +106,28 @@ export interface NewsPost {
   created_at: string;
 }
 
+/** Public-read Storage bucket holding the community map's region tiles. */
+export const MAP_TILES_BUCKET = "map-tiles";
+
+export type MapDimension = "overworld" | "nether" | "end";
+
+/**
+ * One 512x512-block region of the crowd-sourced world map. `region_x`/`region_z`
+ * are Xaero region coordinates (block coord / 512, floored); the tile image lives
+ * in the `map-tiles` bucket at `storage_path`. Unique per (dimension, x, z) — a
+ * re-upload replaces the row, so the newest tile per cell wins.
+ */
+export interface MapTile {
+  id: string;
+  dimension: MapDimension;
+  region_x: number;
+  region_z: number;
+  storage_path: string;
+  contributor_player_id: string | null;
+  contributor_ign: string | null;
+  uploaded_at: string;
+}
+
 let client: SupabaseClient | null = null;
 
 /**

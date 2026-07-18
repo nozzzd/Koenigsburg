@@ -13,7 +13,15 @@ locally and deployed on Vercel.
 
 1. Create a project at [supabase.com](https://supabase.com) (or use your existing one).
 2. Open **SQL Editor → New query**, paste the contents of
-   [`supabase/schema.sql`](supabase/schema.sql), and run it.
+   [`supabase/schema.sql`](supabase/schema.sql), and run it. Then run each
+   numbered migration in `supabase/` (`002_…` through `010_…`) the same way —
+   they're idempotent, so re-running is safe.
+   - **Community map:** [`supabase/010_map_tiles.sql`](supabase/010_map_tiles.sql)
+     creates the `map_tiles` table **and** a public-read Storage bucket named
+     `map-tiles` that holds the crowd-sourced world-map tiles. If your Supabase
+     project blocks `insert into storage.buckets`, create the bucket manually in
+     **Storage → New bucket** (name `map-tiles`, **Public** on). The `/map` page
+     stays on its empty "being surveyed" state until the first tile is uploaded.
 3. Collect two values for later:
    - **Project URL** → `SUPABASE_URL` (Project Settings → Data API)
    - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API Keys).
