@@ -7,7 +7,7 @@ import { getSupabase, type Team } from "@/lib/supabase";
 import { resolveRoleTeam } from "@/actions/quiz";
 import { ARCHETYPE_BY_KEY } from "@/lib/quiz";
 import { Crest, GateShell, GoldDivider, Panel } from "@/components/ui";
-import { DiscordButton } from "@/components/DiscordButton";
+import { DiscordButton, JoinDiscordButton } from "@/components/DiscordButton";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { ManualSignupForm } from "@/components/forms/ManualSignupForm";
 
@@ -80,7 +80,21 @@ export default async function ApplyPage({
         </Panel>
       ) : (
         <Panel className="space-y-5 p-6">
+          <div className="flex items-start gap-3 rounded-lg border border-gold-500/30 bg-gold-400/5 px-4 py-3 text-sm">
+            <Shield className="mt-0.5 h-4 w-4 shrink-0 text-gold-400" />
+            <p className="leading-relaxed text-slate-300">
+              You must be a member of our Discord to be admitted. Signing in with Discord below is
+              the fastest route. If you sign up manually, you&apos;ll still need to join the server
+              and run{" "}
+              <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-gold-300">
+                /verify
+              </code>{" "}
+              with your code — the council can only approve verified petitioners.
+            </p>
+          </div>
+
           <DiscordButton>Fastest route: Sign in with Discord</DiscordButton>
+          <JoinDiscordButton className="w-full">Join our Discord first</JoinDiscordButton>
 
           <GoldDivider />
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-slate-500">

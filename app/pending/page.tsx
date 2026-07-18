@@ -5,6 +5,7 @@ import { getSessionPlayer } from "@/lib/session";
 import { logout } from "@/actions/auth";
 import { Crest, GateShell, GoldDivider, Panel } from "@/components/ui";
 import { CopyCode } from "@/components/CopyCode";
+import { JoinDiscordButton } from "@/components/DiscordButton";
 
 export const metadata: Metadata = { title: "Awaiting the Council" };
 
@@ -66,15 +67,19 @@ export default async function PendingPage({
           </p>
           <CopyCode code={player.verification_code} />
           {isManual ? (
-            <p className="text-sm leading-relaxed text-slate-400">
-              In our Discord, run{" "}
-              <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-gold-300">
-                /verify
-              </code>{" "}
-              and paste this code. The bot confirms it&apos;s you{" "}
-              <span className="text-slate-200">privately</span> — only you can see the
-              reply. Never post it in a channel where others can read it.
-            </p>
+            <>
+              <p className="text-sm leading-relaxed text-slate-400">
+                You must be in our Discord to be admitted. Join the server, then run{" "}
+                <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-gold-300">
+                  /verify
+                </code>{" "}
+                and paste this code. The bot confirms it&apos;s you{" "}
+                <span className="text-slate-200">privately</span> — only you can see the
+                reply. Never post it in a channel where others can read it. Until you
+                verify, the council cannot approve you.
+              </p>
+              <JoinDiscordButton className="w-full">Join our Discord</JoinDiscordButton>
+            </>
           ) : (
             <p className="text-sm leading-relaxed text-slate-400">
               No further steps needed — check back soon.

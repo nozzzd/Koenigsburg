@@ -29,14 +29,13 @@ export default async function AdminMembersPage() {
 
   const members = data ?? [];
 
-  // Flag anyone active + Discord-linked who is no longer in the server. Checked
-  // in parallel; a Discord outage fails OPEN (nobody flagged) so a hiccup can't
-  // paint the whole roll as departed. Admins themselves are skipped — the owner
-  // may not sit in the guild at all.
+  // Flag anyone Discord-linked who is no longer in the server — active OR
+  // pending, so revoking someone who left keeps the flag until they're kicked.
+  // Checked in parallel; a Discord outage fails OPEN (nobody flagged) so a
+  // hiccup can't paint the whole roll as departed. Admins are skipped — the
+  // owner may not sit in the guild at all.
   const departed = new Set<string>();
-  const toCheck = members.filter(
-    (m) => m.status === "active" && m.discord_id && m.role !== "admin"
-  );
+  const toCheck = members.filter((m) => m.discord_id && m.role !== "admin");
   await Promise.all(
     toCheck.map(async (m) => {
       try {
