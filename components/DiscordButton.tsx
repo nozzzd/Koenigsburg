@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { track } from "@/actions/funnel";
 
 /** The public Discord server invite. */
 export const DISCORD_INVITE_URL = "https://discord.gg/B96P9cCD5g";
@@ -11,11 +14,13 @@ export function DiscordMark({ className }: { className?: string }) {
   );
 }
 
-/** Server-renderable link styled as the Discord CTA (starts OAuth sign-in). */
+/** Link styled as the Discord CTA (starts OAuth sign-in). Logs the click as a
+ *  funnel step; navigation proceeds regardless (track is fire-and-forget). */
 export function DiscordButton({ children }: { children: ReactNode }) {
   return (
     <a
       href="/api/auth/discord"
+      onClick={() => void track("discord_click")}
       className="pressable inline-flex w-full items-center justify-center gap-2.5 rounded-lg bg-[#5865F2] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#4752c4]"
     >
       <DiscordMark className="h-5 w-5" />

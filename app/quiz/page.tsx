@@ -4,6 +4,7 @@ import { getMappedRoles } from "@/actions/quiz";
 import { Crest, WordMark, outlineButtonClass } from "@/components/ui";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
 import { Quiz } from "@/components/quiz/Quiz";
+import { FunnelBeacon } from "@/components/FunnelBeacon";
 
 export const metadata: Metadata = {
   title: "Role Alignment Quiz",
@@ -18,6 +19,7 @@ export default async function QuizPage() {
 
   return (
     <>
+      <FunnelBeacon event="quiz_start" />
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <WordMark />
         <nav className="flex items-center gap-2 sm:gap-3">

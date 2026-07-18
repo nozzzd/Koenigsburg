@@ -10,6 +10,7 @@ import { Crest, GateShell, GoldDivider, Panel } from "@/components/ui";
 import { DiscordButton, JoinDiscordButton } from "@/components/DiscordButton";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { ManualSignupForm } from "@/components/forms/ManualSignupForm";
+import { FunnelBeacon } from "@/components/FunnelBeacon";
 
 export const metadata: Metadata = { title: "Apply for Citizenship" };
 
@@ -42,6 +43,7 @@ export default async function ApplyPage({
 
   return (
     <GateShell>
+      <FunnelBeacon event="signup_view" />
       <div className="mb-8 flex flex-col items-center text-center">
         <Crest className="h-16 w-16" />
         <h1 className="mt-6 font-display text-2xl font-bold tracking-[0.2em] text-slate-100">

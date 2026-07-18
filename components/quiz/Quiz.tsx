@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { QUESTIONS, scoreQuiz, type ArchetypeKey } from "@/lib/quiz";
+import { track } from "@/actions/funnel";
 import { QuizResult } from "./QuizResult";
 
 /**
@@ -27,6 +28,7 @@ export function Quiz({ mappedRoles }: { mappedRoles: ArchetypeKey[] }) {
       setIndex(index + 1);
     } else {
       setDone(true);
+      void track("quiz_finish");
     }
   }
 

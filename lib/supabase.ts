@@ -77,6 +77,21 @@ export interface QuizRoleMap {
   updated_at: string;
 }
 
+export type FunnelEventName =
+  | "landing_view"
+  | "quiz_start"
+  | "quiz_finish"
+  | "signup_view"
+  | "discord_click";
+
+/** One anonymous recruitment-funnel step. visit_id is a token, not a person. */
+export interface FunnelEvent {
+  id: string;
+  event: FunnelEventName;
+  visit_id: string;
+  created_at: string;
+}
+
 export interface NewsPost {
   id: string;
   title: string;

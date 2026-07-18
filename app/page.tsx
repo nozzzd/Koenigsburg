@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Compass, Crown, Landmark, ScrollText } from "lucide-react";
+import { Compass, Crown, Layers, Sparkles } from "lucide-react";
+import { getSupabase } from "@/lib/supabase";
 import {
   Crest,
   GoldDivider,
@@ -10,28 +11,48 @@ import {
 } from "@/components/ui";
 import { JoinDiscordButton } from "@/components/DiscordButton";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
+import { FunnelBeacon } from "@/components/FunnelBeacon";
+
+// Keep the count fresh without hammering the DB on every hit.
+export const revalidate = 60;
 
 const pillars = [
   {
-    icon: ScrollText,
-    title: "Citizenship",
-    text: "Petition through Discord. Approved citizens are whitelisted on the website and welcomed within the walls.",
+    icon: Layers,
+    title: "Organized",
+    text: "A real citizenship portal, role system, team guilds, and a shared task ledger. We run like an actual nation — not just another Discord.",
   },
   {
-    icon: Landmark,
-    title: "The Nation",
-    text: "Claim land, build, and shape the districts of the free city — block by block.",
+    icon: Sparkles,
+    title: "Get in early",
+    text: "We're still forging the nation. Founding citizens shape the districts, claim the best roles, and are remembered as the first through the gates.",
   },
   {
     icon: Crown,
-    title: "The Council",
-    text: "Every petition is reviewed by the council. Once approved, you're free to enter the nation.",
+    title: "A place for you",
+    text: "Builder, fighter, gatherer, explorer, statesman — take the alignment quiz and the council finds where you belong. Everyone has a calling.",
   },
 ];
 
-export default function LandingPage() {
+/** Live count of sworn citizens — social proof. Degrades to null on any error. */
+async function citizenCount(): Promise<number | null> {
+  try {
+    const { count } = await getSupabase()
+      .from("players")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active");
+    return count ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function LandingPage() {
+  const count = await citizenCount();
+
   return (
     <>
+      <FunnelBeacon event="landing_view" />
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <WordMark />
         <nav className="flex items-center gap-2 sm:gap-3">
@@ -52,7 +73,7 @@ export default function LandingPage() {
         <section className="flex flex-col items-center pt-12 pb-14 text-center sm:pt-24">
           <Crest className="h-16 w-16 sm:h-20 sm:w-20" />
           <p className="mt-6 font-display text-[0.65rem] font-semibold tracking-[0.35em] text-gold-500 sm:mt-8 sm:text-xs sm:tracking-[0.5em]">
-            THE FREE CITY OF
+            THE MOST ORGANIZED NATION IN THE EVENT
           </p>
           {/* Tracking + size scale down hard on phones — at 5xl with 0.15em
               tracking this word is wider than a 375px viewport. */}
@@ -60,9 +81,28 @@ export default function LandingPage() {
             KÖNIGSBURG
           </h1>
           <p className="mt-6 max-w-xl text-balance text-slate-400">
-            Built to last, bound by oath. Earn your citizenship and build your legacy.
+            A civilization run like a real state — citizenship, roles, and a council, all in
+            place before the first stone is laid. Swear in now and help build it from the ground
+            up.
           </p>
-          <div className="mt-10 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-none sm:items-center sm:gap-4">
+
+          {count !== null && (
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-gold-500/30 bg-gold-400/5 px-4 py-1.5 text-xs font-semibold text-gold-300">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-400 opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-400" />
+              </span>
+              {count === 0 ? (
+                <>Be the first citizen of Königsburg</>
+              ) : (
+                <>
+                  {count} sworn in — you&apos;d be founding citizen #{count + 1}
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-3 sm:max-w-none sm:items-center sm:gap-4">
             <Link href="/login" className={heroCtaClass}>
               Enter the Gates
             </Link>
