@@ -81,7 +81,7 @@ export default async function LandingPage() {
             KÖNIGSBURG
           </h1>
           <p className="mt-6 max-w-xl text-balance text-slate-400">
-            A civilization run like a real state — citizenship, roles, and a council, all in
+            A civilization run like a real state, with citizenship, roles, and a council, all in
             place before the first stone is laid. Swear in now and help build it from the ground
             up.
           </p>
@@ -96,7 +96,7 @@ export default async function LandingPage() {
                 <>Be the first citizen of Königsburg</>
               ) : (
                 <>
-                  {count} sworn in — you&apos;d be founding citizen #{count + 1}
+                  {count} sworn in. You&apos;d be founding citizen #{count + 1}
                 </>
               )}
             </div>
