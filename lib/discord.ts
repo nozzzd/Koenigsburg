@@ -240,9 +240,38 @@ export async function removeMemberRole(discordUserId: string, roleId: string): P
   }
 }
 
-/** True if the user is still in the guild; false if they've left (404). */
-export async function isGuildMember(discordUserId: string): Promise<boolean> {
-  return (await getGuildMemberRoles(discordUserId)) !== null;
+/**
+ * Every Discord ID currently in the guild, as a Set — one bulk paginated call
+ * instead of one lookup per member. Checking "who left" against this set avoids
+ * the rate-limit storm (and the silent fail-open) you get from firing a
+ * per-member request for the whole roll at once.
+ *
+ * Requires the bot's **Server Members Intent** (Developer Portal → Bot →
+ * Privileged Gateway Intents → Server Members Intent). Without it Discord
+ * returns the bot itself only or 403; the caller must treat a throw as
+ * "couldn't determine", never as "everyone left".
+ */
+export async function listGuildMemberIds(): Promise<Set<string>> {
+  const ids = new Set<string>();
+  let after = "0";
+  // Page through in chunks of 1000 until a short page signals the end.
+  for (let page = 0; page < 50; page++) {
+    const res = await fetch(
+      `${API}/guilds/${env("DISCORD_GUILD_ID")}/members?limit=1000&after=${after}`,
+      {
+        headers: { Authorization: `Bot ${env("DISCORD_BOT_TOKEN")}` },
+        cache: "no-store",
+      }
+    );
+    if (!res.ok) {
+      throw new Error(`Discord member list failed (${res.status})`);
+    }
+    const batch = (await res.json()) as { user?: { id: string } }[];
+    for (const m of batch) if (m.user?.id) ids.add(m.user.id);
+    if (batch.length < 1000) break;
+    after = batch[batch.length - 1].user!.id;
+  }
+  return ids;
 }
 
 /**

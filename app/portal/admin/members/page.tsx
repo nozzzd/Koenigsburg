@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, UserMinus, Users } from "lucide-react";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
-import { isGuildMember } from "@/lib/discord";
+import { listGuildMemberIds } from "@/lib/discord";
 import { GoldDivider, Panel } from "@/components/ui";
 import { MemberRow } from "@/components/admin/MemberRow";
 
@@ -29,22 +29,25 @@ export default async function AdminMembersPage() {
 
   const members = data ?? [];
 
-  // Flag anyone Discord-linked who is no longer in the server — active OR
-  // pending, so revoking someone who left keeps the flag until they're kicked.
-  // Checked in parallel; a Discord outage fails OPEN (nobody flagged) so a
-  // hiccup can't paint the whole roll as departed. Admins are skipped — the
-  // owner may not sit in the guild at all.
+  // Flag anyone Discord-linked (active OR pending, so the flag survives a
+  // Revoke) who is no longer in the server. One bulk member list instead of a
+  // per-member request avoids Discord rate limits — the old per-member burst
+  // silently skipped anyone that got rate-limited, so real departures slipped
+  // through. If the bulk call fails (Server Members Intent off, or an outage)
+  // we flag NOBODY and surface a warning, rather than guessing.
   const departed = new Set<string>();
-  const toCheck = members.filter((m) => m.discord_id && m.role !== "admin");
-  await Promise.all(
-    toCheck.map(async (m) => {
-      try {
-        if (!(await isGuildMember(m.discord_id!))) departed.add(m.id);
-      } catch (err) {
-        console.error(`Guild check failed for ${m.minecraft_ign}:`, err);
+  let checkFailed = false;
+  try {
+    const guildIds = await listGuildMemberIds();
+    for (const m of members) {
+      if (m.discord_id && m.role !== "admin" && !guildIds.has(m.discord_id)) {
+        departed.add(m.id);
       }
-    })
-  );
+    }
+  } catch (err) {
+    console.error("Guild member list failed; skipping departure check:", err);
+    checkFailed = true;
+  }
   const stats = [
     { label: "Souls", value: members.length },
     { label: "Citizens", value: members.filter((m) => m.status === "active").length },
@@ -86,6 +89,22 @@ export default async function AdminMembersPage() {
           </Panel>
         ))}
       </div>
+
+      {checkFailed && (
+        <Panel className="flex items-start gap-3 border-amber-900/50 bg-amber-950/20 p-5">
+          <UserMinus className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold text-amber-300">
+              Couldn&apos;t check who&apos;s still in the Discord.
+            </p>
+            <p className="text-slate-400">
+              The departure check is skipped this load — no one is flagged. Enable the bot&apos;s{" "}
+              <span className="text-slate-200">Server Members Intent</span> (Discord Developer
+              Portal → Bot → Privileged Gateway Intents), then reload.
+            </p>
+          </div>
+        </Panel>
+      )}
 
       {departed.size > 0 && (
         <Panel className="flex items-start gap-3 border-red-900/50 bg-red-950/20 p-5">
