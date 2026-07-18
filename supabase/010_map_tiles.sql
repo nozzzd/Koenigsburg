@@ -2,11 +2,13 @@
 -- Run once in the Supabase SQL editor. Safe to run repeatedly.
 --
 -- The world is diced into 512x512-block regions (Xaero's native region size).
--- Citizens export their Xaero's World Map to PNG, the browser slices it into
--- region-aligned tiles, and each tile is uploaded to the `map-tiles` bucket at a
--- deterministic path (overworld/<rx>_<rz>.png). One row per region cell; a new
--- upload UPSERTs it, so the NEWEST tile per cell always wins. The public /map
--- page reassembles the tiles by their coordinates.
+-- Citizens select their Xaero's World Map folder on /map/contribute; their
+-- browser parses each region file, renders it to a PNG tile, and uploads it to
+-- the `map-tiles` bucket at a deterministic path (overworld/<rx>_<rz>.png).
+-- One row per region cell. `captured_at` is the region file's own modification
+-- time — a tile only replaces the stored one when its capture date is NEWER,
+-- so a re-upload of an old map can never wipe fresher scouting. The public
+-- /map page reassembles the tiles by their coordinates.
 
 CREATE TABLE IF NOT EXISTS map_tiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -16,10 +18,17 @@ CREATE TABLE IF NOT EXISTS map_tiles (
     storage_path TEXT NOT NULL,         -- object path within the map-tiles bucket
     contributor_player_id UUID REFERENCES players(id) ON DELETE SET NULL,
     contributor_ign VARCHAR(32),        -- denormalised so credit survives a player delete
+    -- When the terrain was actually seen in-game (the region file's mtime,
+    -- server-clamped against future dates). THE merge key: newest wins.
+    captured_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
-    -- One tile per cell; a re-upload of the same region replaces it (newest wins).
+    -- One tile per cell; a fresher capture of the same region replaces it.
     UNIQUE (dimension, region_x, region_z)
 );
+
+-- In case an earlier revision of this migration (without captured_at) was run.
+ALTER TABLE map_tiles ADD COLUMN IF NOT EXISTS captured_at
+    TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL;
 
 CREATE INDEX IF NOT EXISTS idx_map_tiles_dimension ON map_tiles(dimension);
 
