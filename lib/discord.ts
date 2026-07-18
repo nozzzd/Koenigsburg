@@ -240,6 +240,45 @@ export async function removeMemberRole(discordUserId: string, roleId: string): P
   }
 }
 
+/** True if the user is still in the guild; false if they've left (404). */
+export async function isGuildMember(discordUserId: string): Promise<boolean> {
+  return (await getGuildMemberRoles(discordUserId)) !== null;
+}
+
+/**
+ * DM a user via the bot. Opens (or reuses) a DM channel, then posts. Returns
+ * false rather than throwing when the DM can't be sent — most often because the
+ * user has DMs closed or shares no server with the bot — so callers can carry
+ * on through a batch. A 403/404 is an expected "couldn't reach them", not a bug.
+ */
+export async function sendDirectMessage(
+  discordUserId: string,
+  content: string
+): Promise<boolean> {
+  const auth = `Bot ${env("DISCORD_BOT_TOKEN")}`;
+  const channelRes = await fetch(`${API}/users/@me/channels`, {
+    method: "POST",
+    headers: { Authorization: auth, "Content-Type": "application/json" },
+    body: JSON.stringify({ recipient_id: discordUserId }),
+  });
+  if (!channelRes.ok) {
+    console.error(`Could not open DM channel for ${discordUserId} (${channelRes.status})`);
+    return false;
+  }
+  const channel = (await channelRes.json()) as { id: string };
+
+  const msgRes = await fetch(`${API}/channels/${channel.id}/messages`, {
+    method: "POST",
+    headers: { Authorization: auth, "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+  });
+  if (!msgRes.ok) {
+    console.error(`Could not DM ${discordUserId} (${msgRes.status})`);
+    return false;
+  }
+  return true;
+}
+
 /** Strips @Citizen — used when a player renounces their citizenship. */
 export async function removeCitizenRole(discordUserId: string): Promise<void> {
   const res = await fetch(

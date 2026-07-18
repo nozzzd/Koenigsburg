@@ -1,4 +1,4 @@
-import { Check, Crown, ScrollText, ShieldOff, Trash2 } from "lucide-react";
+import { Check, Crown, Lock, ScrollText, ShieldOff, Trash2, UserMinus } from "lucide-react";
 import type { Player } from "@/lib/supabase";
 import { approvePlayer } from "@/actions/admin";
 import { removeMember, revokeCitizenship } from "@/actions/members";
@@ -20,7 +20,16 @@ const actionButtonClass =
  * meta row below, and new admin controls go in the actions column. Both are
  * additive — nothing else in the roster needs to change.
  */
-export function MemberRow({ member, isSelf }: { member: Player; isSelf: boolean }) {
+export function MemberRow({
+  member,
+  isSelf,
+  departed = false,
+}: {
+  member: Player;
+  isSelf: boolean;
+  /** Active member who is no longer in the Discord server. */
+  departed?: boolean;
+}) {
   const isPending = member.status === "pending";
 
   return (
@@ -56,6 +65,12 @@ export function MemberRow({ member, isSelf }: { member: Player; isSelf: boolean 
           >
             {isPending ? "Pending" : "Active"}
           </span>
+          {departed && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-red-600/50 bg-red-950/40 px-2 py-0.5 font-semibold text-red-300">
+              <UserMinus className="h-3 w-3" />
+              Left Discord
+            </span>
+          )}
           <span className="text-slate-500">{ROLE_LABEL[member.role]}</span>
           {member.discord_id ? (
             <span className="rounded-full border border-indigo-500/40 px-2 py-0.5 text-indigo-300">
@@ -80,17 +95,26 @@ export function MemberRow({ member, isSelf }: { member: Player; isSelf: boolean 
 
       {/* actions — add future admin controls here */}
       <div className="flex shrink-0 flex-wrap items-center gap-2">
-        {isPending && (
-          <form action={approvePlayer.bind(null, member.id)}>
-            <button
-              type="submit"
-              className={`${actionButtonClass} border-emerald-700/60 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-950/50`}
+        {isPending &&
+          (member.discord_id ? (
+            <form action={approvePlayer.bind(null, member.id)}>
+              <button
+                type="submit"
+                className={`${actionButtonClass} border-emerald-700/60 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-950/50`}
+              >
+                <Check className="h-3.5 w-3.5" />
+                Approve
+              </button>
+            </form>
+          ) : (
+            <span
+              title="They must run /verify with their code before they can be approved."
+              className={`${actionButtonClass} cursor-not-allowed border-slate-800 text-slate-600`}
             >
-              <Check className="h-3.5 w-3.5" />
-              Approve
-            </button>
-          </form>
-        )}
+              <Lock className="h-3.5 w-3.5" />
+              Awaiting /verify
+            </span>
+          ))}
 
         {!isSelf && !isPending && (
           <form action={revokeCitizenship.bind(null, member.id)}>

@@ -5,6 +5,7 @@ import {
   ClipboardList,
   Compass,
   ImageIcon,
+  Lock,
   Newspaper,
   ScrollText,
   ShieldCheck,
@@ -206,12 +207,22 @@ export default async function AdminPage() {
                     </span>
                   </div>
                 </div>
-                <form action={approvePlayer.bind(null, applicant.id)} className="sm:w-44">
-                  <SubmitButton>
-                    <Check className="h-4 w-4" />
-                    Approve
-                  </SubmitButton>
-                </form>
+                {applicant.discord_id ? (
+                  <form action={approvePlayer.bind(null, applicant.id)} className="sm:w-44">
+                    <SubmitButton>
+                      <Check className="h-4 w-4" />
+                      Approve
+                    </SubmitButton>
+                  </form>
+                ) : (
+                  <div
+                    title="They must run /verify with their code before they can be approved."
+                    className="inline-flex shrink-0 cursor-not-allowed items-center justify-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-2.5 font-display text-sm font-bold tracking-wider text-slate-600 sm:w-44"
+                  >
+                    <Lock className="h-4 w-4" />
+                    Awaiting /verify
+                  </div>
+                )}
               </Panel>
             </li>
           ))}

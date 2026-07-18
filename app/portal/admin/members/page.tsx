@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Users } from "lucide-react";
+import { ArrowLeft, UserMinus, Users } from "lucide-react";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
+import { isGuildMember } from "@/lib/discord";
 import { GoldDivider, Panel } from "@/components/ui";
 import { MemberRow } from "@/components/admin/MemberRow";
 
 export const metadata: Metadata = { title: "Admin — The Roll of Königsburg" };
+
+// Always live: departures must be caught on load, not served from cache.
+export const dynamic = "force-dynamic";
 
 export default async function AdminMembersPage() {
   const player = await getSessionPlayer();
@@ -24,11 +28,29 @@ export default async function AdminMembersPage() {
   }
 
   const members = data ?? [];
+
+  // Flag anyone active + Discord-linked who is no longer in the server. Checked
+  // in parallel; a Discord outage fails OPEN (nobody flagged) so a hiccup can't
+  // paint the whole roll as departed. Admins themselves are skipped — the owner
+  // may not sit in the guild at all.
+  const departed = new Set<string>();
+  const toCheck = members.filter(
+    (m) => m.status === "active" && m.discord_id && m.role !== "admin"
+  );
+  await Promise.all(
+    toCheck.map(async (m) => {
+      try {
+        if (!(await isGuildMember(m.discord_id!))) departed.add(m.id);
+      } catch (err) {
+        console.error(`Guild check failed for ${m.minecraft_ign}:`, err);
+      }
+    })
+  );
   const stats = [
     { label: "Souls", value: members.length },
     { label: "Citizens", value: members.filter((m) => m.status === "active").length },
     { label: "Pending", value: members.filter((m) => m.status === "pending").length },
-    { label: "Elders", value: members.filter((m) => m.role === "admin").length },
+    { label: "Left Discord", value: departed.size },
   ];
 
   return (
@@ -66,6 +88,26 @@ export default async function AdminMembersPage() {
         ))}
       </div>
 
+      {departed.size > 0 && (
+        <Panel className="flex items-start gap-3 border-red-900/50 bg-red-950/20 p-5">
+          <UserMinus className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold text-red-300">
+              {departed.size} member{departed.size === 1 ? "" : "s"} left the Discord while still
+              on the roll.
+            </p>
+            <p className="text-slate-400">
+              {members
+                .filter((m) => departed.has(m.id))
+                .map((m) => m.minecraft_ign)
+                .join(", ")}
+              . They&apos;ve lost portal access already — Revoke or Kick them below to clear the
+              roll.
+            </p>
+          </div>
+        </Panel>
+      )}
+
       <GoldDivider />
 
       {members.length === 0 ? (
@@ -79,7 +121,11 @@ export default async function AdminMembersPage() {
         <ul className="space-y-3">
           {members.map((member) => (
             <li key={member.id}>
-              <MemberRow member={member} isSelf={member.id === player.id} />
+              <MemberRow
+                member={member}
+                isSelf={member.id === player.id}
+                departed={departed.has(member.id)}
+              />
             </li>
           ))}
         </ul>

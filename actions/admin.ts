@@ -30,6 +30,15 @@ export async function approvePlayer(playerId: string): Promise<void> {
     .maybeSingle<Player>();
   if (!target) throw new Error("Player not found");
 
+  // A linked Discord account (set by /verify or OAuth) is proof of ownership.
+  // Without it, a manual signup is unverified — refuse, so nobody gets in on an
+  // unproven claim. The queue also hides the button, but this is the real gate.
+  if (!target.discord_id) {
+    throw new Error(
+      "This applicant hasn't verified their Discord yet. Have them run /verify with their code first."
+    );
+  }
+
   if (target.status !== "active") {
     // Reroll on the (vanishingly rare) code collision.
     let updated = false;
