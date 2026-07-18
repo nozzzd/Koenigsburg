@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { Compass, Crown, Layers, Sparkles } from "lucide-react";
+import {
+  Compass,
+  Crown,
+  Layers,
+  MapPin,
+  ScrollText,
+  ShieldCheck,
+  Sparkles,
+  Swords,
+} from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import {
   Crest,
@@ -19,18 +28,44 @@ export const revalidate = 60;
 const pillars = [
   {
     icon: Layers,
-    title: "Organized",
-    text: "A real citizenship portal, role system, team guilds, and a shared task ledger. We run like an actual nation, not just another Discord.",
+    title: "Run like a real nation",
+    text: "While other nations argue in a messy Discord, we have a citizenship roll, a role system, team guilds, and a council that actually plans. Order wins events.",
   },
   {
     icon: Sparkles,
-    title: "Get in early",
-    text: "We're still forging the nation. Founding citizens shape the districts, claim the best roles, and are remembered as the first through the gates.",
+    title: "Founding-member advantage",
+    text: "The nation is being forged right now. Join today and you claim the best roles, shape the capital, and go down as one of the first names on the roll.",
   },
   {
     icon: Crown,
-    title: "A place for you",
-    text: "Builder, fighter, gatherer, explorer, statesman. Take the alignment quiz and the council finds where you belong. Everyone has a calling.",
+    title: "A role with your name on it",
+    text: "You won't be a nobody grinding alone. Take the alignment quiz and the council gives you a real place: builder, fighter, gatherer, explorer, or statesman.",
+  },
+];
+
+/** Concrete benefits a citizen gets the moment they're approved. */
+const benefits = [
+  { icon: ShieldCheck, text: "A whitelist spot secured on the event server" },
+  { icon: Compass, text: "A role matched to how you actually like to play" },
+  { icon: Swords, text: "A team and a council that fight for you, not against you" },
+  { icon: MapPin, text: "Land to claim and build in a planned capital" },
+  { icon: ScrollText, text: "Tasks and goals so you always know what matters" },
+  { icon: Crown, text: "Strength in numbers when rival nations march" },
+];
+
+/** The three low-friction steps from stranger to citizen. */
+const steps = [
+  {
+    title: "Sign in with Discord",
+    text: "One click adds you straight to our server. No forms, no waiting.",
+  },
+  {
+    title: "Get verified",
+    text: "Prove your name and the council reviews you. Whitelisted fast.",
+  },
+  {
+    title: "Claim your role",
+    text: "Take the quiz, get your calling, and start building your legacy.",
   },
 ];
 
@@ -80,10 +115,10 @@ export default async function LandingPage() {
           <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-[2rem] font-bold tracking-[0.06em] text-transparent sm:text-6xl sm:tracking-[0.15em] lg:text-7xl">
             KÖNIGSBURG
           </h1>
-          <p className="mt-6 max-w-xl text-balance text-slate-400">
-            A civilization run like a real state, with citizenship, roles, and a council, all in
-            place before the first stone is laid. Swear in now and help build it from the ground
-            up.
+          <p className="mt-6 max-w-xl text-balance text-slate-300">
+            Most players spend the event as nobodies, grinding alone. Not here. Königsburg gives
+            you a role, a team, and a nation that has its act together before anyone else even
+            has walls.
           </p>
 
           {count !== null && (
@@ -137,6 +172,87 @@ export default async function LandingPage() {
               <p className="mt-2 text-sm leading-relaxed text-slate-400">{text}</p>
             </Panel>
           ))}
+        </section>
+
+        <GoldDivider className="w-full max-w-3xl" />
+
+        {/* What you actually get — tangible benefits sell harder than flavor. */}
+        <section className="w-full max-w-4xl py-14">
+          <div className="text-center">
+            <p className="font-display text-xs font-semibold tracking-[0.4em] text-gold-500">
+              THE MOMENT YOU ARE SWORN IN
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-widest text-slate-100 sm:text-3xl">
+              What every citizen gets
+            </h2>
+          </div>
+          <ul className="stagger mt-8 grid gap-3 sm:grid-cols-2">
+            {benefits.map(({ icon: Icon, text }) => (
+              <li key={text}>
+                <Panel className="flex items-center gap-3 p-4">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold-500/30 bg-gold-400/5">
+                    <Icon className="h-4 w-4 text-gold-400" strokeWidth={1.75} />
+                  </span>
+                  <span className="text-sm text-slate-300">{text}</span>
+                </Panel>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <GoldDivider className="w-full max-w-3xl" />
+
+        {/* Three steps kills the "is this a hassle?" hesitation. */}
+        <section className="w-full max-w-5xl py-14">
+          <div className="text-center">
+            <p className="font-display text-xs font-semibold tracking-[0.4em] text-gold-500">
+              FROM STRANGER TO CITIZEN
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-widest text-slate-100 sm:text-3xl">
+              Join in three steps
+            </h2>
+          </div>
+          <ol className="stagger mt-8 grid gap-4 sm:grid-cols-3">
+            {steps.map(({ title, text }, i) => (
+              <li key={title}>
+                <Panel className="h-full p-6">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold-500/40 font-display text-sm font-bold text-gold-300">
+                    {i + 1}
+                  </span>
+                  <h3 className="mt-4 font-display text-sm font-bold tracking-widest text-slate-100">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-400">{text}</p>
+                </Panel>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <GoldDivider className="w-full max-w-3xl" />
+
+        {/* Closing ask — one last strong push to the gates. */}
+        <section className="flex w-full max-w-3xl flex-col items-center py-16 text-center">
+          <h2 className="font-display text-2xl font-bold tracking-widest text-slate-100 sm:text-3xl">
+            The gates are open
+          </h2>
+          <p className="mt-4 max-w-lg text-balance text-slate-400">
+            {count && count > 0
+              ? `${count} have already sworn in. Founding roles are filling. Claim yours before someone else does.`
+              : "Founding citizens are being sworn in now. Be one of the first names on the roll."}
+          </p>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            <Link href="/login" className={heroCtaClass}>
+              Enter the Gates
+            </Link>
+            <Link
+              href="/quiz"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-400 underline-offset-4 transition hover:text-gold-300 hover:underline"
+            >
+              <Compass className="h-4 w-4" />
+              Not sure where you fit? Take the quiz
+            </Link>
+          </div>
         </section>
       </main>
 
