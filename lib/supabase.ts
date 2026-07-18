@@ -114,8 +114,9 @@ export type MapDimension = "overworld" | "nether" | "end";
 /**
  * One 512x512-block region of the crowd-sourced world map. `region_x`/`region_z`
  * are Xaero region coordinates (block coord / 512, floored); the tile image lives
- * in the `map-tiles` bucket at `storage_path`. Unique per (dimension, x, z) — a
- * re-upload replaces the row, so the newest tile per cell wins.
+ * in the `map-tiles` bucket at `storage_path`. Unique per (dimension, x, z);
+ * `captured_at` (the region file's own modification time) is the merge key — a
+ * tile is only replaced by one with a NEWER capture date.
  */
 export interface MapTile {
   id: string;
@@ -125,6 +126,7 @@ export interface MapTile {
   storage_path: string;
   contributor_player_id: string | null;
   contributor_ign: string | null;
+  captured_at: string;
   uploaded_at: string;
 }
 

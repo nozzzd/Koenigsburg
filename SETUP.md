@@ -22,6 +22,10 @@ locally and deployed on Vercel.
      project blocks `insert into storage.buckets`, create the bucket manually in
      **Storage → New bucket** (name `map-tiles`, **Public** on). The `/map` page
      stays on its empty "being surveyed" state until the first tile is uploaded.
+     The in-browser renderer's block/biome color tables
+     ([`lib/xaero/colors.json`](lib/xaero/colors.json)) are pre-generated —
+     rerun `python scripts/generate-xaero-colors.py` after a Minecraft update
+     adds new blocks or biomes.
 3. Collect two values for later:
    - **Project URL** → `SUPABASE_URL` (Project Settings → Data API)
    - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API Keys).

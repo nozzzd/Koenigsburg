@@ -11,7 +11,7 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
-import { TileUploader } from "@/components/map/TileUploader";
+import { RegionUploader } from "@/components/map/RegionUploader";
 
 export const metadata: Metadata = {
   title: "Contribute to the Map",
@@ -21,24 +21,24 @@ export const metadata: Metadata = {
 
 const steps: { title: string; body: string; caption: string }[] = [
   {
-    title: "Open your world map in-game",
-    body: "Join the server, then press M (the default key) to open Xaero's World Map. Pan around so the areas you've explored are loaded.",
-    caption: "Xaero's World Map open in-game",
+    title: "Find your Xaero map folder",
+    body: "Press the Windows key + R, paste %appdata%\\.minecraft\\xaero\\world-map and hit Enter — the folder pops open. (Using CurseForge, Modrinth or Prism? Open your modpack's folder from the launcher instead, then go into xaero, then world-map.)",
+    caption: "The world-map folder in Windows Explorer",
   },
   {
-    title: "Export it to a PNG",
-    body: "Click the settings/gear icon on the world map, then the \"Export to PNG\" button. Save the image somewhere you'll find it — your Desktop is fine.",
-    caption: "The Export to PNG button in map settings",
+    title: "Select that folder below",
+    body: "Scroll down, click \"Choose folder\" and pick the world-map folder you just found. Your browser may warn about \"uploading\" the folder — that's fine: everything is read on your own computer first.",
+    caption: "Picking the world-map folder in the browser",
   },
   {
-    title: "Note the two corner coordinates",
-    body: "Move your mouse to the TOP-LEFT corner of the exported area and write down the X and Z shown. Do the same for the BOTTOM-RIGHT corner. Those four numbers tell us where your map sits in the world.",
-    caption: "Reading X / Z at a map corner",
+    title: "Check it found our server",
+    body: "If you've played on several servers, pick ours from the list (we pre-select the world you played most recently). The name is the server address you use to join.",
+    caption: "Choosing the right world",
   },
   {
-    title: "Upload it here",
-    body: "Below, pick your PNG, type in the four corner numbers, and hit upload. We automatically cut it into tiles and drop them onto the shared map. Newer uploads replace older ones for the same area.",
-    caption: "The upload form on this page",
+    title: "Hit the button and watch",
+    body: "Your browser draws map tiles straight from the mod's own files and uploads the finished pictures. You'll see your map appear as it goes. Every area carries the date you last saw it — the shared map always keeps the newest look at each area.",
+    caption: "The map rendering in the browser",
   },
 ];
 
@@ -69,10 +69,11 @@ export default async function ContributePage() {
             Add your discoveries
           </h1>
           <p className="mt-4 max-w-xl text-balance text-slate-400">
-            Königsburg&apos;s map is built by its people. Export the world map you
-            already have from Xaero&apos;s mod and we&apos;ll stitch your corner of
-            the world into everyone&apos;s. It only takes a minute — no editing, no
-            tech skills.
+            Königsburg&apos;s map is built by its people. Your Xaero mod already
+            keeps a map of everything you&apos;ve explored — point us at its
+            folder and we&apos;ll stitch your corner of the world into
+            everyone&apos;s. It only takes a minute — no exporting, no
+            coordinates, no tech skills.
           </p>
         </section>
 
@@ -106,9 +107,13 @@ export default async function ContributePage() {
             ))}
           </div>
           <p className="mx-auto max-w-2xl rounded-lg border border-slate-800 bg-slate-900/40 px-4 py-3 text-center text-xs leading-relaxed text-slate-500">
-            <span className="font-semibold text-slate-400">Why two corners?</span>{" "}
-            Xaero shrinks large exports, so the image scale varies. The two corner
-            coordinates let us line your map up exactly, whatever size it exported at.
+            <span className="font-semibold text-slate-400">
+              What actually gets uploaded?
+            </span>{" "}
+            Only finished map pictures — one small image per 512×512 area — plus
+            the date each area was last seen. Your waypoints live in a different
+            folder and are never touched. And because every area carries its own
+            date, an old map can never overwrite someone&apos;s newer scouting.
           </p>
         </section>
 
@@ -117,13 +122,13 @@ export default async function ContributePage() {
         <section className="py-10">
           <Panel className="p-6 sm:p-8">
             <h2 className="mb-1 font-display text-lg font-bold tracking-wide text-slate-100">
-              Upload your export
+              Share your map
             </h2>
             <p className="mb-6 text-sm text-slate-500">
               Signed in as <span className="text-gold-300">{player.minecraft_ign}</span>.
               Your name is credited on the tiles you add.
             </p>
-            <TileUploader />
+            <RegionUploader />
           </Panel>
         </section>
       </main>
