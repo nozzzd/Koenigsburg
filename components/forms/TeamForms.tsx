@@ -76,6 +76,20 @@ export function CreateTeamForm() {
           </span>
         </label>
       </div>
+      <label
+        htmlFor="team-self"
+        className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5"
+      >
+        <input
+          id="team-self"
+          name="self_assignable"
+          type="checkbox"
+          className="h-4 w-4 accent-gold-400"
+        />
+        <span className="text-sm font-semibold text-slate-300">
+          Let citizens join this team themselves
+        </span>
+      </label>
       <SubmitButton>Found the team</SubmitButton>
     </form>
   );
@@ -134,6 +148,21 @@ export function EditTeamForm({ team }: { team: Team }) {
           </p>
         )}
       </div>
+      <label
+        htmlFor={`edit-self-${team.id}`}
+        className="flex cursor-pointer items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5"
+      >
+        <input
+          id={`edit-self-${team.id}`}
+          name="self_assignable"
+          type="checkbox"
+          defaultChecked={team.self_assignable}
+          className="h-4 w-4 accent-gold-400"
+        />
+        <span className="text-sm font-semibold text-slate-300">
+          Let citizens join this team themselves
+        </span>
+      </label>
       <SubmitButton>Save changes</SubmitButton>
     </form>
   );

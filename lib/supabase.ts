@@ -61,6 +61,8 @@ export interface Team {
   color: string | null;
   /** NULL for website-only teams. */
   discord_role_id: string | null;
+  /** True if citizens may join/leave this team themselves from the portal. */
+  self_assignable: boolean;
   created_at: string;
 }
 

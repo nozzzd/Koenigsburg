@@ -9,18 +9,55 @@ import {
   UserRound,
 } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
+import { getSupabase, type Team } from "@/lib/supabase";
 import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SaveKeyWarning } from "@/components/SaveKeyWarning";
 import { NewsWidget } from "@/components/NewsWidget";
 import { TasksWidget } from "@/components/TasksWidget";
+import { TeamPicker } from "@/components/TeamPicker";
 
 export const metadata: Metadata = { title: "Citizen's Hall" };
 
 const ROLE_LABELS = { guest: "Guest", citizen: "Citizen", admin: "Council Elder" } as const;
 
+/**
+ * Self-assignable teams + the player's memberships, for the team picker.
+ * Degrades to nothing if the teams tables aren't migrated yet.
+ */
+async function loadTeamPickerData(playerId: string): Promise<{
+  teams: Team[];
+  memberTeamIds: string[];
+  hasAnyTeam: boolean;
+} | null> {
+  const supabase = getSupabase();
+  const { data: teams, error } = await supabase
+    .from("teams")
+    .select("*")
+    .eq("self_assignable", true)
+    .order("name")
+    .returns<Team[]>();
+  if (error) return null; // unmigrated or unavailable — hide the feature
+
+  const { data: memberships } = await supabase
+    .from("team_members")
+    .select("team_id")
+    .eq("player_id", playerId)
+    .returns<{ team_id: string }[]>();
+  const allIds = new Set((memberships ?? []).map((m) => m.team_id));
+  const selfIds = (teams ?? []).map((t) => t.id).filter((id) => allIds.has(id));
+
+  return {
+    teams: teams ?? [],
+    memberTeamIds: selfIds,
+    hasAnyTeam: allIds.size > 0,
+  };
+}
+
 export default async function PortalPage() {
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
+
+  const teamPicker = await loadTeamPickerData(player.id);
 
   const memberSince = new Date(player.created_at).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -66,6 +103,14 @@ export default async function PortalPage() {
           </Panel>
         ))}
       </div>
+
+      {teamPicker && (
+        <TeamPicker
+          teams={teamPicker.teams}
+          memberTeamIds={teamPicker.memberTeamIds}
+          hasAnyTeam={teamPicker.hasAnyTeam}
+        />
+      )}
 
       {player.role === "admin" && (
         <Link href="/portal/admin" className="block">

@@ -40,6 +40,7 @@ export async function createTeam(
   const description = String(formData.get("description") ?? "").trim() || null;
   const color = String(formData.get("color") ?? "").trim() || null;
   const withRole = formData.get("discord_role") === "on";
+  const selfAssignable = formData.get("self_assignable") === "on";
 
   if (name.length < 2 || name.length > 80) {
     return { error: "Give the team a name (2–80 characters)." };
@@ -60,7 +61,13 @@ export async function createTeam(
 
   const { error } = await getSupabase()
     .from("teams")
-    .insert({ name, description, color, discord_role_id: discordRoleId });
+    .insert({
+      name,
+      description,
+      color,
+      discord_role_id: discordRoleId,
+      self_assignable: selfAssignable,
+    });
 
   if (error) {
     // Roll the Discord role back so we don't orphan it.
@@ -96,6 +103,7 @@ export async function updateTeam(
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
   const color = String(formData.get("color") ?? "").trim() || null;
+  const selfAssignable = formData.get("self_assignable") === "on";
 
   if (name.length < 2 || name.length > 80) {
     return { error: "Give the team a name (2–80 characters)." };
@@ -105,7 +113,7 @@ export async function updateTeam(
 
   const { error } = await getSupabase()
     .from("teams")
-    .update({ name, description, color })
+    .update({ name, description, color, self_assignable: selfAssignable })
     .eq("id", id);
 
   if (error) {
@@ -225,4 +233,55 @@ export async function assignTeamTask(
   }
   refresh();
   return null;
+}
+
+// ── Member self-service ──────────────────────────────────────────────────────
+// Citizens (not just admins) join or leave teams the council marked
+// self_assignable. The guard is the self_assignable flag, so a member can never
+// self-add to a team the council controls, and can only ever move their OWN
+// membership.
+
+async function requireActiveCitizen(): Promise<Player> {
+  const me = await getSessionPlayer();
+  if (!me || me.status !== "active") throw new Error("Not authorized");
+  return me;
+}
+
+async function assertSelfAssignable(teamId: string) {
+  const team = await loadTeam(teamId);
+  if (!team.self_assignable) {
+    throw new Error("This team can only be assigned by the council.");
+  }
+  return team;
+}
+
+/** Join a self-assignable team yourself. */
+export async function selfAssignTeam(teamId: string): Promise<void> {
+  const me = await requireActiveCitizen();
+  await assertSelfAssignable(teamId);
+  await joinTeam(teamId, me.id);
+  revalidatePath("/portal");
+}
+
+/** Leave a self-assignable team you joined yourself. */
+export async function selfLeaveTeam(teamId: string): Promise<void> {
+  const me = await requireActiveCitizen();
+  const team = await assertSelfAssignable(teamId);
+  const supabase = getSupabase();
+
+  const { error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("team_id", teamId)
+    .eq("player_id", me.id);
+  if (error) throw new Error(`Could not leave the team: ${error.message}`);
+
+  if (team.discord_role_id && me.discord_id) {
+    try {
+      await removeMemberRole(me.discord_id, team.discord_role_id);
+    } catch (err) {
+      console.error("Failed to strip team Discord role on self-leave:", err);
+    }
+  }
+  revalidatePath("/portal");
 }
