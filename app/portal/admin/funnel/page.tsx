@@ -188,6 +188,14 @@ export default async function AdminFunnelPage({
           <>No landing views recorded yet in this window.</>
         )}
       </Panel>
+
+      <Panel className="p-4 text-sm text-slate-400">
+        <span className="font-semibold text-slate-200">Virality:</span>{" "}
+        {uniq("quiz_share")} quiz {uniq("quiz_share") === 1 ? "taker" : "takers"} shared their
+        result
+        {uniq("quiz_finish") > 0 && <> ({pct(uniq("quiz_share"), uniq("quiz_finish"))} of finishers)</>}
+        . Every share carries a link back to the quiz.
+      </Panel>
     </div>
   );
 }

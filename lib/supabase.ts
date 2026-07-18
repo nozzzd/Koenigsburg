@@ -81,6 +81,7 @@ export type FunnelEventName =
   | "landing_view"
   | "quiz_start"
   | "quiz_finish"
+  | "quiz_share"
   | "signup_view"
   | "discord_click";
 
