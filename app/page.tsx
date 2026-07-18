@@ -20,7 +20,7 @@ const pillars = [
   {
     icon: Layers,
     title: "Organized",
-    text: "A real citizenship portal, role system, team guilds, and a shared task ledger. We run like an actual nation — not just another Discord.",
+    text: "A real citizenship portal, role system, team guilds, and a shared task ledger. We run like an actual nation, not just another Discord.",
   },
   {
     icon: Sparkles,
@@ -30,7 +30,7 @@ const pillars = [
   {
     icon: Crown,
     title: "A place for you",
-    text: "Builder, fighter, gatherer, explorer, statesman — take the alignment quiz and the council finds where you belong. Everyone has a calling.",
+    text: "Builder, fighter, gatherer, explorer, statesman. Take the alignment quiz and the council finds where you belong. Everyone has a calling.",
   },
 ];
 
