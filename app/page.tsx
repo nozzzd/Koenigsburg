@@ -1,13 +1,12 @@
 import Link from "next/link";
 import {
+  ClipboardList,
   Compass,
   Crown,
   Layers,
-  MapPin,
-  ScrollText,
-  ShieldCheck,
+  Newspaper,
   Sparkles,
-  Swords,
+  Users,
 } from "lucide-react";
 import { getSupabase } from "@/lib/supabase";
 import {
@@ -43,14 +42,14 @@ const pillars = [
   },
 ];
 
-/** Concrete benefits a citizen gets the moment they're approved. */
+/** What the nation's organization actually gives a citizen — all true today. */
 const benefits = [
-  { icon: ShieldCheck, text: "A whitelist spot secured on the event server" },
-  { icon: Compass, text: "A role matched to how you actually like to play" },
-  { icon: Swords, text: "A team and a council that fight for you, not against you" },
-  { icon: MapPin, text: "Land to claim and build in a planned capital" },
-  { icon: ScrollText, text: "Tasks and goals so you always know what matters" },
-  { icon: Crown, text: "Strength in numbers when rival nations march" },
+  { icon: Layers, text: "Your own citizenship portal, not a lost role in a crowded Discord" },
+  { icon: Compass, text: "A clear role and a team from day one, so you never grind alone" },
+  { icon: ClipboardList, text: "A shared task ledger, so the whole nation knows the plan" },
+  { icon: Crown, text: "A council that actually coordinates and leads, not chaos" },
+  { icon: Newspaper, text: "In-nation dispatches that keep every citizen in the loop" },
+  { icon: Users, text: "Founding-member standing while the best roles are still open" },
 ];
 
 /** The three low-friction steps from stranger to citizen. */
@@ -61,7 +60,7 @@ const steps = [
   },
   {
     title: "Get verified",
-    text: "Prove your name and the council reviews you. Whitelisted fast.",
+    text: "Prove your name in Discord and the council reviews your petition.",
   },
   {
     title: "Claim your role",

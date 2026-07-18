@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { QUESTIONS, scoreQuiz, type ArchetypeKey } from "@/lib/quiz";
 import { track } from "@/actions/funnel";
+import { Crest } from "@/components/ui";
 import { QuizResult } from "./QuizResult";
 
 /**
@@ -50,7 +51,22 @@ export function Quiz({ mappedRoles }: { mappedRoles: ArchetypeKey[] }) {
   const progress = Math.round(((index + 1) / QUESTIONS.length) * 100);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-2xl space-y-6">
+      {/* Intro — only during the quiz; the result screen reclaims the space. */}
+      <section className="page-in flex flex-col items-center pb-4 text-center">
+        <Crest className="h-14 w-14" />
+        <p className="mt-6 font-display text-[0.65rem] font-semibold tracking-[0.35em] text-gold-500 sm:text-xs sm:tracking-[0.45em]">
+          NATION ROLE
+        </p>
+        <h1 className="mt-2 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-3xl font-bold tracking-[0.08em] text-transparent sm:text-4xl">
+          ALIGNMENT QUIZ
+        </h1>
+        <p className="mt-4 max-w-md text-balance text-sm text-slate-400">
+          Answer merely sixteen questions to see which role suits you best! Make sure to answer
+          these questions truthfully, so we can assign you the best-suited role.
+        </p>
+      </section>
+
       {/* Progress rail */}
       <div>
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
