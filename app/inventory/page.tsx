@@ -309,7 +309,7 @@ export default async function InventoryPage({
                     : hasSnapshots
                       ? "Search by the in-game name or full namespaced item ID."
                       : !ledger.receiverConfigured
-                        ? "Add the three QMSYNC_* environment values, then redeploy."
+                        ? "Add QMSYNC_SERVER_ID, then redeploy."
                         : "Search unlocks after the first approved QMSync snapshot."}
                 </p>
               </form>
@@ -340,7 +340,7 @@ export default async function InventoryPage({
                 <p className="mt-3 max-w-md text-sm leading-6 text-slate-500">
                   {ledger.receiverConfigured
                     ? "The receiver is ready. The first QMSync snapshot from an active citizen will make these stores searchable."
-                    : "The database is ready. Add QMSYNC_SERVER_ID, QMSYNC_SERVER_NAME, and QMSYNC_API_KEY in Vercel, then redeploy."}
+                    : "The database is ready. Add QMSYNC_SERVER_ID in Vercel, then redeploy."}
                 </p>
               </div>
             ) : ledger.results.length === 0 ? (

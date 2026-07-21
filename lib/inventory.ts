@@ -62,9 +62,7 @@ function count(value: number | string | null | undefined): number {
 export async function getInventoryLedger(rawQuery: string): Promise<InventoryLedger> {
   const query = rawQuery.trim().slice(0, 80);
   const serverId = process.env.QMSYNC_SERVER_ID?.trim() || null;
-  const receiverConfigured = Boolean(
-    serverId && process.env.QMSYNC_API_KEY?.trim()
-  );
+  const receiverConfigured = Boolean(serverId);
   const realmName =
     process.env.QMSYNC_SERVER_NAME?.trim() ||
     process.env.QMSYNC_SERVER_ID?.trim() ||

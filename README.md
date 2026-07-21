@@ -54,5 +54,5 @@ supabase/                      # Base schema + numbered idempotent migrations
 Real credentials live only in `.env.local` (gitignored) and Vercel's
 environment variables. The committed `.env.example` holds placeholders only.
 
-The QMSync v1 receiver contract and trusted-bridge setup are documented in
+The QMSync v1 receiver contract and client setup are documented in
 [QMSYNC.md](QMSYNC.md).

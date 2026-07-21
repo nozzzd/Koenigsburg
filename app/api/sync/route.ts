@@ -1,17 +1,13 @@
-import { POST as inventorySyncPost } from "../inventory/sync/route";
-import { qmsyncHandshake, qmsyncHandshakeOptions } from "@/lib/qmsyncHandshake";
+import { handleQMSyncSync, qmsyncOptions } from "@/lib/qmsync";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-export function GET(request: Request): Response {
-  return qmsyncHandshake(request);
-}
+export const maxDuration = 60;
 
 export function POST(request: Request): Promise<Response> {
-  return inventorySyncPost(request);
+  return handleQMSyncSync(request);
 }
 
 export function OPTIONS(): Response {
-  return qmsyncHandshakeOptions();
+  return qmsyncOptions();
 }

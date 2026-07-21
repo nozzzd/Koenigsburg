@@ -1,108 +1,110 @@
 # QMSync inventory integration
 
-The website exposes the QMSync handshake at:
+Koenigsburg implements the QMSync protocol v1 contract from
+[KarolexDev/QMSync](https://github.com/KarolexDev/QMSync).
+
+The mod must be given the website base URL:
 
 ```text
-GET /api/handshake
+https://koenigsburg.vercel.app
 ```
 
-The handshake response advertises the sync endpoint and supported protocol.
-For older mod configs, `/api/sync` is also accepted as a compatibility alias.
-The canonical QMSync v1 snapshot receiver is:
+Do not append an API path. QMSync sends requests to these paths itself:
 
 ```text
-POST /api/inventory/sync
-Authorization: Bearer <QMSYNC_API_KEY>
-Content-Type: application/json
+POST /api/handshake
+POST /api/sync
 ```
 
-The receiver is intended for a trusted Minecraft server plugin or private
-bridge. Do not bundle `QMSYNC_API_KEY` into a publicly distributed client mod;
-forward client observations through the trusted server/bridge instead.
+`POST /api/inventory/sync` is retained as a compatibility alias for the sync
+endpoint.
 
 ## One-time setup
 
-1. Run `supabase/011_inventory.sql` in the Supabase SQL Editor after the
-   existing schema and migrations.
-2. Set `QMSYNC_SERVER_ID`, `QMSYNC_SERVER_NAME`, and `QMSYNC_API_KEY`
-   locally and in Vercel.
-3. Redeploy. If the mod asks for a handshake URL, use
-   `https://YOUR-DOMAIN/api/handshake`; if it asks for the raw receiver URL,
-   use `https://YOUR-DOMAIN/api/inventory/sync`.
+1. Run `supabase/011_inventory.sql`, then `supabase/012_qmsync_v1.sql`, in
+   the Supabase SQL Editor after the other schema files. Both are idempotent.
+2. Set `QMSYNC_SERVER_ID` in Vercel to the exact ID shown by `/qmsync status`
+   while connected to the Minecraft server. This is normally similar to
+   `multiplayer/play_example_com`, not a display name.
+3. Optionally set `QMSYNC_SERVER_NAME` to the friendly realm name shown on the
+   inventory page, then redeploy.
+4. Make sure the connecting player's portal record is `active` and its
+   `minecraft_ign` exactly matches the in-game name.
+5. In Minecraft, run:
 
-The player must already have `status = active` in the portal. On their first
-authenticated sync, the receiver links the submitted Mojang UUID to the active
-player with the same IGN. Later syncs use the UUID, so an IGN change does not
-create another player.
+```text
+/qmsync connect https://koenigsburg.vercel.app
+```
 
-## QMSync v1 payload
+On the first approved handshake, the website links the Mojang UUID to the
+active portal record with the same IGN. Later requests authorize by UUID, so
+changing an IGN does not create another player.
+
+QMSync v1 has no API-key or bearer-token field. Do not put Supabase credentials
+or another website secret in the client mod.
+
+## Handshake contract
+
+QMSync sends:
 
 ```json
 {
   "protocolVersion": 1,
-  "serverId": "koenigsburg",
-  "capturedAt": "2026-07-21T18:30:00.000Z",
-  "player": {
-    "uuid": "8667ba71-b85a-4004-af54-457a9734eed7",
-    "ign": "ExamplePlayer"
-  },
-  "source": {
-    "id": "primary-pc",
-    "label": "ExamplePlayer's memory bank"
-  },
-  "containers": [
-    {
-      "dimension": "minecraft:overworld",
-      "position": { "x": 125, "y": 64, "z": -310 },
-      "type": "minecraft:chest",
-      "name": "Stone warehouse",
-      "capturedAt": "2026-07-21T18:29:48.000Z",
-      "private": false,
-      "items": [
-        {
-          "id": "minecraft:cobblestone",
-          "name": "Cobblestone",
-          "count": 1728
-        },
-        {
-          "id": "minecraft:oak_log",
-          "name": "Oak Log",
-          "count": 64
-        }
-      ]
-    }
-  ]
+  "playerUuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+  "playerName": "ExamplePlayer",
+  "serverId": "multiplayer/play_example_com",
+  "serverName": "Multiplayer: Koenigsburg"
 }
 ```
 
-`capturedAt` may be an ISO timestamp or Unix milliseconds. A container may
-omit its own timestamp and inherit the payload timestamp. Counts with the same
-item ID and display name are combined before storage.
+An approved identity receives exactly:
 
-The receiver accepts at most 200 containers and 8,000 item rows in one request.
-Larger snapshots should be sent in batches. Each container is merged by server,
-dimension, and block coordinates. A snapshot only replaces the stored contents
-when its capture time is newer, so retries and stale memory banks are safe.
+```json
+{ "status": "SYNCED" }
+```
 
-Set `private: true` for any container that must not enter the ledger. Ender
-Chests are always discarded even if the flag is missing. Empty `items` clears
-a previously counted container when the empty observation is newer.
+A wrong server, inactive player, unknown player, or mismatched UUID receives
+HTTP 200 with:
 
-## Responses
+```json
+{ "status": "ACCESS_DENIED" }
+```
 
-A successful request returns:
+Unsupported protocol versions and malformed payloads use HTTP 400. Missing
+configuration or database functions use HTTP 5xx, which QMSync reports as a
+connection failure.
+
+## Snapshot contract
+
+`POST /api/sync` repeats the identity fields and adds `data`, the complete
+serialized QMSync memory bank:
 
 ```json
 {
-  "ok": true,
-  "saved": 1,
-  "stale": 0,
-  "skippedPrivate": 0
+  "protocolVersion": 1,
+  "playerUuid": "8667ba71-b85a-4004-af54-457a9734eed7",
+  "playerName": "ExamplePlayer",
+  "serverId": "multiplayer/play_example_com",
+  "serverName": "Multiplayer: Koenigsburg",
+  "data": {
+    "minecraft:overworld": {
+      "memories": {
+        "125,64,-310": {
+          "items": [
+            { "id": "minecraft:cobblestone", "count": 64 }
+          ],
+          "container": "minecraft:chest",
+          "realTimestamp": "2026-07-21T18:29:48Z"
+        }
+      },
+      "overrides": {}
+    }
+  }
 }
 ```
 
-`stale` counts containers ignored because Supabase already has a newer or
-equal observation. A partial database failure returns HTTP 500 with `saved`,
-`stale`, and `failed`; retrying the same batch is safe. Authentication and
-validation failures use HTTP 4xx, while missing environment variables or the
-inventory migration use HTTP 503.
+Each successful request atomically replaces that player's previous full
+snapshot. Unknown Minecraft item-component fields are tolerated; item IDs,
+counts, memory keys, and block positions are validated before storage. The
+receiver accepts bodies up to 4 MiB, 5,000 containers, and 100,000 item-stack
+slots.

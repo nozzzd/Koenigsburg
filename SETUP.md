@@ -14,7 +14,7 @@ locally and deployed on Vercel.
 1. Create a project at [supabase.com](https://supabase.com) (or use your existing one).
 2. Open **SQL Editor → New query**, paste the contents of
    [`supabase/schema.sql`](supabase/schema.sql), and run it. Then run each
-   numbered migration in `supabase/` (`002_…` through `011_…`) the same way —
+   numbered migration in `supabase/` (`002_…` through `012_…`) the same way —
    they're idempotent, so re-running is safe.
    - **Community map:** [`supabase/010_map_tiles.sql`](supabase/010_map_tiles.sql)
      creates the `map_tiles` table **and** a public-read Storage bucket named
@@ -27,10 +27,11 @@ locally and deployed on Vercel.
      rerun `python scripts/generate-xaero-colors.py` after a Minecraft update
      adds new blocks or biomes.
    - **Inventory ledger:** [`supabase/011_inventory.sql`](supabase/011_inventory.sql)
-     creates the QMSync sources, containers, item counts, and the race-safe
-     database functions used by `/inventory` and `/api/inventory/sync`.
-     Configure the three `QMSYNC_*` values from `.env.example`; the exact v1
-     request contract is documented in [`QMSYNC.md`](QMSYNC.md).
+     creates the sources, containers, item counts, and search functions.
+     [`supabase/012_qmsync_v1.sql`](supabase/012_qmsync_v1.sql) adds atomic
+     full-snapshot storage for `/api/handshake` and `/api/sync`. Configure
+     `QMSYNC_SERVER_ID` (and the optional friendly name) from `.env.example`;
+     the exact v1 contract is in [`QMSYNC.md`](QMSYNC.md).
 3. Collect two values for later:
    - **Project URL** → `SUPABASE_URL` (Project Settings → Data API)
    - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API Keys).

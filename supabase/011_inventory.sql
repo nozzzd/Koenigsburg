@@ -2,8 +2,8 @@
 -- Run in the Supabase SQL editor after schema.sql and migrations 002-010.
 -- Safe to run repeatedly: no existing inventory data is dropped.
 
--- QMSync identifies a player by their Mojang UUID. The first authenticated
--- sync links that UUID to an already-active portal player with the same IGN;
+-- QMSync identifies a player by their Mojang UUID. The first approved
+-- handshake or sync links it to an active portal player with the same IGN;
 -- subsequent syncs use the UUID as the stable identity (IGNs can change).
 ALTER TABLE players
     ADD COLUMN IF NOT EXISTS minecraft_uuid UUID;
@@ -12,8 +12,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_players_minecraft_uuid
     ON players(minecraft_uuid)
     WHERE minecraft_uuid IS NOT NULL;
 
--- One row per QMSync installation/memory bank. A player can sync from more
--- than one computer, while source_key stays unique for that player + server.
+-- One row per QMSync player/server source. source_key remains stable across
+-- the mod's complete memory-bank snapshots.
 CREATE TABLE IF NOT EXISTS inventory_sources (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     server_id VARCHAR(80) NOT NULL,
