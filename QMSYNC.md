@@ -1,6 +1,14 @@
 # QMSync inventory integration
 
-The website receives QMSync v1 snapshots at:
+The website exposes the QMSync handshake at:
+
+```text
+GET /api/handshake
+```
+
+The handshake response advertises the sync endpoint and supported protocol.
+For older mod configs, `/api/sync` is also accepted as a compatibility alias.
+The canonical QMSync v1 snapshot receiver is:
 
 ```text
 POST /api/inventory/sync
@@ -18,8 +26,9 @@ forward client observations through the trusted server/bridge instead.
    existing schema and migrations.
 2. Set `QMSYNC_SERVER_ID`, `QMSYNC_SERVER_NAME`, and `QMSYNC_API_KEY`
    locally and in Vercel.
-3. Redeploy, then point the QMSync bridge at
-   `https://YOUR-DOMAIN/api/inventory/sync`.
+3. Redeploy. If the mod asks for a handshake URL, use
+   `https://YOUR-DOMAIN/api/handshake`; if it asks for the raw receiver URL,
+   use `https://YOUR-DOMAIN/api/inventory/sync`.
 
 The player must already have `status = active` in the portal. On their first
 authenticated sync, the receiver links the submitted Mojang UUID to the active
