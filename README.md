@@ -1,7 +1,8 @@
 # 🏰 Königsburg Web Portal
 
 Citizenship portal for the Königsburg Minecraft civilization: player database,
-Discord OAuth / manual signups, and one-click admin whitelisting.
+Discord OAuth / manual signups, community map, searchable QMSync inventory, and
+one-click admin whitelisting.
 
 Built with **Next.js (App Router) + TypeScript + Tailwind CSS**, backed by
 **Supabase (PostgreSQL)**, deployed on **Vercel**. No auth library — sessions
@@ -40,13 +41,18 @@ app/
 ├── pending/                   # Limbo: shows the KBRG verification code
 ├── portal/                    # Guarded: session + active status required
 │   └── admin/                 # role=admin only: whitelisting queue
-└── api/auth/discord/          # OAuth start + callback
-actions/                       # Server Actions (auth, admin approval)
-lib/                           # Supabase client, sessions, Discord API, codes
-supabase/schema.sql            # Run once in the Supabase SQL editor
+├── map/                       # Public map + signed-in Xaero contributor
+├── inventory/                 # Public QMSync inventory search
+└── api/                       # Discord OAuth/interactions + QMSync receiver
+actions/                       # Server Actions (auth, admin approval, map)
+lib/                           # Supabase, sessions, Discord, inventory, Xaero
+supabase/                      # Base schema + numbered idempotent migrations
 ```
 
 ## Secrets
 
 Real credentials live only in `.env.local` (gitignored) and Vercel's
 environment variables. The committed `.env.example` holds placeholders only.
+
+The QMSync v1 receiver contract and trusted-bridge setup are documented in
+[QMSYNC.md](QMSYNC.md).

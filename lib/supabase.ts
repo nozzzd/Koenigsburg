@@ -8,6 +8,8 @@ export type PlayerRole = "guest" | "citizen" | "admin";
 export interface Player {
   id: string;
   minecraft_ign: string;
+  /** Stable Mojang identity, linked by the first approved QMSync upload. */
+  minecraft_uuid: string | null;
   discord_id: string | null;
   discord_username: string;
   /**
