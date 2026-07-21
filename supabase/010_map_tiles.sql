@@ -4,7 +4,8 @@
 -- The world is diced into 512x512-block regions (Xaero's native region size).
 -- Citizens select their Xaero's World Map folder on /map/contribute; their
 -- browser parses each region file, renders it to a PNG tile, and uploads it to
--- the `map-tiles` bucket at a deterministic path (overworld/<rx>_<rz>.png).
+-- the `map-tiles` bucket. The `map_tiles.storage_path` row points at the
+-- currently published object for each region.
 -- One row per region cell. `captured_at` is the region file's own modification
 -- time — a tile only replaces the stored one when its capture date is NEWER,
 -- so a re-upload of an old map can never wipe fresher scouting. The public
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS map_tiles (
     dimension VARCHAR(20) NOT NULL DEFAULT 'overworld',  -- overworld | nether | end
     region_x INTEGER NOT NULL,          -- Xaero region coordinate (block coord / 512, floored)
     region_z INTEGER NOT NULL,
-    storage_path TEXT NOT NULL,         -- object path within the map-tiles bucket
+    storage_path TEXT NOT NULL,         -- current object path within the map-tiles bucket
     contributor_player_id UUID REFERENCES players(id) ON DELETE SET NULL,
     contributor_ign VARCHAR(32),        -- denormalised so credit survives a player delete
     -- When the terrain was actually seen in-game (the region file's mtime,
@@ -38,7 +39,8 @@ ALTER TABLE map_tiles ENABLE ROW LEVEL SECURITY;
 
 -- Public-read storage bucket for the tile images. Public so the assembled map
 -- (and the "download full map" button) work for everyone, logged in or not, and
--- keep working after the event. Writes are service-role only (upsert overwrite).
+-- keep working after the event. Writes are service-role only; the table row
+-- chooses which uploaded object is currently published for each region.
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('map-tiles', 'map-tiles', true)
 ON CONFLICT (id) DO NOTHING;

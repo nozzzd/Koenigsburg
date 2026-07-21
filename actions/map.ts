@@ -211,7 +211,20 @@ export async function submitTiles(
       if (!insertError) {
         accepted = true;
       } else if (insertError.code === "23505") {
-        stale++;
+        const { data: retryUpdated, error: retryError } = await supabase
+          .from("map_tiles")
+          .update(row)
+          .eq("dimension", dimension)
+          .eq("region_x", tile.rx)
+          .eq("region_z", tile.rz)
+          .lt("captured_at", capturedAt)
+          .select("storage_path")
+          .returns<{ storage_path: string }[]>();
+        if (retryError) {
+          console.error("tile row retry update failed:", path, retryError);
+        }
+        accepted = (retryUpdated ?? []).length > 0;
+        if (!accepted) stale++;
       } else {
         console.error("tile row insert failed:", path, insertError);
       }
