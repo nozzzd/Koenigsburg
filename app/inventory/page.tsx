@@ -17,6 +17,7 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
+import { InventoryAutoRefresh } from "@/components/InventoryAutoRefresh";
 import {
   getInventoryLedger,
   type InventorySearchResult,
@@ -167,6 +168,7 @@ export default async function InventoryPage({
 
   return (
     <>
+      <InventoryAutoRefresh />
       <header className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:px-6">
         <WordMark />
         <nav className="flex items-center gap-2 sm:gap-3">
