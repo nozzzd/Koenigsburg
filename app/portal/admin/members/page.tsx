@@ -4,9 +4,15 @@ import { redirect } from "next/navigation";
 import { ArrowLeft, UserMinus, Users } from "lucide-react";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
-import { listGuildMemberIds } from "@/lib/discord";
+import {
+  getGuildMemberRoles,
+  listGuildMembership,
+  rolesIncludeCitizen,
+} from "@/lib/discord";
 import { GoldDivider, Panel } from "@/components/ui";
 import { MemberRow } from "@/components/admin/MemberRow";
+
+type DiscordIssue = "left" | "missing-role";
 
 export const metadata: Metadata = { title: "Admin — The Roll of Königsburg" };
 
@@ -27,32 +33,81 @@ export default async function AdminMembersPage() {
     throw new Error(`Failed to load the roll: ${error.message}`);
   }
 
-  const members = data ?? [];
+  let members = data ?? [];
 
-  // Flag anyone Discord-linked (active OR pending, so the flag survives a
-  // Revoke) who is no longer in the server. One bulk member list instead of a
-  // per-member request avoids Discord rate limits — the old per-member burst
-  // silently skipped anyone that got rate-limited, so real departures slipped
-  // through. If the bulk call fails (Server Members Intent off, or an outage)
-  // we flag NOBODY and surface a warning, rather than guessing.
-  const departed = new Set<string>();
+  // Discord is the source of truth for linked citizens. One bulk member roll
+  // provides almost every answer; if an active player is unexpectedly absent
+  // from that roll, confirm them individually before doing anything destructive.
+  // Any Discord failure is fail-open: uncertain accounts stay untouched.
+  const discordIssues = new Map<string, DiscordIssue>();
+  const automaticallyRevoked = new Set<string>();
   let checkFailed = false;
+  let revokeFailed = false;
   try {
-    const guildIds = await listGuildMemberIds();
-    for (const m of members) {
-      if (m.discord_id && m.role !== "admin" && !guildIds.has(m.discord_id)) {
-        departed.add(m.id);
+    const guildMembers = await listGuildMembership();
+    for (const member of members) {
+      if (!member.discord_id || member.role === "admin") continue;
+
+      let roles: string[] | null;
+      if (guildMembers.has(member.discord_id)) {
+        roles = guildMembers.get(member.discord_id) ?? [];
+      } else if (member.status === "active") {
+        try {
+          roles = await getGuildMemberRoles(member.discord_id);
+        } catch (err) {
+          console.error("Individual Discord membership confirmation failed:", err);
+          checkFailed = true;
+          continue;
+        }
+      } else {
+        // This is display-only for an account already pending; no mutation is
+        // based on an unconfirmed absence from the bulk roll.
+        discordIssues.set(member.id, "left");
+        continue;
+      }
+
+      if (roles === null) {
+        discordIssues.set(member.id, "left");
+      } else if (member.status === "active" && !rolesIncludeCitizen(roles)) {
+        discordIssues.set(member.id, "missing-role");
+      }
+
+      if (
+        member.status === "active" &&
+        (roles === null || !rolesIncludeCitizen(roles))
+      ) {
+        automaticallyRevoked.add(member.id);
+      }
+    }
+
+    if (automaticallyRevoked.size > 0) {
+      const { error: revokeError } = await getSupabase()
+        .from("players")
+        .update({ status: "pending", role: "guest" })
+        .in("id", [...automaticallyRevoked])
+        .eq("status", "active")
+        .neq("role", "admin");
+      if (revokeError) {
+        console.error("Bulk Discord citizenship reconciliation failed:", revokeError);
+        revokeFailed = true;
+      } else {
+        members = members.map((member): Player =>
+          automaticallyRevoked.has(member.id)
+            ? { ...member, status: "pending", role: "guest" }
+            : member
+        );
       }
     }
   } catch (err) {
-    console.error("Guild member list failed; skipping departure check:", err);
+    console.error("Guild member list failed; skipping citizenship reconciliation:", err);
     checkFailed = true;
   }
+
   const stats = [
     { label: "Souls", value: members.length },
     { label: "Citizens", value: members.filter((m) => m.status === "active").length },
     { label: "Pending", value: members.filter((m) => m.status === "pending").length },
-    { label: "Left Discord", value: departed.size },
+    { label: "Discord issues", value: discordIssues.size },
   ];
 
   return (
@@ -98,7 +153,7 @@ export default async function AdminMembersPage() {
               Couldn&apos;t check who&apos;s still in the Discord.
             </p>
             <p className="text-slate-400">
-              The departure check is skipped this load — no one is flagged. Enable the bot&apos;s{" "}
+              Any uncertain account was left unchanged. Enable the bot&apos;s{" "}
               <span className="text-slate-200">Server Members Intent</span> (Discord Developer
               Portal → Bot → Privileged Gateway Intents), then reload.
             </p>
@@ -106,21 +161,42 @@ export default async function AdminMembersPage() {
         </Panel>
       )}
 
-      {departed.size > 0 && (
+      {revokeFailed && (
+        <Panel className="flex items-start gap-3 border-amber-900/50 bg-amber-950/20 p-5">
+          <UserMinus className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold text-amber-300">
+              Discord changes were found, but the roll could not be updated.
+            </p>
+            <p className="text-slate-400">
+              Those accounts are denied when they next make a protected request. Check the
+              Supabase connection, then reload to persist their pending status.
+            </p>
+          </div>
+        </Panel>
+      )}
+
+      {discordIssues.size > 0 && (
         <Panel className="flex items-start gap-3 border-red-900/50 bg-red-950/20 p-5">
           <UserMinus className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
           <div className="space-y-1 text-sm">
             <p className="font-semibold text-red-300">
-              {departed.size} member{departed.size === 1 ? "" : "s"} left the Discord while still
-              on the roll.
+              {discordIssues.size} member{discordIssues.size === 1 ? "" : "s"} no longer meets the
+              Discord citizenship requirement.
             </p>
             <p className="text-slate-400">
               {members
-                .filter((m) => departed.has(m.id))
+                .filter((m) => discordIssues.has(m.id))
                 .map((m) => m.minecraft_ign)
                 .join(", ")}
-              . They&apos;ve lost portal access already — Revoke or Kick them below to clear the
-              roll.
+              .{" "}
+              {automaticallyRevoked.size > 0
+                ? revokeFailed
+                  ? "Their active accounts are denied on protected requests, but the pending status still needs to be persisted."
+                  : `${automaticallyRevoked.size} active account${
+                      automaticallyRevoked.size === 1 ? " was" : "s were"
+                    } automatically moved to pending.`
+                : "These accounts were already pending."}
             </p>
           </div>
         </Panel>
@@ -142,7 +218,7 @@ export default async function AdminMembersPage() {
               <MemberRow
                 member={member}
                 isSelf={member.id === player.id}
-                departed={departed.has(member.id)}
+                discordIssue={discordIssues.get(member.id)}
               />
             </li>
           ))}

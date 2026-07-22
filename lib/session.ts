@@ -2,7 +2,12 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { getSupabase, type Player } from "./supabase";
+import { ensureActiveCitizenship } from "./citizenship";
 import { env } from "./env";
+
+export type SessionPlayer = Player & {
+  citizenshipRevoked?: boolean;
+};
 
 const SESSION_COOKIE = "kbg_session";
 const HANDOFF_COOKIE = "kbg_discord";
@@ -58,8 +63,12 @@ export async function getSessionPlayerId(): Promise<string | null> {
   return openToken<{ pid: string }>(token)?.pid ?? null;
 }
 
-/** Resolves the session cookie to a live database row (null if either is gone). */
-export async function getSessionPlayer(): Promise<Player | null> {
+/**
+ * Resolves the session cookie to a live database row and revalidates active,
+ * Discord-linked citizenship. Every caller therefore sees the role revocation,
+ * including server actions and API paths outside the main portal layout.
+ */
+export async function getSessionPlayer(): Promise<SessionPlayer | null> {
   const playerId = await getSessionPlayerId();
   if (!playerId) return null;
   const { data } = await getSupabase()
@@ -67,7 +76,14 @@ export async function getSessionPlayer(): Promise<Player | null> {
     .select("*")
     .eq("id", playerId)
     .maybeSingle<Player>();
-  return data ?? null;
+  if (!data) return null;
+  if (data.status !== "active" || (await ensureActiveCitizenship(data))) return data;
+  return {
+    ...data,
+    status: "pending",
+    role: "guest",
+    citizenshipRevoked: true,
+  };
 }
 
 export async function destroySession(): Promise<void> {

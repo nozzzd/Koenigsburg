@@ -69,6 +69,11 @@ export async function submitTiles(
 ): Promise<SubmitTilesResult> {
   const player = await getSessionPlayer();
   if (!player) return { error: "You must be logged in to contribute tiles." };
+  if (player.status !== "active") {
+    return {
+      error: "Active citizenship is required to contribute map tiles.",
+    };
+  }
 
   const dimensionRaw = String(formData.get("dimension") ?? "overworld");
   const dimension = (DIMENSIONS.includes(dimensionRaw as MapDimension)

@@ -2,6 +2,7 @@ import "server-only";
 
 import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
+import { ensureActiveCitizenship } from "@/lib/citizenship";
 
 const PROTOCOL_VERSION = 1;
 const MAX_BODY_BYTES = 4 * 1024 * 1024;
@@ -30,8 +31,14 @@ type SyncPlayer = {
   id: string;
   minecraft_ign: string;
   minecraft_uuid: string | null;
+  discord_id: string | null;
   status: "pending" | "active";
+  role: "guest" | "citizen" | "admin";
 };
+
+type PlayerResolution =
+  | { ok: true; player: SyncPlayer }
+  | { ok: false; denied: boolean; error?: string };
 
 type NormalizedItem = {
   item_id: string;
@@ -272,16 +279,17 @@ async function parseRequest(
   };
 }
 
-async function resolvePlayer(
-  identity: Identity
-): Promise<
-  | { ok: true; player: SyncPlayer }
-  | { ok: false; denied: boolean; error?: string }
-> {
+async function authorizePlayer(player: SyncPlayer): Promise<PlayerResolution> {
+  return (await ensureActiveCitizenship(player))
+    ? { ok: true, player }
+    : { ok: false, denied: true };
+}
+
+async function resolvePlayer(identity: Identity): Promise<PlayerResolution> {
   const supabase = getSupabase();
   const byUuid = await supabase
     .from("players")
-    .select("id,minecraft_ign,minecraft_uuid,status")
+    .select("id,minecraft_ign,minecraft_uuid,discord_id,status,role")
     .eq("minecraft_uuid", identity.playerUuid)
     .maybeSingle<SyncPlayer>();
 
@@ -294,14 +302,12 @@ async function resolvePlayer(
     };
   }
   if (byUuid.data) {
-    return byUuid.data.status === "active"
-      ? { ok: true, player: byUuid.data }
-      : { ok: false, denied: true };
+    return authorizePlayer(byUuid.data);
   }
 
   const byIgn = await supabase
     .from("players")
-    .select("id,minecraft_ign,minecraft_uuid,status")
+    .select("id,minecraft_ign,minecraft_uuid,discord_id,status,role")
     .ilike("minecraft_ign", identity.playerName)
     .eq("status", "active")
     .maybeSingle<SyncPlayer>();
@@ -321,6 +327,9 @@ async function resolvePlayer(
   ) {
     return { ok: false, denied: true };
   }
+  if (!(await ensureActiveCitizenship(byIgn.data))) {
+    return { ok: false, denied: true };
+  }
   if (byIgn.data.minecraft_uuid === identity.playerUuid) {
     return { ok: true, player: byIgn.data };
   }
@@ -330,7 +339,7 @@ async function resolvePlayer(
     .update({ minecraft_uuid: identity.playerUuid })
     .eq("id", byIgn.data.id)
     .is("minecraft_uuid", null)
-    .select("id,minecraft_ign,minecraft_uuid,status")
+    .select("id,minecraft_ign,minecraft_uuid,discord_id,status,role")
     .maybeSingle<SyncPlayer>();
 
   if (linked.error) {
@@ -345,7 +354,7 @@ async function resolvePlayer(
 
   const raced = await supabase
     .from("players")
-    .select("id,minecraft_ign,minecraft_uuid,status")
+    .select("id,minecraft_ign,minecraft_uuid,discord_id,status,role")
     .eq("id", byIgn.data.id)
     .eq("minecraft_uuid", identity.playerUuid)
     .maybeSingle<SyncPlayer>();
@@ -357,8 +366,8 @@ async function resolvePlayer(
       error: "Player verification is temporarily unavailable.",
     };
   }
-  return raced.data?.status === "active"
-    ? { ok: true, player: raced.data }
+  return raced.data
+    ? authorizePlayer(raced.data)
     : { ok: false, denied: true };
 }
 

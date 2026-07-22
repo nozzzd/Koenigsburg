@@ -23,12 +23,12 @@ const actionButtonClass =
 export function MemberRow({
   member,
   isSelf,
-  departed = false,
+  discordIssue,
 }: {
   member: Player;
   isSelf: boolean;
-  /** Active member who is no longer in the Discord server. */
-  departed?: boolean;
+  /** Why this Discord-linked account no longer qualifies for citizenship. */
+  discordIssue?: "left" | "missing-role";
 }) {
   const isPending = member.status === "pending";
 
@@ -65,10 +65,14 @@ export function MemberRow({
           >
             {isPending ? "Pending" : "Active"}
           </span>
-          {departed && (
+          {discordIssue && (
             <span className="inline-flex items-center gap-1 rounded-full border border-red-600/50 bg-red-950/40 px-2 py-0.5 font-semibold text-red-300">
-              <UserMinus className="h-3 w-3" />
-              Left Discord
+              {discordIssue === "left" ? (
+                <UserMinus className="h-3 w-3" />
+              ) : (
+                <ShieldOff className="h-3 w-3" />
+              )}
+              {discordIssue === "left" ? "Left Discord" : "Missing @Citizen"}
             </span>
           )}
           <span className="text-slate-500">{ROLE_LABEL[member.role]}</span>
@@ -97,15 +101,25 @@ export function MemberRow({
       <div className="flex shrink-0 flex-wrap items-center gap-2">
         {isPending &&
           (member.discord_id ? (
-            <form action={approvePlayer.bind(null, member.id)}>
-              <button
-                type="submit"
-                className={`${actionButtonClass} border-emerald-700/60 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-950/50`}
+            discordIssue === "left" ? (
+              <span
+                title="They must rejoin the Discord before citizenship can be restored."
+                className={`${actionButtonClass} cursor-not-allowed border-slate-800 text-slate-600`}
               >
-                <Check className="h-3.5 w-3.5" />
-                Approve
-              </button>
-            </form>
+                <UserMinus className="h-3.5 w-3.5" />
+                Not in Discord
+              </span>
+            ) : (
+              <form action={approvePlayer.bind(null, member.id)}>
+                <button
+                  type="submit"
+                  className={`${actionButtonClass} border-emerald-700/60 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-950/50`}
+                >
+                  <Check className="h-3.5 w-3.5" />
+                  Approve
+                </button>
+              </form>
+            )
           ) : (
             <span
               title="They must run /verify with their code before they can be approved."

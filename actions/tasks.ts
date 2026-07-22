@@ -18,6 +18,15 @@ async function requireAdmin(): Promise<Player> {
   return me;
 }
 
+async function requireActiveMember(): Promise<Player> {
+  const me = await getSessionPlayer();
+  if (!me) redirect("/login");
+  if (me.status !== "active") {
+    redirect(me.citizenshipRevoked ? "/pending?revoked=1" : "/pending");
+  }
+  return me;
+}
+
 async function loadTask(id: string): Promise<Task> {
   const { data } = await getSupabase()
     .from("tasks")
@@ -42,8 +51,7 @@ export async function addPersonalTask(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
-  const me = await getSessionPlayer();
-  if (!me) redirect("/login");
+  const me = await requireActiveMember();
 
   const title = readTitle(formData);
   if (title.length < 2) return { error: "Write out the task first." };
@@ -80,8 +88,7 @@ async function inTeam(playerId: string, teamId: string): Promise<boolean> {
  *   realm               → elders only
  */
 export async function toggleTask(id: string): Promise<void> {
-  const me = await getSessionPlayer();
-  if (!me) redirect("/login");
+  const me = await requireActiveMember();
 
   const task = await loadTask(id);
   let canToggle = task.player_id === me.id;
@@ -104,8 +111,7 @@ export async function toggleTask(id: string): Promise<void> {
  * for them — otherwise "assigned" would mean nothing.
  */
 export async function deleteTask(id: string): Promise<void> {
-  const me = await getSessionPlayer();
-  if (!me) redirect("/login");
+  const me = await requireActiveMember();
 
   const task = await loadTask(id);
   const ownPersonal = task.scope === "personal" && task.player_id === me.id;

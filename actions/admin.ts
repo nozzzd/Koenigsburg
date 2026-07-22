@@ -40,6 +40,21 @@ export async function approvePlayer(playerId: string): Promise<void> {
   }
 
   if (target.status !== "active") {
+    // Discord membership is now the source of truth. Grant @Citizen before
+    // activating the website row; if the member left the guild (404) or the
+    // bot cannot manage the role, approval must not create an active account
+    // that Discord says is ineligible.
+    if (target.role !== "admin") {
+      try {
+        await assignCitizenRole(target.discord_id);
+      } catch (err) {
+        console.error("Discord role assignment blocked citizenship approval:", err);
+        throw new Error(
+          "Could not grant @Citizen in Discord. Make sure the member is still in the server and the bot can manage that role."
+        );
+      }
+    }
+
     // Reroll on the (vanishingly rare) code collision.
     let updated = false;
     let lastError = "";
@@ -61,18 +76,6 @@ export async function approvePlayer(playerId: string): Promise<void> {
       if (error.code !== "23505") break;
     }
     if (!updated) throw new Error(`Approval failed: ${lastError}`);
-
-    if (target.discord_id) {
-      try {
-        await assignCitizenRole(target.discord_id);
-      } catch (err) {
-        // The player is approved either way; the role can be granted by hand.
-        console.error(
-          `Approved ${target.minecraft_ign} but Discord role assignment failed:`,
-          err
-        );
-      }
-    }
 
     // Honor the team they elected from the alignment quiz, then clear it so a
     // later re-approval can't re-add them. Best-effort: a failed join never

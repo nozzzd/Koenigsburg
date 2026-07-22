@@ -45,6 +45,9 @@ const steps: { title: string; body: string; caption: string }[] = [
 export default async function ContributePage() {
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
+  if (player.status !== "active") {
+    redirect(player.citizenshipRevoked ? "/pending?revoked=1" : "/pending");
+  }
 
   return (
     <>

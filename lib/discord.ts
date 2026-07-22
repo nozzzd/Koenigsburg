@@ -103,17 +103,24 @@ export async function getGuildMemberRoles(discordUserId: string): Promise<string
 
 export async function hasCitizenRole(discordUserId: string): Promise<boolean> {
   const roles = await getGuildMemberRoles(discordUserId);
-  return roles?.includes(env("DISCORD_CITIZEN_ROLE_ID")) ?? false;
+  return roles !== null && rolesIncludeCitizen(roles);
+}
+
+export function rolesIncludeCitizen(roles: readonly string[]): boolean {
+  return roles.includes(env("DISCORD_CITIZEN_ROLE_ID"));
 }
 
 // Portal pages re-check citizenship on every load; cache briefly so a burst of
 // navigation doesn't spend a Discord API call per request.
 const roleCheckCache = new Map<string, { citizen: boolean; at: number }>();
-const ROLE_CACHE_TTL_MS = 60_000;
+const ROLE_CACHE_TTL_MS = 15_000;
 
 export async function hasCitizenRoleCached(discordUserId: string): Promise<boolean> {
   const hit = roleCheckCache.get(discordUserId);
-  if (hit && Date.now() - hit.at < ROLE_CACHE_TTL_MS) return hit.citizen;
+  // Cache only positive checks. A cached denial must never immediately undo a
+  // fresh admin approval, while a short positive cache keeps normal portal
+  // navigation from hammering Discord.
+  if (hit?.citizen && Date.now() - hit.at < ROLE_CACHE_TTL_MS) return true;
   const citizen = await hasCitizenRole(discordUserId);
   roleCheckCache.set(discordUserId, { citizen, at: Date.now() });
   return citizen;
@@ -139,6 +146,7 @@ export async function assignCitizenRole(discordUserId: string): Promise<void> {
   if (!res.ok) {
     throw new Error(`Discord role assignment failed (${res.status})`);
   }
+  roleCheckCache.set(discordUserId, { citizen: true, at: Date.now() });
 }
 
 // Whether /verify is installed. Cached so the admin page doesn't hit Discord
@@ -271,18 +279,17 @@ export async function removeMemberRole(discordUserId: string, roleId: string): P
 }
 
 /**
- * Every Discord ID currently in the guild, as a Set — one bulk paginated call
- * instead of one lookup per member. Checking "who left" against this set avoids
- * the rate-limit storm (and the silent fail-open) you get from firing a
- * per-member request for the whole roll at once.
+ * Every Discord member and their role IDs, fetched in one paginated roll. This
+ * lets the admin page reconcile both departures and lost @Citizen roles without
+ * firing one Discord request per player.
  *
  * Requires the bot's **Server Members Intent** (Developer Portal → Bot →
  * Privileged Gateway Intents → Server Members Intent). Without it Discord
  * returns the bot itself only or 403; the caller must treat a throw as
  * "couldn't determine", never as "everyone left".
  */
-export async function listGuildMemberIds(): Promise<Set<string>> {
-  const ids = new Set<string>();
+export async function listGuildMembership(): Promise<Map<string, string[]>> {
+  const members = new Map<string, string[]>();
   let after = "0";
   // Page through in chunks of 1000 until a short page signals the end.
   for (let page = 0; page < 50; page++) {
@@ -296,12 +303,14 @@ export async function listGuildMemberIds(): Promise<Set<string>> {
     if (!res.ok) {
       throw new Error(`Discord member list failed (${res.status})`);
     }
-    const batch = (await res.json()) as { user?: { id: string } }[];
-    for (const m of batch) if (m.user?.id) ids.add(m.user.id);
+    const batch = (await res.json()) as { user?: { id: string }; roles?: string[] }[];
+    for (const member of batch) {
+      if (member.user?.id) members.set(member.user.id, member.roles ?? []);
+    }
     if (batch.length < 1000) break;
     after = batch[batch.length - 1].user!.id;
   }
-  return ids;
+  return members;
 }
 
 /**
@@ -356,4 +365,5 @@ export async function removeCitizenRole(discordUserId: string): Promise<void> {
   if (!res.ok && res.status !== 404) {
     throw new Error(`Discord role removal failed (${res.status})`);
   }
+  roleCheckCache.delete(discordUserId);
 }

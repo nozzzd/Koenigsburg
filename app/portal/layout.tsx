@@ -2,17 +2,16 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Home, LogOut, Shield } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
-import { getSupabase } from "@/lib/supabase";
-import { hasCitizenRoleCached } from "@/lib/discord";
 import { logout } from "@/actions/auth";
 import { SHELL, WordMark, navButtonClass } from "@/components/ui";
 import { SettingsDrawer } from "@/components/SettingsDrawer";
+import { CitizenshipWatcher } from "@/components/CitizenshipWatcher";
 
 /**
  * Route safeguard for everything under /portal:
  *   no session           → /login
  *   status == 'pending'  → /pending
- *   lost @Citizen role   → demoted, → /pending?revoked=1
+ *   lost @Citizen role   → shared session check demotes, → /pending?revoked=1
  *   status == 'active'   → render
  *
  * Only the guard and the header live here. Each section supplies its own body
@@ -24,29 +23,13 @@ export default async function PortalLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
-  if (player.status === "pending") redirect("/pending");
-
-  // Citizenship follows Discord: leaving the server or losing @Citizen revokes
-  // portal access. Admins are exempt (the owner may not hold @Citizen at all),
-  // and manual signups have no discord_id to check.
-  if (player.discord_id && player.role !== "admin") {
-    let stillCitizen = true; // fail OPEN — a Discord outage must not lock everyone out
-    try {
-      stillCitizen = await hasCitizenRoleCached(player.discord_id);
-    } catch (err) {
-      console.error("Citizen re-check failed; allowing access:", err);
-    }
-    if (!stillCitizen) {
-      await getSupabase()
-        .from("players")
-        .update({ status: "pending", role: "guest" })
-        .eq("id", player.id);
-      redirect("/pending?revoked=1");
-    }
+  if (player.status === "pending") {
+    redirect(player.citizenshipRevoked ? "/pending?revoked=1" : "/pending");
   }
 
   return (
     <>
+      <CitizenshipWatcher />
       {/* The bar's border and fill live on the inner element, so the rule stops
           at the frame instead of running the full width of the monitor. */}
       <header className={`${SHELL} px-4 sm:px-6`}>
