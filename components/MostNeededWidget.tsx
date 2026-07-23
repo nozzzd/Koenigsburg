@@ -89,30 +89,35 @@ export async function MostNeededWidget({
           </p>
           <ul className="mt-3 divide-y divide-slate-800/70">
             {shortfalls.map((s) => {
-              const width = biggest > 0 ? Math.max(6, Math.round((s.missing / biggest) * 100)) : 0;
+              const width = biggest > 0 ? Math.max(4, Math.round((s.missing / biggest) * 100)) : 0;
               return (
-                <li key={s.item_id} className="px-5 py-2.5">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] mc-slot">
-                        <ItemIcon
-                          itemId={s.item_id}
-                          label={s.display_name}
-                          className="h-5 w-5"
-                        />
-                      </span>
-                      <span className="truncate text-sm text-slate-200">{s.display_name}</span>
-                    </span>
-                    <span className="shrink-0 font-mono text-xs font-semibold text-amber-400">
+                <li key={s.item_id} className="flex items-center gap-3 px-5 py-2.5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[3px] mc-slot">
+                    <ItemIcon
+                      itemId={s.item_id}
+                      label={s.display_name}
+                      className="h-8 w-8"
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-slate-100">
+                      {s.display_name}
+                    </p>
+                    <div className="mt-1.5 h-0.5 overflow-hidden rounded-full bg-slate-800">
+                      <div
+                        className="h-full rounded-full bg-amber-500/70"
+                        style={{ width: `${width}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className="shrink-0 text-right">
+                    <span className="font-display text-lg font-bold leading-none text-amber-300">
                       {count(s.missing)}
                     </span>
-                  </div>
-                  <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-slate-800">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-500/80 to-amber-300/80"
-                      style={{ width: `${width}%` }}
-                    />
-                  </div>
+                    <span className="mt-0.5 block text-[0.6rem] uppercase tracking-widest text-slate-600">
+                      short
+                    </span>
+                  </span>
                 </li>
               );
             })}

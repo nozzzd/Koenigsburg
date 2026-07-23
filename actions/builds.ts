@@ -6,7 +6,7 @@ import { getSupabase, BUILD_FILES_BUCKET, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import type { ActionState } from "@/lib/forms";
 import type { BuildStatus } from "@/lib/builds";
-import { parseMaterialList, slugToItemId } from "@/lib/litematica";
+import { parseMaterialList, slugToItemId, formatItemName } from "@/lib/litematica";
 import { isRealMinecraftItem } from "@/lib/minecraft-items";
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
@@ -159,7 +159,7 @@ export async function addBuildItem(
   }
   if (!quantity) return { error: "Enter how many are needed." };
 
-  const display_name = (displayInput || idInput).slice(0, MAX_DISPLAY);
+  const display_name = formatItemName(displayInput || idInput).slice(0, MAX_DISPLAY);
   const item_id = (idInput || slugToItemId(displayInput)).toLowerCase().slice(0, MAX_ITEM_ID);
 
   if (!isRealMinecraftItem(item_id)) {

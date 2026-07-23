@@ -40,6 +40,17 @@ export function slugToItemId(label: string): string {
   return slug ? `minecraft:${slug}` : "minecraft:unknown";
 }
 
+/**
+ * Tidy a human-typed item name into clean sentence case: collapse whitespace,
+ * lowercase everything, then capitalise the first letter.
+ *   "oAk  pLanks" → "Oak planks"   "  IRON ingot " → "Iron ingot"
+ */
+export function formatItemName(raw: string): string {
+  const clean = raw.replace(/\s+/g, " ").trim().toLowerCase();
+  if (!clean) return clean;
+  return clean[0].toUpperCase() + clean.slice(1);
+}
+
 function titleCase(id: string): string {
   const path = id.split(":").at(-1) ?? id;
   return path
