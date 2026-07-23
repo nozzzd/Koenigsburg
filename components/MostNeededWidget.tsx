@@ -113,17 +113,21 @@ export async function MostNeededWidget({
         </>
       )}
 
-      {isAdmin && (
-        <div className="mt-auto border-t border-slate-800/80 p-4">
+      <div className="mt-auto space-y-2 border-t border-slate-800/80 p-4">
+        <Link href="/portal/builds" className={`${navButtonClass} w-full justify-center`}>
+          See all builds
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+        {isAdmin && (
           <Link
             href="/portal/admin/builds"
-            className={`${navButtonClass} w-full justify-center`}
+            className={`${navButtonClass} w-full justify-center border-gold-500/40 text-gold-300`}
           >
             Open the Master Plan
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
-        </div>
-      )}
+        )}
+      </div>
     </Panel>
   );
 }

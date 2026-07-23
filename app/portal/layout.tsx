@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Home, LogOut, Shield } from "lucide-react";
+import { Hammer, Home, LogOut, Shield } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
 import { logout } from "@/actions/auth";
 import { SHELL, WordMark, navButtonClass } from "@/components/ui";
@@ -36,6 +36,10 @@ export default async function PortalLayout({
         <div className="flex items-center justify-between gap-3 border-b border-slate-800/80 py-4 sm:gap-4">
           <WordMark href="/portal" />
           <nav className="flex items-center gap-2">
+            <Link href="/portal/builds" className={navButtonClass}>
+              <Hammer className="h-4 w-4" />
+              <span className="hidden sm:inline">Builds</span>
+            </Link>
             {player.role === "admin" && (
               <Link
                 href="/portal/admin"

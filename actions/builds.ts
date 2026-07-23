@@ -2,11 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { getSupabase, type Player } from "@/lib/supabase";
+import { getSupabase, BUILD_FILES_BUCKET, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import type { ActionState } from "@/lib/forms";
 import type { BuildStatus } from "@/lib/builds";
 import { parseMaterialList, slugToItemId } from "@/lib/litematica";
+
+const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
+const ALLOWED_FILE_EXT = [".litematic", ".schem", ".schematic", ".nbt"];
 
 const MAX_NAME = 120;
 const MAX_ITEM_ID = 160;
@@ -24,10 +27,15 @@ async function requireAdmin(): Promise<Player> {
   return me;
 }
 
-/** Refresh the dashboard and, when given, one project's detail page. */
+/** Refresh the admin views, the citizen views, and one project's detail pages. */
 function refresh(projectId?: string) {
   revalidatePath("/portal/admin/builds");
-  if (projectId) revalidatePath(`/portal/admin/builds/${projectId}`);
+  revalidatePath("/portal/builds");
+  revalidatePath("/portal");
+  if (projectId) {
+    revalidatePath(`/portal/admin/builds/${projectId}`);
+    revalidatePath(`/portal/builds/${projectId}`);
+  }
 }
 
 function str(formData: FormData, key: string): string {
@@ -203,6 +211,39 @@ export async function updateBuildItem(
   return null;
 }
 
+/**
+ * Assign responsibility for a requirement to a team or a single player.
+ * The `assignee` field is "team:<id>", "player:<id>", or empty to clear.
+ * A team and a player are mutually exclusive.
+ */
+export async function setBuildItemAssignee(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  await requireAdmin();
+
+  const itemRowId = str(formData, "item_row_id");
+  const projectId = str(formData, "project_id");
+  const assignee = str(formData, "assignee");
+  if (!itemRowId) return { error: "Missing item." };
+
+  let assigned_team_id: string | null = null;
+  let assigned_player_id: string | null = null;
+  if (assignee.startsWith("team:")) assigned_team_id = assignee.slice(5) || null;
+  else if (assignee.startsWith("player:")) assigned_player_id = assignee.slice(7) || null;
+
+  const { error } = await getSupabase()
+    .from("build_project_items")
+    .update({ assigned_team_id, assigned_player_id })
+    .eq("id", itemRowId);
+  if (error) {
+    console.error("setBuildItemAssignee failed:", error);
+    return { error: "Could not save that assignment. Please try again." };
+  }
+  refresh(projectId || undefined);
+  return null;
+}
+
 /** Toggle whether a line claims its share of the pool before unlocked lines. */
 export async function toggleBuildItemLock(
   itemRowId: string,
@@ -266,4 +307,85 @@ export async function importMaterials(
   }
   refresh(projectId);
   return null;
+}
+
+function safeFileName(name: string): string {
+  return name
+    .replace(/[^a-zA-Z0-9._-]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 200) || "schematic";
+}
+
+/** Upload a Litematica / schematic file to a project for citizens to download. */
+export async function uploadBuildFile(
+  _prev: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const me = await requireAdmin();
+
+  const projectId = str(formData, "project_id");
+  const file = formData.get("file");
+  if (!projectId) return { error: "Missing project." };
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose a file first." };
+  if (file.size > MAX_FILE_BYTES) {
+    return { error: "That file is too large (25 MB max)." };
+  }
+
+  const lower = file.name.toLowerCase();
+  if (!ALLOWED_FILE_EXT.some((ext) => lower.endsWith(ext))) {
+    return { error: `Only ${ALLOWED_FILE_EXT.join(", ")} files are allowed.` };
+  }
+
+  const fileName = safeFileName(file.name);
+  const storagePath = `${projectId}/${crypto.randomUUID()}-${fileName}`;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const contentType = file.type || "application/octet-stream";
+
+  const supabase = getSupabase();
+  const { error: uploadError } = await supabase.storage
+    .from(BUILD_FILES_BUCKET)
+    .upload(storagePath, bytes, { upsert: false, contentType });
+  if (uploadError) {
+    console.error("uploadBuildFile storage failed:", uploadError);
+    return {
+      error:
+        "Could not store that file. If the build-files bucket is missing, run supabase/014_build_assignees_and_files.sql.",
+    };
+  }
+
+  const { error: rowError } = await supabase.from("build_project_files").insert({
+    project_id: projectId,
+    file_name: fileName,
+    storage_path: storagePath,
+    size_bytes: file.size,
+    content_type: contentType,
+    uploaded_by: me.id,
+  });
+  if (rowError) {
+    console.error("uploadBuildFile row failed:", rowError);
+    await supabase.storage.from(BUILD_FILES_BUCKET).remove([storagePath]);
+    return { error: "Could not save that file. Please try again." };
+  }
+
+  refresh(projectId);
+  return null;
+}
+
+/** Remove an uploaded schematic (storage object + metadata row). */
+export async function deleteBuildFile(fileId: string, projectId: string): Promise<void> {
+  await requireAdmin();
+  const supabase = getSupabase();
+
+  const { data } = await supabase
+    .from("build_project_files")
+    .select("storage_path")
+    .eq("id", fileId)
+    .maybeSingle<{ storage_path: string }>();
+
+  const { error } = await supabase.from("build_project_files").delete().eq("id", fileId);
+  if (error) throw new Error(`Could not remove that file: ${error.message}`);
+  if (data?.storage_path) {
+    await supabase.storage.from(BUILD_FILES_BUCKET).remove([data.storage_path]);
+  }
+  refresh(projectId);
 }

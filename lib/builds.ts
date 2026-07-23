@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, BUILD_FILES_BUCKET } from "@/lib/supabase";
 
 export type BuildStatus = "active" | "archived" | "completed";
 
@@ -25,6 +25,20 @@ export interface BuildProjectItem {
   required_quantity: number;
   manual_override: number | null;
   locked: boolean;
+  /** Optional responsibility — a whole team OR one player, never both. */
+  assigned_team_id: string | null;
+  assigned_player_id: string | null;
+  created_at: string;
+}
+
+/** A raw build_project_files row (an uploaded Litematica / schematic). */
+export interface BuildFile {
+  id: string;
+  project_id: string;
+  file_name: string;
+  storage_path: string;
+  size_bytes: number;
+  content_type: string | null;
   created_at: string;
 }
 
@@ -42,6 +56,8 @@ export interface AllocatedItem {
   missing: number;
   locked: boolean;
   override: number | null;
+  assignedTeamId: string | null;
+  assignedPlayerId: string | null;
 }
 
 export interface AllocatedProject {
@@ -142,6 +158,8 @@ export function allocateBuilds(
           missing: Math.max(0, item.required_quantity - give),
           locked: item.locked,
           override: item.manual_override,
+          assignedTeamId: item.assigned_team_id,
+          assignedPlayerId: item.assigned_player_id,
         };
       }
     );
@@ -274,4 +292,53 @@ export async function getBuildProject(
     ready: true,
     project: overview.projects.find((p) => p.id === id) ?? null,
   };
+}
+
+/** The public download URL for a stored schematic object. */
+export function buildFileUrl(storagePath: string): string {
+  return getSupabase().storage.from(BUILD_FILES_BUCKET).getPublicUrl(storagePath).data
+    .publicUrl;
+}
+
+/** Uploaded schematic files for one project, newest first. Empty on any error. */
+export async function getBuildFiles(projectId: string): Promise<BuildFile[]> {
+  const { data, error } = await getSupabase()
+    .from("build_project_files")
+    .select("*")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false })
+    .returns<BuildFile[]>();
+  if (error) {
+    // Table may not exist until 014 is run — downloads simply don't appear.
+    console.error("getBuildFiles failed:", error);
+    return [];
+  }
+  return data ?? [];
+}
+
+/** Label lookups for resolving assignee ids to names on the project pages. */
+export interface AssigneeDirectory {
+  teams: Map<string, { name: string; color: string | null }>;
+  players: Map<string, string>;
+}
+
+/** Teams and active players, for turning assignee ids into readable names. */
+export async function getAssigneeDirectory(): Promise<AssigneeDirectory> {
+  const supabase = getSupabase();
+  const [teamsRes, playersRes] = await Promise.all([
+    supabase.from("teams").select("id, name, color").returns<
+      { id: string; name: string; color: string | null }[]
+    >(),
+    supabase
+      .from("players")
+      .select("id, minecraft_ign")
+      .eq("status", "active")
+      .returns<{ id: string; minecraft_ign: string }[]>(),
+  ]);
+
+  const teams = new Map<string, { name: string; color: string | null }>();
+  for (const t of teamsRes.data ?? []) teams.set(t.id, { name: t.name, color: t.color });
+  const players = new Map<string, string>();
+  for (const p of playersRes.data ?? []) players.set(p.id, p.minecraft_ign);
+  return { teams, players };
 }

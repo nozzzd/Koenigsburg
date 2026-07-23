@@ -6,6 +6,8 @@ import {
   ArrowLeft,
   CheckCircle2,
   Database,
+  Download,
+  FileBox,
   Hammer,
   ListPlus,
   Lock,
@@ -13,10 +15,17 @@ import {
   RotateCcw,
   Trash2,
   Upload,
+  Users,
 } from "lucide-react";
 import { getSessionPlayer } from "@/lib/session";
-import { getBuildProject } from "@/lib/builds";
 import {
+  buildFileUrl,
+  getAssigneeDirectory,
+  getBuildFiles,
+  getBuildProject,
+} from "@/lib/builds";
+import {
+  deleteBuildFile,
   deleteBuildProject,
   removeBuildItem,
   setBuildStatus,
@@ -25,9 +34,11 @@ import {
 import { GoldDivider, Panel } from "@/components/ui";
 import {
   AddBuildItemForm,
+  AssignItemForm,
   EditBuildItemForm,
   EditBuildProjectForm,
   ImportMaterialsForm,
+  UploadBuildFileForm,
 } from "@/components/forms/BuildForms";
 
 export const dynamic = "force-dynamic";
@@ -48,6 +59,12 @@ function pct(value: number): number {
 
 function count(value: number): string {
   return new Intl.NumberFormat("en-GB").format(value);
+}
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export default async function AdminBuildDetailPage({
@@ -82,6 +99,13 @@ export default async function AdminBuildDetailPage({
   }
 
   if (!project) notFound();
+
+  const [files, directory] = await Promise.all([
+    getBuildFiles(project.id),
+    getAssigneeDirectory(),
+  ]);
+  const teamOptions = [...directory.teams].map(([id, t]) => ({ id, name: t.name }));
+  const playerOptions = [...directory.players].map(([id, ign]) => ({ id, ign }));
 
   return (
     <div className="space-y-8">
@@ -210,6 +234,21 @@ export default async function AdminBuildDetailPage({
                         )}
                       </div>
                       <p className="mt-1 font-mono text-xs text-slate-600">{item.item_id}</p>
+                      {(() => {
+                        const teamName = item.assignedTeamId
+                          ? directory.teams.get(item.assignedTeamId)?.name
+                          : null;
+                        const playerName = item.assignedPlayerId
+                          ? directory.players.get(item.assignedPlayerId)
+                          : null;
+                        if (!teamName && !playerName) return null;
+                        return (
+                          <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-indigo-500/40 bg-indigo-950/30 px-2 py-0.5 text-xs font-semibold text-indigo-300">
+                            <Users className="h-3 w-3" />
+                            {teamName ?? playerName}
+                          </p>
+                        );
+                      })()}
                       <p className="mt-2 text-xs text-slate-500">
                         Need <span className="text-slate-300">{count(item.required)}</span> ·
                         reserved <span className="text-slate-300">{count(item.allocated)}</span>{" "}
@@ -252,12 +291,25 @@ export default async function AdminBuildDetailPage({
                     </div>
                   </div>
 
-                  <div className="mt-3 border-t border-slate-800/70 pt-3">
+                  <div className="mt-3 space-y-3 border-t border-slate-800/70 pt-3">
                     <EditBuildItemForm
                       itemRowId={item.id}
                       projectId={project.id}
                       required={item.required}
                       override={item.override}
+                    />
+                    <AssignItemForm
+                      itemRowId={item.id}
+                      projectId={project.id}
+                      current={
+                        item.assignedTeamId
+                          ? `team:${item.assignedTeamId}`
+                          : item.assignedPlayerId
+                            ? `player:${item.assignedPlayerId}`
+                            : ""
+                      }
+                      teams={teamOptions}
+                      players={playerOptions}
                     />
                   </div>
                 </Panel>
@@ -290,6 +342,57 @@ export default async function AdminBuildDetailPage({
           </div>
         </Panel>
       </div>
+
+      <Panel className="p-5">
+        <p className="flex items-center gap-2 font-display text-sm font-bold tracking-widest text-gold-300">
+          <FileBox className="h-4 w-4" />
+          LITEMATICA FILES
+        </p>
+        <p className="mt-1 text-sm text-slate-500">
+          Upload schematics for this build — citizens can download them from the project
+          page.
+        </p>
+        {files.length > 0 && (
+          <ul className="mt-4 space-y-2">
+            {files.map((f) => (
+              <li key={f.id}>
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-slate-800 bg-slate-950/40 px-3.5 py-2.5">
+                  <div className="flex min-w-0 items-center gap-2.5">
+                    <FileBox className="h-4 w-4 shrink-0 text-gold-400" />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold text-slate-200">
+                        {f.file_name}
+                      </p>
+                      <p className="text-xs text-slate-600">{formatBytes(f.size_bytes)}</p>
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    <a
+                      href={buildFileUrl(f.storage_path)}
+                      download={f.file_name}
+                      className="pressable inline-flex items-center gap-1.5 rounded-md border border-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-400 hover:border-gold-500/50 hover:text-gold-300"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download
+                    </a>
+                    <form action={deleteBuildFile.bind(null, f.id, project.id)}>
+                      <button
+                        aria-label={`Remove ${f.file_name}`}
+                        className="pressable inline-flex items-center rounded-md border border-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:border-red-800 hover:bg-red-950/40 hover:text-red-300"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="mt-4 max-w-md">
+          <UploadBuildFileForm projectId={project.id} />
+        </div>
+      </Panel>
 
       <Panel className="p-5">
         <p className="font-display text-sm font-bold tracking-widest text-gold-300">

@@ -5,8 +5,10 @@ import {
   addBuildItem,
   createBuildProject,
   importMaterials,
+  setBuildItemAssignee,
   updateBuildItem,
   updateBuildProject,
+  uploadBuildFile,
 } from "@/actions/builds";
 import type { ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
@@ -279,6 +281,101 @@ export function EditBuildItemForm({
       >
         Save
       </button>
+    </form>
+  );
+}
+
+/** Assign one requirement to a team or a single player. Saves on change. */
+export function AssignItemForm({
+  itemRowId,
+  projectId,
+  current,
+  teams,
+  players,
+}: {
+  itemRowId: string;
+  projectId: string;
+  current: string;
+  teams: { id: string; name: string }[];
+  players: { id: string; ign: string }[];
+}) {
+  const [state, action] = useActionState<ActionState, FormData>(setBuildItemAssignee, null);
+
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-2">
+      {state?.error && (
+        <div className="w-full">
+          <ErrorBanner message={state.error} />
+        </div>
+      )}
+      <input type="hidden" name="item_row_id" value={itemRowId} />
+      <input type="hidden" name="project_id" value={projectId} />
+      <label className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+        Gatherer
+      </label>
+      <select
+        name="assignee"
+        defaultValue={current}
+        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+        className={`${inputClass} w-auto min-w-[12rem] py-2 text-sm`}
+      >
+        <option value="">Unassigned</option>
+        {teams.length > 0 && (
+          <optgroup label="Teams">
+            {teams.map((t) => (
+              <option key={t.id} value={`team:${t.id}`}>
+                {t.name}
+              </option>
+            ))}
+          </optgroup>
+        )}
+        {players.length > 0 && (
+          <optgroup label="Members">
+            {players.map((p) => (
+              <option key={p.id} value={`player:${p.id}`}>
+                {p.ign}
+              </option>
+            ))}
+          </optgroup>
+        )}
+      </select>
+      {/* Progressive enhancement: works without JS via this button. */}
+      <noscript>
+        <button type="submit" className="text-xs font-semibold text-gold-300">
+          Save
+        </button>
+      </noscript>
+    </form>
+  );
+}
+
+/** Upload a Litematica / schematic file to a project. */
+export function UploadBuildFileForm({ projectId }: { projectId: string }) {
+  const [state, action] = useActionState<ActionState, FormData>(uploadBuildFile, null);
+  const ref = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (state === null) ref.current?.reset();
+  }, [state]);
+
+  return (
+    <form ref={ref} action={action} className="space-y-3">
+      {state?.error && <ErrorBanner message={state.error} />}
+      <input type="hidden" name="project_id" value={projectId} />
+      <input
+        type="file"
+        name="file"
+        required
+        accept=".litematic,.schem,.schematic,.nbt"
+        className="block w-full text-sm text-slate-400 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:font-display file:text-xs file:font-bold file:tracking-wider file:text-gold-300 hover:file:bg-slate-700"
+      />
+      <p className="text-xs text-slate-500">
+        <code className="text-gold-400">.litematic</code>,{" "}
+        <code className="text-gold-400">.schem</code>,{" "}
+        <code className="text-gold-400">.schematic</code> or{" "}
+        <code className="text-gold-400">.nbt</code> · 25 MB max.
+      </p>
+      <SubmitButton>Upload schematic</SubmitButton>
     </form>
   );
 }

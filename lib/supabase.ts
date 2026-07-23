@@ -111,6 +111,9 @@ export interface NewsPost {
 /** Public-read Storage bucket holding the community map's region tiles. */
 export const MAP_TILES_BUCKET = "map-tiles";
 
+/** Public-read Storage bucket holding uploaded Litematica / schematic files. */
+export const BUILD_FILES_BUCKET = "build-files";
+
 export type MapDimension = "overworld" | "nether" | "end";
 
 /**
