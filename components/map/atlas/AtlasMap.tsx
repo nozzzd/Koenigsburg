@@ -412,22 +412,26 @@ export function AtlasMap({
           backgroundSize: "32px 32px",
         }}
       >
-        {/* Tiles (scaled) */}
-        <div
-          className="relative origin-top-left"
-          style={{ width: 0, height: 0, transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
-        >
-          {tiles.map((t) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={`${t.rx}_${t.rz}`}
-              src={t.url}
-              alt={`Region ${t.rx}, ${t.rz}`}
-              draggable={false}
-              className="absolute [image-rendering:pixelated]"
-              style={{ left: t.rx * CELL, top: t.rz * CELL, width: CELL, height: CELL }}
-            />
-          ))}
+        {/* Tiles: rendered in screen space (same maths as the markers) so they
+           always paint - a zero-size transformed layer failed to in some
+           browsers. Each region is placed by its block-coordinate corner. */}
+        <div className="absolute inset-0 overflow-hidden">
+          {tiles.map((t) => {
+            const s = screenOf(t.rx * 512, t.rz * 512);
+            const size = CELL * zoom;
+            if (s.x > vpSize.w || s.y > vpSize.h || s.x + size < 0 || s.y + size < 0) return null;
+            return (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={`${t.rx}_${t.rz}`}
+                src={t.url}
+                alt={`Region ${t.rx}, ${t.rz}`}
+                draggable={false}
+                className="absolute [image-rendering:pixelated]"
+                style={{ left: s.x, top: s.y, width: size, height: size }}
+              />
+            );
+          })}
         </div>
 
         {/* Claims + draft (screen-space SVG) */}
@@ -481,7 +485,7 @@ export function AtlasMap({
               <div
                 key={m.id}
                 className="pointer-events-auto absolute flex flex-col items-center"
-                style={{ left: s.x, top: s.y, transform: "translate(-50%, -100%)", cursor: isAdmin ? "pointer" : "default" }}
+                style={{ left: s.x, top: s.y, transform: "translate(-50%, -100%)", cursor: "none" }}
                 onPointerDown={(e) => {
                   if (!isAdmin || mode !== "select") return;
                   e.stopPropagation();
