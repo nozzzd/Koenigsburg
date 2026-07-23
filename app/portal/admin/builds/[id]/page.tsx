@@ -33,6 +33,7 @@ import {
 } from "@/actions/builds";
 import { GoldDivider, Panel } from "@/components/ui";
 import { ItemIcon } from "@/components/ItemIcon";
+import { RemoveItemButton } from "@/components/RemoveItemButton";
 import { MINECRAFT_ITEM_IDS } from "@/lib/minecraft-items";
 import {
   AddBuildItemForm,
@@ -291,14 +292,10 @@ export default async function AdminBuildDetailPage({
                           )}
                         </button>
                       </form>
-                      <form action={removeBuildItem.bind(null, item.id, project.id)}>
-                        <button
-                          aria-label={`Remove ${item.display_name}`}
-                          className="pressable inline-flex items-center gap-1.5 rounded-md border border-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:border-red-800 hover:bg-red-950/40 hover:text-red-300"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </form>
+                      <RemoveItemButton
+                        action={removeBuildItem.bind(null, item.id, project.id)}
+                        label={`Remove ${item.display_name}`}
+                      />
                     </div>
                   </div>
 
@@ -393,14 +390,10 @@ export default async function AdminBuildDetailPage({
                       <Download className="h-3.5 w-3.5" />
                       Download
                     </a>
-                    <form action={deleteBuildFile.bind(null, f.id, project.id)}>
-                      <button
-                        aria-label={`Remove ${f.file_name}`}
-                        className="pressable inline-flex items-center rounded-md border border-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:border-red-800 hover:bg-red-950/40 hover:text-red-300"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </form>
+                    <RemoveItemButton
+                      action={deleteBuildFile.bind(null, f.id, project.id)}
+                      label={`Remove ${f.file_name}`}
+                    />
                   </div>
                 </div>
               </li>
