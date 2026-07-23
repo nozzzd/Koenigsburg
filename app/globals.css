@@ -395,13 +395,24 @@ html {
   letter-spacing: 0.02em;
 }
 
-/* Light-mode: keep the GUI dark — an inventory reads as a dark window — but
-   frame it so it sits deliberately on the light page instead of floating. */
+/* Light-mode: the authentic Minecraft GUI palette — a light-grey panel with
+   raised bevel and darker recessed slots, exactly like the in-game inventory. */
 :root[data-theme="light"] .mc-panel {
-  border: 1px solid rgba(15, 23, 42, 0.18);
+  background-color: #c6c6c6;
+  background-image: none;
   box-shadow:
-    inset 3px 3px 0 rgba(255, 255, 255, 0.14),
-    inset -3px -3px 0 rgba(0, 0, 0, 0.55),
-    0 8px 24px rgba(15, 23, 42, 0.12);
-  background-color: #2b2e36;
+    inset 2px 2px 0 #ffffff,
+    inset -2px -2px 0 #55595f,
+    0 8px 24px rgba(15, 23, 42, 0.14);
+}
+
+:root[data-theme="light"] .mc-slot {
+  background-color: #8b8b8b;
+  box-shadow:
+    inset 2px 2px 0 #373737,
+    inset -2px -2px 0 #ffffff;
+}
+
+:root[data-theme="light"] .mc-slot:hover {
+  background-color: #9a9a9a;
 }
