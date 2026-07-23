@@ -9,7 +9,7 @@ import { QuizResult } from "./QuizResult";
 /**
  * The quiz flow: one question at a time, four answer cards, a progress
  * footer. Picking an answer advances immediately; the last pick computes the
- * score and swaps in the result screen. Entirely client-side and anonymous —
+ * score and swaps in the result screen. Entirely client-side and anonymous -
  * nothing is written anywhere until the recruit chooses to sign up.
  */
 export function Quiz({ mappedRoles }: { mappedRoles: ArchetypeKey[] }) {
@@ -52,7 +52,7 @@ export function Quiz({ mappedRoles }: { mappedRoles: ArchetypeKey[] }) {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
-      {/* Intro — only during the quiz; the result screen reclaims the space. */}
+      {/* Intro - only during the quiz; the result screen reclaims the space. */}
       <section className="page-in flex flex-col items-center pb-4 text-center">
         <Crest className="h-14 w-14" />
         <p className="mt-6 font-display text-[0.65rem] font-semibold tracking-[0.35em] text-gold-500 sm:text-xs sm:tracking-[0.45em]">
@@ -93,7 +93,7 @@ export function Quiz({ mappedRoles }: { mappedRoles: ArchetypeKey[] }) {
         </div>
       </div>
 
-      {/* One question — keyed so it re-animates on change */}
+      {/* One question - keyed so it re-animates on change */}
       <div key={question.id} className="page-in space-y-5">
         <h2 className="text-center font-display text-xl font-bold tracking-wide text-slate-100 sm:text-2xl">
           {question.prompt}

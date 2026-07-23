@@ -6,7 +6,7 @@ import { GoldDivider, Panel } from "@/components/ui";
 
 export const metadata: Metadata = { title: "The Herald" };
 
-/** Missing table (unmigrated) shouldn't break the portal — show an empty feed. */
+/** Missing table (unmigrated) shouldn't break the portal - show an empty feed. */
 async function getNews(): Promise<NewsPost[]> {
   const { data, error } = await getSupabase()
     .from("news")

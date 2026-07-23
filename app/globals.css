@@ -27,8 +27,10 @@ body {
    Dark is the default (no attribute). Tailwind v4 compiles every colour
    utility to var(--color-*), so inverting the slate scale here re-themes the
    whole site without touching a single component.
-   Gold is darkened instead of inverted — it must stay legible on white. */
+   Gold is darkened instead of inverted - it must stay legible on white. */
 :root[data-theme="light"] {
+  /* Light mode: keep native controls light - white box, dark arrows. */
+  color-scheme: light;
   --color-slate-50: #020617;
   --color-slate-100: #0f172a;
   --color-slate-200: #1e293b;
@@ -61,7 +63,7 @@ body {
   --tw-shadow-color: rgb(15 23 42 / 0.08);
 }
 
-/* A gold button is gold in both themes — pinned so the palette can't invert
+/* A gold button is gold in both themes - pinned so the palette can't invert
    its dark ink text into unreadable white. */
 .btn-gold {
   background-image: linear-gradient(to bottom, #e6cc74, #b8962e);
@@ -88,7 +90,7 @@ button:disabled {
 /* ── Pressable ──────────────────────────────────────────────────────────────
    Lifts a touch on hover (with a slight overshoot, so it feels sprung rather
    than mechanical) and snaps down fast on press. These own their transition
-   outright — don't add Tailwind's `transition` alongside or the two fight over
+   outright - don't add Tailwind's `transition` alongside or the two fight over
    the same property. */
 .pressable {
   transition:
@@ -123,8 +125,11 @@ button:disabled {
    <details> snaps open because the browser flips its content between
    display states. interpolate-size lets height:auto be animated, and
    ::details-content is the box to animate. Where unsupported, it simply opens
-   instantly as before — no worse than today. */
+   instantly as before - no worse than today. */
 :root {
+  /* Paint native controls (number-input steppers, scrollbars, etc.) to match
+     the dark theme - dark box, white arrows - instead of the browser default. */
+  color-scheme: dark;
   interpolate-size: allow-keywords;
 }
 
@@ -347,7 +352,7 @@ html {
   image-rendering: crisp-edges;
 }
 
-/* The outer GUI frame — a raised, panelled surface like a chest window. */
+/* The outer GUI frame - a raised, panelled surface like a chest window. */
 .mc-panel {
   background-color: #23252b;
   background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.12));
@@ -381,7 +386,7 @@ html {
   letter-spacing: 0.03em;
 }
 
-/* Item tooltip — dark fill, thin black frame, inner purple border. */
+/* Item tooltip - dark fill, thin black frame, inner purple border. */
 .mc-tooltip {
   background-color: rgba(16, 0, 16, 0.94);
   border: 1px solid #0a000a;
@@ -395,7 +400,7 @@ html {
   letter-spacing: 0.02em;
 }
 
-/* Light-mode: the authentic Minecraft GUI palette — a light-grey panel with
+/* Light-mode: the authentic Minecraft GUI palette - a light-grey panel with
    raised bevel and darker recessed slots, exactly like the in-game inventory. */
 :root[data-theme="light"] .mc-panel {
   background-color: #c6c6c6;

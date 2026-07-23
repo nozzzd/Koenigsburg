@@ -29,10 +29,10 @@ const pixel = VT323({
 export const metadata: Metadata = {
   title: {
     default: "Königsburg",
-    template: "%s — Königsburg",
+    template: "%s - Königsburg",
   },
   description:
-    "The gates of Königsburg — citizenship portal of the nation. Apply, be approved, and build within the walls.",
+    "The gates of Königsburg - citizenship portal of the nation. Apply, be approved, and build within the walls.",
 };
 
 export default function RootLayout({

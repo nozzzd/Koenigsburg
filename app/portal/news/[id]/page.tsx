@@ -87,7 +87,7 @@ export default async function NewsPostPage({
         <p className="text-lg leading-relaxed text-slate-300">{post.summary}</p>
       )}
 
-      {/* Plain text — rendered as text (React escapes it), newlines preserved. */}
+      {/* Plain text - rendered as text (React escapes it), newlines preserved. */}
       <div className="whitespace-pre-wrap text-base leading-relaxed text-slate-400">
         {post.body}
       </div>

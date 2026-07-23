@@ -164,7 +164,7 @@ export default async function InventoryPage({
               Inventory of the nation
             </h1>
             <p className="mt-5 max-w-2xl text-balance text-base leading-7 text-slate-400 sm:text-lg">
-              One search across Königsburg&apos;s recorded chests, barrels, and stores —
+              One search across Königsburg&apos;s recorded chests, barrels, and stores -
               with the exact place each item was last seen.
             </p>
           </div>
@@ -232,7 +232,7 @@ export default async function InventoryPage({
                   <Icon className="h-5 w-5 text-gold-400" strokeWidth={1.5} />
                 </div>
                 <span className="font-display text-2xl font-bold text-slate-200">
-                  {ledger.ready ? formatCount(value) : "—"}
+                  {ledger.ready ? formatCount(value) : "-"}
                 </span>
               </div>
               <p className="mt-5 font-display text-sm font-bold tracking-wider text-slate-200">

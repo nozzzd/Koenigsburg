@@ -9,7 +9,7 @@ import { GoldDivider, Panel } from "@/components/ui";
 import { CreateTeamForm, EditTeamForm } from "@/components/forms/TeamForms";
 import { TeamRoster } from "@/components/TeamRoster";
 
-export const metadata: Metadata = { title: "Admin — Teams" };
+export const metadata: Metadata = { title: "Admin - Teams" };
 
 type MemberRow = { team_id: string; players: Player | null };
 
@@ -89,7 +89,7 @@ export default async function AdminTeamsPage() {
         </h1>
         <p className="mt-2 text-sm text-slate-400">
           Group members into teams and assign whole teams a task at once. A team
-          can mirror a Discord role — joining assigns it, leaving strips it.
+          can mirror a Discord role - joining assigns it, leaving strips it.
         </p>
       </div>
 
@@ -179,7 +179,7 @@ export default async function AdminTeamsPage() {
                     </form>
                   </div>
 
-                  {/* Rename / recolour — collapsible so it doesn't clutter the card. */}
+                  {/* Rename / recolour - collapsible so it doesn't clutter the card. */}
                   <details className="mt-4 group">
                     <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-xs font-semibold text-slate-500 transition hover:text-gold-300 [&::-webkit-details-marker]:hidden">
                       <Pencil className="h-3.5 w-3.5" />
@@ -190,7 +190,7 @@ export default async function AdminTeamsPage() {
                     </div>
                   </details>
 
-                  {/* Click a name to add/remove — instant, searchable. */}
+                  {/* Click a name to add/remove - instant, searchable. */}
                   <div className="mt-4">
                     <TeamRoster
                       teamId={team.id}

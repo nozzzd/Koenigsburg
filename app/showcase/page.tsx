@@ -21,7 +21,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Great Works",
   description:
-    "The great works of Königsburg — cathedrals, harbors, and fortifications raised by our citizens. Join the nation and build your own legacy.",
+    "The great works of Königsburg - cathedrals, harbors, and fortifications raised by our citizens. Join the nation and build your own legacy.",
 };
 
 /** Managed by admins at /portal/admin/showcase. */
@@ -33,7 +33,7 @@ async function getProjects(): Promise<Project[]> {
     .order("created_at", { ascending: true })
     .returns<Project[]>();
   if (error) {
-    // Table missing (migration not run) or DB hiccup — show an empty gallery
+    // Table missing (migration not run) or DB hiccup - show an empty gallery
     // rather than taking the whole public page down.
     console.error("Failed to load projects:", error);
     return [];
@@ -67,7 +67,7 @@ export default async function ShowcasePage() {
           </h1>
           <p className="mt-5 max-w-xl text-balance text-slate-400">
             Every stone laid by a citizen of the nation. This is what we build
-            together — come raise your own monument within the walls.
+            together - come raise your own monument within the walls.
           </p>
         </section>
 

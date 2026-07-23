@@ -2,7 +2,7 @@ import "server-only";
 import { getSupabase, type Player, type Team } from "./supabase";
 import { addMemberRole } from "./discord";
 
-/** Load a team by id or throw — shared by the team actions and the join core. */
+/** Load a team by id or throw - shared by the team actions and the join core. */
 export async function loadTeam(id: string): Promise<Team> {
   const { data } = await getSupabase()
     .from("teams")
@@ -15,7 +15,7 @@ export async function loadTeam(id: string): Promise<Team> {
 
 /**
  * The core join: upsert membership and best-effort assign the team's Discord
- * role. NOT authorization-guarded — every caller must authorize first (the
+ * role. NOT authorization-guarded - every caller must authorize first (the
  * admin actions run as an admin; signup runs it for the just-created player).
  * Never throws on a Discord failure: the website is the source of truth and a
  * missing role can always be added by hand.

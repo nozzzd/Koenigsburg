@@ -25,7 +25,7 @@ export const revalidate = 60;
 export const metadata: Metadata = {
   title: "Map",
   description:
-    "The known world of Königsburg — charted region by region from our citizens' own explorations. Add the lands you've discovered.",
+    "The known world of Königsburg - charted region by region from our citizens' own explorations. Add the lands you've discovered.",
 };
 
 /** Reads every charted region and resolves each to a public tile URL. */
@@ -38,7 +38,7 @@ async function getTiles(): Promise<DisplayTile[]> {
     .returns<MapTile[]>();
 
   if (error) {
-    // Table/bucket not created yet (migration 010 not run) — show the empty
+    // Table/bucket not created yet (migration 010 not run) - show the empty
     // state instead of crashing the public page.
     console.error("Failed to load map tiles:", error);
     return [];
@@ -78,7 +78,7 @@ export default async function MapPage() {
           </h1>
           <p className="mt-5 max-w-xl text-balance text-slate-400">
             Charted region by region from our own citizens&apos; explorations. Every
-            tile is the newest scouting we have — the frontier fills in as more of
+            tile is the newest scouting we have - the frontier fills in as more of
             us venture out.
           </p>
         </section>
@@ -93,7 +93,7 @@ export default async function MapPage() {
                 THE MAP IS BEING SURVEYED
               </p>
               <p className="max-w-sm text-sm text-slate-500">
-                No lands have been charted yet. Be the first cartographer — upload a
+                No lands have been charted yet. Be the first cartographer - upload a
                 slice of your Xaero map and put Königsburg on the map.
               </p>
               <Link href="/map/contribute" className={`${goldButtonClass} mt-2 sm:w-auto`}>

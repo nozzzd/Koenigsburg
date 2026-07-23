@@ -7,7 +7,7 @@ import { WelcomeForm } from "@/components/forms/WelcomeForm";
 
 export const metadata: Metadata = { title: "Welcome, Citizen" };
 
-/** Path 1 — @Citizen verified in Discord; one-time IGN prompt. */
+/** Path 1 - @Citizen verified in Discord; one-time IGN prompt. */
 export default async function WelcomePage() {
   const player = await getSessionPlayer();
   if (player) redirect(player.status === "pending" ? "/pending" : "/portal");

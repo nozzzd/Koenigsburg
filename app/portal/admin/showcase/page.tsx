@@ -8,7 +8,7 @@ import { deleteProject } from "@/actions/projects";
 import { GoldDivider, Panel } from "@/components/ui";
 import { ProjectForm } from "@/components/forms/ProjectForm";
 
-export const metadata: Metadata = { title: "Admin — Great Works" };
+export const metadata: Metadata = { title: "Admin - Great Works" };
 
 const summaryClass =
   "flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-gold-500/50 hover:text-gold-300 [&::-webkit-details-marker]:hidden";
@@ -24,7 +24,7 @@ export default async function AdminShowcasePage() {
     .order("created_at", { ascending: true })
     .returns<Project[]>();
 
-  // The table won't exist until the migration is run — say so instead of crashing.
+  // The table won't exist until the migration is run - say so instead of crashing.
   if (error) {
     return (
       <div className="space-y-6">
@@ -100,7 +100,7 @@ export default async function AdminShowcasePage() {
             NO WORKS RECORDED
           </p>
           <p className="text-sm text-slate-500">
-            Add the first one above — it appears on the showcase immediately.
+            Add the first one above - it appears on the showcase immediately.
           </p>
         </Panel>
       ) : (

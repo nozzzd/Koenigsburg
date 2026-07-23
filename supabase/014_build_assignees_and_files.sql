@@ -3,7 +3,7 @@
 -- Safe to run repeatedly.
 --
 -- Two additions on top of the planner:
---   1. Each requirement line can name who is responsible for gathering it —
+--   1. Each requirement line can name who is responsible for gathering it -
 --      a whole team OR a single player (never both). Purely informational;
 --      it does not change allocation.
 --   2. A project can carry uploaded Litematica schematic files that citizens

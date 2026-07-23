@@ -2,7 +2,7 @@ import { getSupabase, type Player } from "@/lib/supabase";
 import { sendDirectMessage } from "@/lib/discord";
 import { env } from "@/lib/env";
 
-// node:crypto / bot fetches — keep off the edge runtime.
+// node:crypto / bot fetches - keep off the edge runtime.
 export const runtime = "nodejs";
 // Never cache: this must actually run each time the cron fires.
 export const dynamic = "force-dynamic";
@@ -10,11 +10,11 @@ export const dynamic = "force-dynamic";
 /**
  * Daily nudge to finish verification.
  *
- * DMs every still-pending player who HAS a linked Discord account — i.e. they
+ * DMs every still-pending player who HAS a linked Discord account - i.e. they
  * ran /verify to prove ownership but the council hasn't approved them yet, OR
  * they came through OAuth and never finished. A manual signup with no
  * discord_id can't be reached (we don't know their Discord), so they're the
- * ones the reminder is really chasing toward /verify in the first place — and
+ * ones the reminder is really chasing toward /verify in the first place - and
  * they simply aren't DM-able until they run it.
  *
  * Triggered by Vercel Cron (see vercel.json). Vercel attaches
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   try {
     expected = `Bearer ${env("CRON_SECRET")}`;
   } catch {
-    // No secret configured — refuse rather than run unauthenticated.
+    // No secret configured - refuse rather than run unauthenticated.
     return new Response("cron not configured", { status: 503 });
   }
   if (auth !== expected) {
@@ -53,7 +53,7 @@ export async function GET(request: Request) {
     const message =
       `🏰 **A reminder from the council of Königsburg.**\n\n` +
       `Your petition as **${player.minecraft_ign}** still awaits approval. ` +
-      `If you haven't yet, run \`/verify ${player.verification_code}\` in the server to prove your claim — ` +
+      `If you haven't yet, run \`/verify ${player.verification_code}\` in the server to prove your claim - ` +
       `the council can only admit verified petitioners.\n\n` +
       `Once you're verified, an elder will admit you shortly. See you within the walls.`;
     try {

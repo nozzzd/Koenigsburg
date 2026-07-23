@@ -177,7 +177,7 @@ export function AddBuildItemForm({ projectId }: { projectId: string }) {
       <div>
         <label htmlFor="item-id" className={labelClass}>
           Minecraft ID{" "}
-          <span className="normal-case text-slate-600">(optional — guessed from the name)</span>
+          <span className="normal-case text-slate-600">(optional - guessed from the name)</span>
         </label>
         <input
           id="item-id"

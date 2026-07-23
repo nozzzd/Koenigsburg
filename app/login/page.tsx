@@ -53,7 +53,7 @@ export default async function LoginPage({
           <div className="space-y-1.5">
             <DiscordButton>Sign in with Discord</DiscordButton>
             <p className="text-center text-xs text-slate-500">
-              Fastest way in — sworn citizens are admitted instantly.
+              Fastest way in - sworn citizens are admitted instantly.
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export default async function LoginPage({
 
         <GoldDivider />
 
-        {/* Manual re-login — tucked behind a toggle for returning players */}
+        {/* Manual re-login - tucked behind a toggle for returning players */}
         <details className="group">
           <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-700 hover:text-slate-100 [&::-webkit-details-marker]:hidden">
             <span className="flex items-center gap-2">

@@ -66,19 +66,19 @@ export function SettingsDrawer({ code, ign }: { code: string; ign: string }) {
             <CopyCode code={code} />
             <p className="text-sm leading-relaxed text-slate-400">
               If your session is lost or you change devices, enter the gates again
-              with your Minecraft name and this key. Guard it well —{" "}
+              with your Minecraft name and this key. Guard it well -{" "}
               <span className="text-slate-200">anyone holding it can enter as you</span>.
             </p>
           </div>
 
-          {/* Destructive — pushed to the very bottom, armed only by typing the IGN. */}
+          {/* Destructive - pushed to the very bottom, armed only by typing the IGN. */}
           <div className="mt-auto space-y-4 border-t border-slate-800 pt-6">
             <p className="flex items-start gap-2 text-xs leading-relaxed text-slate-500">
               <TriangleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
               <span>
                 Leaving erases your record and strips your{" "}
                 <span className="text-slate-300">@Citizen</span> role in Discord.
-                This cannot be undone — you would have to petition anew.
+                This cannot be undone - you would have to petition anew.
               </span>
             </p>
             <LeaveForm ign={ign} />

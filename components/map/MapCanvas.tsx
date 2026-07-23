@@ -17,7 +17,7 @@ const MAX_ZOOM = 4;
 
 /**
  * Pannable / zoomable coordinate map. Each region tile is absolutely positioned
- * by its (rx, rz); pan and zoom are a single CSS transform on the inner layer —
+ * by its (rx, rz); pan and zoom are a single CSS transform on the inner layer -
  * no mapping library. Missing regions are simply the unexplored frontier.
  */
 export function MapCanvas({ tiles }: { tiles: DisplayTile[] }) {

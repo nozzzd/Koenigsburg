@@ -2,7 +2,7 @@
  * Litematica material-list import.
  *
  * ─────────────────────────────────────────────────────────────────────────
- * EXTENSION POINT — this is the ONE place to update once a real Litematica
+ * EXTENSION POINT - this is the ONE place to update once a real Litematica
  * export sample is available. Everything else (schema, allocation engine,
  * server actions, UI) already treats an imported list exactly like a
  * hand-entered one, so dropping in the true format is a change to this file

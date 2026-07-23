@@ -13,7 +13,7 @@ import { generateVerificationCode } from "@/lib/codes";
  *
  * Approval also ROTATES the verification code. A manual signup posts their
  * code publicly in #immigration to prove ownership, which makes it worthless
- * as a credential — so the posted one is burned here and the member is issued
+ * as a credential - so the posted one is burned here and the member is issued
  * a fresh private login key (key_saved=false ⇒ they're warned to save it).
  */
 export async function approvePlayer(playerId: string): Promise<void> {
@@ -31,7 +31,7 @@ export async function approvePlayer(playerId: string): Promise<void> {
   if (!target) throw new Error("Player not found");
 
   // A linked Discord account (set by /verify or OAuth) is proof of ownership.
-  // Without it, a manual signup is unverified — refuse, so nobody gets in on an
+  // Without it, a manual signup is unverified - refuse, so nobody gets in on an
   // unproven claim. The queue also hides the button, but this is the real gate.
   if (!target.discord_id) {
     throw new Error(

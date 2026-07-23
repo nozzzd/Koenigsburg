@@ -12,7 +12,7 @@ import { submitTiles } from "@/actions/map";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
 import { scanWorldMapFolder, type WorldGroup } from "@/lib/xaero/scan";
 
-const BATCH = 12; // tiles per request — keeps each POST well under Vercel's ~4.5MB cap
+const BATCH = 12; // tiles per request - keeps each POST well under Vercel's ~4.5MB cap
 const MAX_REGIONS = 1200;
 const PREVIEW_MAX_PX = 1024;
 
@@ -94,7 +94,7 @@ export function RegionUploader() {
     if (!selected || phase !== "idle") return;
     if (selected.files.length > MAX_REGIONS) {
       setError(
-        `That world has ${selected.files.length} region files — more than the ${MAX_REGIONS} we can take in one go. Ping an admin and we'll split it.`
+        `That world has ${selected.files.length} region files - more than the ${MAX_REGIONS} we can take in one go. Ping an admin and we'll split it.`
       );
       return;
     }
@@ -185,7 +185,7 @@ export function RegionUploader() {
     setFailures(failed);
 
     if (cancelRef.current) {
-      setNote("Cancelled — nothing was uploaded.");
+      setNote("Cancelled - nothing was uploaded.");
       setPhase("idle");
       return;
     }
@@ -193,7 +193,7 @@ export function RegionUploader() {
       setError(
         failed.length > 0
           ? "None of the region files could be read. Update Xaero's World Map, hop on the server so it re-saves, and try again."
-          : "That world's map files are all empty — explore a little first!"
+          : "That world's map files are all empty - explore a little first!"
       );
       setPhase("idle");
       return;
@@ -206,7 +206,7 @@ export function RegionUploader() {
 
     for (let i = 0; i < tiles.length; i += BATCH) {
       if (cancelRef.current) {
-        setNote("Stopped early — the regions uploaded so far are on the map.");
+        setNote("Stopped early - the regions uploaded so far are on the map.");
         break;
       }
       const batch = tiles.slice(i, i + BATCH);
@@ -261,7 +261,7 @@ export function RegionUploader() {
           </p>
           {stale > 0 && (
             <p className="pl-6 text-emerald-400/80">
-              {stale} {stale === 1 ? "region was" : "regions were"} skipped — the
+              {stale} {stale === 1 ? "region was" : "regions were"} skipped - the
               map already has newer scouting there.
             </p>
           )}
@@ -278,7 +278,7 @@ export function RegionUploader() {
           <ul className="space-y-0.5 pl-5">
             {failures.slice(0, 5).map((f) => (
               <li key={f.name}>
-                {f.name} — {f.reason}
+                {f.name} - {f.reason}
               </li>
             ))}
             {failures.length > 5 && <li>…and {failures.length - 5} more.</li>}
@@ -325,13 +325,13 @@ export function RegionUploader() {
           >
             {groups.map((g) => (
               <option key={g.key} value={g.key}>
-                {g.label} — {g.files.length} regions, last played{" "}
+                {g.label} - {g.files.length} regions, last played{" "}
                 {formatDay(g.newestMs)}
               </option>
             ))}
           </select>
           <p className="mt-1.5 text-xs text-slate-500">
-            We picked the most recently played one for you — double-check the
+            We picked the most recently played one for you - double-check the
             name matches our server.
           </p>
         </div>
@@ -371,7 +371,7 @@ export function RegionUploader() {
           <p className="text-center text-xs text-slate-500">
             {phase === "done"
               ? "That's what got stitched into the shared map."
-              : "Your discoveries, drawn right in your browser — nothing uploads until this finishes."}
+              : "Your discoveries, drawn right in your browser - nothing uploads until this finishes."}
           </p>
         </div>
       )}

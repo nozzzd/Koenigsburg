@@ -2,9 +2,9 @@
 -- Run once in the Supabase SQL editor. Safe to run repeatedly.
 --
 -- Three kinds of entry, distinguished by `scope`:
---   personal — a member's own to-do; they own it outright
---   assigned — set BY an admin FOR one member; they tick it, only admins remove it
---   realm    — a general goal every citizen sees (player_id IS NULL)
+--   personal - a member's own to-do; they own it outright
+--   assigned - set BY an admin FOR one member; they tick it, only admins remove it
+--   realm    - a general goal every citizen sees (player_id IS NULL)
 
 DO $$ BEGIN
     CREATE TYPE task_scope AS ENUM ('personal', 'assigned', 'realm');

@@ -14,7 +14,7 @@ import { MemberRow } from "@/components/admin/MemberRow";
 
 type DiscordIssue = "left" | "missing-role";
 
-export const metadata: Metadata = { title: "Admin — The Roll of Königsburg" };
+export const metadata: Metadata = { title: "Admin - The Roll of Königsburg" };
 
 // Always live: departures must be caught on load, not served from cache.
 export const dynamic = "force-dynamic";

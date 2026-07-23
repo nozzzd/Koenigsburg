@@ -7,7 +7,7 @@
 -- the `map-tiles` bucket. The `map_tiles.storage_path` row points at the
 -- currently published object for each region.
 -- One row per region cell. `captured_at` is the region file's own modification
--- time — a tile only replaces the stored one when its capture date is NEWER,
+-- time - a tile only replaces the stored one when its capture date is NEWER,
 -- so a re-upload of an old map can never wipe fresher scouting. The public
 -- /map page reassembles the tiles by their coordinates.
 

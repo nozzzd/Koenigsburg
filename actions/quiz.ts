@@ -38,7 +38,7 @@ export const getRoleMap = cache(async (): Promise<Record<ArchetypeKey, string>> 
   return map;
 });
 
-/** The archetypes an admin has wired to a team — what the quiz needs to know. */
+/** The archetypes an admin has wired to a team - what the quiz needs to know. */
 export async function getMappedRoles(): Promise<ArchetypeKey[]> {
   return Object.keys(await getRoleMap()) as ArchetypeKey[];
 }

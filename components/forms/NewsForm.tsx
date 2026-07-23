@@ -13,7 +13,7 @@ export function NewsForm({ post }: { post?: NewsPost }) {
     post ? updateNews : createNews,
     null
   );
-  // Several of these render on one page — keep input ids unique.
+  // Several of these render on one page - keep input ids unique.
   const uid = post?.id ?? "new";
 
   return (
@@ -63,7 +63,7 @@ export function NewsForm({ post }: { post?: NewsPost }) {
           className={`${inputClass} resize-y`}
         />
         <p className="mt-1.5 text-xs text-slate-500">
-          Plain text — line breaks and paragraphs are preserved.
+          Plain text - line breaks and paragraphs are preserved.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export function NewsForm({ post }: { post?: NewsPost }) {
             className="h-4 w-4 accent-gold-400"
           />
           <span className="text-sm font-semibold text-slate-300">
-            Important — pin to the top
+            Important - pin to the top
           </span>
         </label>
       </div>

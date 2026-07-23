@@ -5,7 +5,7 @@ import { getSupabase, type NewsPost } from "@/lib/supabase";
 import { Panel, navButtonClass } from "@/components/ui";
 
 /**
- * Missing table (unmigrated) shouldn't break the dashboard — show empty.
+ * Missing table (unmigrated) shouldn't break the dashboard - show empty.
  * cache() dedupes: the widget renders twice (desktop sidebar + mobile block),
  * but only one query goes out per request.
  */
@@ -50,7 +50,7 @@ export async function NewsWidget({ className = "" }: { className?: string }) {
         </div>
       ) : (
         <div className="flex flex-1 flex-col overflow-y-auto">
-          {/* Lead story gets the room — image, headline, blurb. */}
+          {/* Lead story gets the room - image, headline, blurb. */}
           <Link href={`/portal/news/${lead.id}`} className="group block">
             {lead.image_url && (
               // eslint-disable-next-line @next/next/no-img-element

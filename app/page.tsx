@@ -42,7 +42,7 @@ const pillars = [
   },
 ];
 
-/** What the nation's organization actually gives a citizen — all true today. */
+/** What the nation's organization actually gives a citizen - all true today. */
 const benefits = [
   { icon: Layers, text: "Your own citizenship portal, not a lost role in a crowded Discord" },
   { icon: Compass, text: "A clear role and a team from day one, so you never grind alone" },
@@ -68,7 +68,7 @@ const steps = [
   },
 ];
 
-/** Live count of sworn citizens — social proof. Degrades to null on any error. */
+/** Live count of sworn citizens - social proof. Degrades to null on any error. */
 async function citizenCount(): Promise<number | null> {
   try {
     const { count } = await getSupabase()
@@ -109,7 +109,7 @@ export default async function LandingPage() {
           <p className="mt-6 font-display text-[0.65rem] font-semibold tracking-[0.35em] text-gold-500 sm:mt-8 sm:text-xs sm:tracking-[0.5em]">
             THE MOST ORGANIZED NATION IN THE EVENT
           </p>
-          {/* Tracking + size scale down hard on phones — at 5xl with 0.15em
+          {/* Tracking + size scale down hard on phones - at 5xl with 0.15em
               tracking this word is wider than a 375px viewport. */}
           <h1 className="mt-3 bg-gradient-to-b from-slate-50 via-slate-200 to-slate-400 bg-clip-text font-display text-[2rem] font-bold tracking-[0.06em] text-transparent sm:text-6xl sm:tracking-[0.15em] lg:text-7xl">
             KÖNIGSBURG
@@ -175,7 +175,7 @@ export default async function LandingPage() {
 
         <GoldDivider className="w-full max-w-3xl" />
 
-        {/* What you actually get — tangible benefits sell harder than flavor. */}
+        {/* What you actually get - tangible benefits sell harder than flavor. */}
         <section className="w-full max-w-4xl py-14">
           <div className="text-center">
             <p className="font-display text-xs font-semibold tracking-[0.4em] text-gold-500">
@@ -230,7 +230,7 @@ export default async function LandingPage() {
 
         <GoldDivider className="w-full max-w-3xl" />
 
-        {/* Closing ask — one last strong push to the gates. */}
+        {/* Closing ask - one last strong push to the gates. */}
         <section className="flex w-full max-w-3xl flex-col items-center py-16 text-center">
           <h2 className="font-display text-2xl font-bold tracking-widest text-slate-100 sm:text-3xl">
             The gates are open

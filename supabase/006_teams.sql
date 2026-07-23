@@ -27,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_team_members_player ON team_members(player_id);
 ALTER TABLE tasks
     ADD COLUMN IF NOT EXISTS team_id UUID REFERENCES teams(id) ON DELETE CASCADE;
 
--- Extend the scope enum with 'team' (idempotent — ignored if already present).
+-- Extend the scope enum with 'team' (idempotent - ignored if already present).
 DO $$ BEGIN
     ALTER TYPE task_scope ADD VALUE IF NOT EXISTS 'team';
 EXCEPTION WHEN duplicate_object THEN NULL;

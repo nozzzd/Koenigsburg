@@ -53,7 +53,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const { project } = await getBuildProject(id);
-  return { title: project ? `Admin — ${project.name}` : "Admin — Build" };
+  return { title: project ? `Admin - ${project.name}` : "Admin - Build" };
 }
 
 function pct(value: number): number {
@@ -364,7 +364,7 @@ export default async function AdminBuildDetailPage({
           LITEMATICA FILES
         </p>
         <p className="mt-1 text-sm text-slate-500">
-          Upload schematics for this build — citizens can download them from the project
+          Upload schematics for this build - citizens can download them from the project
           page.
         </p>
         {files.length > 0 && (

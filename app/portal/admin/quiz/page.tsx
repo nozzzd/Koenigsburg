@@ -7,7 +7,7 @@ import { getSessionPlayer } from "@/lib/session";
 import { GoldDivider, Panel } from "@/components/ui";
 import { QuizRoleMapper } from "@/components/admin/QuizRoleMapper";
 
-export const metadata: Metadata = { title: "Admin — Quiz Roles" };
+export const metadata: Metadata = { title: "Admin - Quiz Roles" };
 
 export default async function AdminQuizPage() {
   const player = await getSessionPlayer();

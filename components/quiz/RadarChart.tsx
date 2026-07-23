@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ARCHETYPES, type ArchetypeKey } from "@/lib/quiz";
 
 /**
- * Hand-built SVG radar (spider) chart — no charting dependency. Six spokes,
+ * Hand-built SVG radar (spider) chart - no charting dependency. Six spokes,
  * one per archetype, drawn clockwise from the top. A faint "nation average"
  * polygon sits behind the player's gold polygon to mirror the two-series look
  * of the reference image. The player polygon animates from the centre out on
@@ -43,7 +43,7 @@ function point(value: number, cos: number, sin: number) {
   return { x: CX + r * cos, y: CY + r * sin };
 }
 
-/** Unclamped — for label anchors beyond the outer ring. point() would snap a
+/** Unclamped - for label anchors beyond the outer ring. point() would snap a
  *  1.14-radius label back onto the ring, right on top of a maxed vertex. */
 function anchorPoint(value: number, cos: number, sin: number) {
   return { x: CX + RADIUS * value * cos, y: CY + RADIUS * value * sin };
@@ -123,7 +123,7 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
         );
       })}
 
-      {/* Nation average — faint reference series */}
+      {/* Nation average - faint reference series */}
       <polygon
         points={polygon(NATION_AVERAGE)}
         fill="var(--color-slate-500)"
@@ -133,7 +133,7 @@ export function RadarChart({ scores }: { scores: Record<ArchetypeKey, number> })
         strokeOpacity={0.4}
       />
 
-      {/* The player's alignment — gold, grows from centre on mount */}
+      {/* The player's alignment - gold, grows from centre on mount */}
       <polygon
         points={polygon(scores)}
         fill="var(--color-gold-400)"

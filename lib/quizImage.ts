@@ -2,7 +2,7 @@ import { ARCHETYPES, ARCHETYPE_BY_KEY, type ArchetypeKey, type QuizResult } from
 
 /**
  * Renders the quiz result to a branded, share-ready PNG on a canvas and hands
- * back a data URL. No dependency and no DOM scraping — the chart is redrawn in
+ * back a data URL. No dependency and no DOM scraping - the chart is redrawn in
  * canvas coordinates so the export is crisp at 2x. Laid out as an asymmetric
  * stat card (chart left, standing + rankings right) with a quiet promo strip,
  * so a shared result reads like a game card rather than a template.
@@ -30,7 +30,7 @@ const AXES = ARCHETYPES.map((a, i) => {
   return { key: a.key, label: a.label, cos: Math.cos(angle), sin: Math.sin(angle) };
 });
 
-/** The site's public origin, if configured — used for the promo strip. */
+/** The site's public origin, if configured - used for the promo strip. */
 function siteHost(): string {
   const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   try {
@@ -72,7 +72,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   const ctx = canvas.getContext("2d")!;
   ctx.scale(S, S);
 
-  // Backdrop: plain deep slate. No gold wash behind the chart — gold at low
+  // Backdrop: plain deep slate. No gold wash behind the chart - gold at low
   // alpha over navy reads as muddy olive; the gold lives in linework instead.
   const bg = ctx.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, COLORS.bg1);
@@ -214,7 +214,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   ctx.font = sans(14, "400");
   wrapText(ctx, blurb, rx, 240, colW, 20);
 
-  // The site's signature divider: line — diamond — line.
+  // The site's signature divider: line - diamond - line.
   const dividerY = 312.5;
   const midX = (rx + colRight) / 2;
   ctx.lineWidth = 1;
@@ -305,7 +305,7 @@ export function buildResultImage(result: QuizResult, topKey: ArchetypeKey): stri
   return canvas.toDataURL("image/png");
 }
 
-/** A small rotated square — the site's diamond motif. */
+/** A small rotated square - the site's diamond motif. */
 function diamond(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -386,7 +386,7 @@ export async function downloadResultImage(result: QuizResult, topKey: ArchetypeK
       await document.fonts.ready;
     }
   } catch {
-    // Fall back to the serif — still on-brand.
+    // Fall back to the serif - still on-brand.
   }
 
   const url = buildResultImage(result, topKey);

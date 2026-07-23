@@ -5,14 +5,14 @@ import { NewsWidget } from "@/components/NewsWidget";
 import { TasksWidget } from "@/components/TasksWidget";
 
 /**
- * The Citizen's Hall only — the two boards live here, not in the shared portal
+ * The Citizen's Hall only - the two boards live here, not in the shared portal
  * layout, so they never show up on the admin or newsletter pages.
  *
  * The Herald (left) and the Ledger (right) are equal-width columns, which is
  * also what keeps the middle on the TRUE centre of the screen: mx-auto alone
  * would only centre within the space left beside a single sidebar.
  *
- * Both are hidden below lg — the dashboard renders them inline on phones
+ * Both are hidden below lg - the dashboard renders them inline on phones
  * instead (cache() dedupes, so it's still one query each).
  */
 export default async function HallLayout({

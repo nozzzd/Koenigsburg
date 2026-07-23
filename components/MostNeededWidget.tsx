@@ -85,7 +85,7 @@ export async function MostNeededWidget({
       ) : (
         <>
           <p className="px-5 pt-4 text-xs text-slate-500">
-            What the nation still needs across every active build — biggest gaps first.
+            What the nation still needs across every active build - biggest gaps first.
           </p>
           <ul className="mt-3 divide-y divide-slate-800/70">
             {shortfalls.map((s) => {

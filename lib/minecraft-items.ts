@@ -1516,7 +1516,7 @@ const ITEM_SET = new Set(MINECRAFT_ITEM_IDS);
 /**
  * True when `itemId` is a real, obtainable Minecraft item.
  * - "minecraft:x" and bare "x" are checked against the vanilla registry.
- * - a non-minecraft namespace (modded) is allowed through — we can't verify it.
+ * - a non-minecraft namespace (modded) is allowed through - we can't verify it.
  */
 export function isRealMinecraftItem(itemId: string): boolean {
   const trimmed = itemId.trim().toLowerCase();
@@ -1525,6 +1525,6 @@ export function isRealMinecraftItem(itemId: string): boolean {
   if (colon === -1) return ITEM_SET.has(trimmed);
   const ns = trimmed.slice(0, colon);
   const path = trimmed.slice(colon + 1);
-  if (ns !== "minecraft") return path.length > 0; // modded — cannot verify, allow
+  if (ns !== "minecraft") return path.length > 0; // modded - cannot verify, allow
   return ITEM_SET.has(path);
 }

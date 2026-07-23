@@ -11,7 +11,7 @@ import { getSupabase, type Player } from "@/lib/supabase";
 import { createSession, setDiscordHandoff } from "@/lib/session";
 
 /**
- * Discord OAuth callback — decides between the three paths:
+ * Discord OAuth callback - decides between the three paths:
  *   existing player  → session → /portal (or /pending)
  *   has @Citizen     → Path 1 → /welcome (one-time IGN prompt)
  *   no @Citizen      → Path 2 → /apply (pre-filled application)
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Signing in now MEANS joining: drop them into the server with the consent
-  // their guilds.join scope granted. Best-effort — a failure (bot missing the
+  // their guilds.join scope granted. Best-effort - a failure (bot missing the
   // Create Instant Invite permission, or a hiccup) must never block sign-in.
   try {
     await addGuildMember(discordUser.id, accessToken);

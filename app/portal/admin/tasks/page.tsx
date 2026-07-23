@@ -9,7 +9,7 @@ import { GoldDivider, Panel } from "@/components/ui";
 import { AssignTaskForm, RealmGoalForm } from "@/components/forms/AssignTaskForm";
 import { AssignTeamTaskForm } from "@/components/forms/TeamForms";
 
-export const metadata: Metadata = { title: "Admin — The Ledger" };
+export const metadata: Metadata = { title: "Admin - The Ledger" };
 
 export default async function AdminTasksPage() {
   const player = await getSessionPlayer();
@@ -31,11 +31,11 @@ export default async function AdminTasksPage() {
         .eq("status", "active")
         .order("minecraft_ign", { ascending: true })
         .returns<Player[]>(),
-      // Teams may not exist yet (006 unmigrated) — tolerate the error.
+      // Teams may not exist yet (006 unmigrated) - tolerate the error.
       supabase.from("teams").select("*").order("name").returns<Team[]>(),
     ]);
 
-  // The table won't exist until the migration is run — say so instead of crashing.
+  // The table won't exist until the migration is run - say so instead of crashing.
   if (error) {
     return (
       <div className="space-y-6">

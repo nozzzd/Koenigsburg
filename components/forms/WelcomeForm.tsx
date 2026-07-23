@@ -6,7 +6,7 @@ import { IGN_HINT, type ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 
-/** Path 1 — citizen verified; declaring the IGN activates the account. */
+/** Path 1 - citizen verified; declaring the IGN activates the account. */
 export function WelcomeForm() {
   const [state, action] = useActionState<ActionState, FormData>(completeCitizenSetup, null);
 

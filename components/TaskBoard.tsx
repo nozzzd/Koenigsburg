@@ -188,7 +188,7 @@ export function TaskBoard({
               <SectionHeading icon={Crown}>From the council</SectionHeading>
               <ul>
                 {assigned.map((task) => (
-                  // Only elders may remove a duty — otherwise "assigned" would
+                  // Only elders may remove a duty - otherwise "assigned" would
                   // mean nothing.
                   <TaskRow
                     key={task.id}

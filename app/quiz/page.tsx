@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function QuizPage() {
-  // Which archetypes an admin has wired to a real team — decides whether the
+  // Which archetypes an admin has wired to a real team - decides whether the
   // result screen offers "Sign up as a Builder" or a plain signup.
   const mappedRoles = await getMappedRoles();
 

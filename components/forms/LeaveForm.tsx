@@ -25,7 +25,7 @@ function ConfirmButton({ disabled }: { disabled: boolean }) {
   );
 }
 
-/** Destructive — deliberately requires typing the exact IGN to arm the button. */
+/** Destructive - deliberately requires typing the exact IGN to arm the button. */
 export function LeaveForm({ ign }: { ign: string }) {
   const [state, action] = useActionState<ActionState, FormData>(
     leaveKoenigsburg,

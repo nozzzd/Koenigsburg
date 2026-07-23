@@ -18,7 +18,7 @@ export function Panel({
   );
 }
 
-/** Ornamental horizontal rule: line — diamond — line. */
+/** Ornamental horizontal rule: line - diamond - line. */
 export function GoldDivider({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-3 ${className}`} aria-hidden>
@@ -43,7 +43,7 @@ export function WordMark({ href = "/" }: { href?: string }) {
   return (
     <Link href={href} className="group flex shrink-0 items-center gap-2 sm:gap-3">
       <Crest className="h-8 w-8 sm:h-9 sm:w-9" />
-      {/* Tighter on phones — the full-size mark plus nav overflows a 320px screen. */}
+      {/* Tighter on phones - the full-size mark plus nav overflows a 320px screen. */}
       <span className="font-display text-sm font-semibold tracking-[0.12em] text-slate-100 transition group-hover:text-gold-300 sm:text-lg sm:tracking-[0.2em]">
         KÖNIGSBURG
       </span>
@@ -73,7 +73,7 @@ export function ErrorBanner({ message }: { message: string }) {
 
 /**
  * The header frame. Deliberately narrower than the hall body so the nav
- * buttons stay in from the edge of a wide monitor — the Herald is allowed to
+ * buttons stay in from the edge of a wide monitor - the Herald is allowed to
  * reach further left than this.
  */
 export const SHELL = "mx-auto w-full max-w-[100rem]";
@@ -96,7 +96,7 @@ export const goldButtonClass =
 export const outlineButtonClass =
   "pressable inline-flex items-center justify-center gap-2 rounded-lg border border-gold-500/40 px-4 py-2.5 font-display text-sm font-bold tracking-wider text-gold-300 hover:border-gold-400 hover:bg-gold-400/10";
 
-/** Oversized primary call-to-action — the single dominant "join" button. */
+/** Oversized primary call-to-action - the single dominant "join" button. */
 export const heroCtaClass =
   "btn-gold pressable inline-flex items-center justify-center gap-2.5 rounded-xl px-10 py-4 font-display text-base font-bold tracking-widest shadow-lg shadow-gold-500/20 hover:shadow-xl hover:shadow-gold-500/30";
 
@@ -107,6 +107,6 @@ export const heroCtaClass =
 export const navButtonClass =
   "pressable inline-flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900/60 px-2.5 py-1.5 text-sm font-semibold text-slate-400 hover:border-gold-500/50 hover:bg-slate-800 hover:text-gold-300 sm:px-3";
 
-/** Panels that are links — lift and lighten so they feel clickable. */
+/** Panels that are links - lift and lighten so they feel clickable. */
 export const cardLinkClass =
   "pressable h-full hover:border-gold-500/50 hover:bg-slate-800/50 hover:shadow-xl hover:shadow-black/50";

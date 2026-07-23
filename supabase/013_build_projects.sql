@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS build_project_items (
     -- live stock) instead of the greedy "take what's needed" figure.
     manual_override BIGINT CHECK (manual_override IS NULL OR manual_override >= 0),
     -- Locked lines claim their share of the pool BEFORE any unlocked line, in
-    -- priority order — a way to guarantee a critical material for one project.
+    -- priority order - a way to guarantee a critical material for one project.
     locked BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
     UNIQUE (project_id, item_id)

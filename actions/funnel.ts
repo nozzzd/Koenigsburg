@@ -42,6 +42,6 @@ export async function track(event: string): Promise<void> {
     const visit_id = await visitId();
     await getSupabase().from("funnel_events").insert({ event, visit_id });
   } catch {
-    // swallow — never surface analytics failures to the visitor
+    // swallow - never surface analytics failures to the visitor
   }
 }

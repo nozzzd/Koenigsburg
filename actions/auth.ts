@@ -20,7 +20,7 @@ function readIgn(formData: FormData): string | null {
 /**
  * The team a quiz-driven recruit elected, re-validated server-side: the form
  * only ever carries a team id chosen by the apply page (which resolved it from
- * a mapped archetype), but we never trust the client — confirm the team still
+ * a mapped archetype), but we never trust the client - confirm the team still
  * exists before persisting it. Returns null for a normal signup or a stale id.
  */
 async function readPendingTeamId(formData: FormData): Promise<string | null> {
@@ -73,7 +73,7 @@ async function insertPlayer(fields: InsertFields): Promise<InsertResult> {
   return { error: "Could not mint a unique code. Please try again." };
 }
 
-/** Path 3 — manual fallback signup (no OAuth). */
+/** Path 3 - manual fallback signup (no OAuth). */
 export async function manualSignup(
   _prev: ActionState,
   formData: FormData
@@ -98,7 +98,7 @@ export async function manualSignup(
   redirect("/pending");
 }
 
-/** Path 2 — application after Discord OAuth (no @Citizen role yet). */
+/** Path 2 - application after Discord OAuth (no @Citizen role yet). */
 export async function submitApplication(
   _prev: ActionState,
   formData: FormData
@@ -125,7 +125,7 @@ export async function submitApplication(
   redirect("/pending");
 }
 
-/** Path 1 — @Citizen verified via OAuth; one-time IGN prompt completes the record. */
+/** Path 1 - @Citizen verified via OAuth; one-time IGN prompt completes the record. */
 export async function completeCitizenSetup(
   _prev: ActionState,
   formData: FormData

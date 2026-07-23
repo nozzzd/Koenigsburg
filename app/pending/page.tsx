@@ -74,7 +74,7 @@ export default async function PendingPage({
                   /verify
                 </code>{" "}
                 and paste this code. The bot confirms it&apos;s you{" "}
-                <span className="text-slate-200">privately</span> — only you can see the
+                <span className="text-slate-200">privately</span> - only you can see the
                 reply. Never post it in a channel where others can read it. Until you
                 verify, the council cannot approve you.
               </p>
@@ -82,7 +82,7 @@ export default async function PendingPage({
             </>
           ) : (
             <p className="text-sm leading-relaxed text-slate-400">
-              No further steps needed — check back soon.
+              No further steps needed - check back soon.
             </p>
           )}
           <div className="flex items-start gap-2.5 rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-3 text-xs leading-relaxed text-slate-400">

@@ -16,18 +16,18 @@ import { RegionUploader } from "@/components/map/RegionUploader";
 export const metadata: Metadata = {
   title: "Contribute to the Map",
   description:
-    "Share the lands you've explored — export your Xaero's World Map and add your discoveries to Königsburg's community map.",
+    "Share the lands you've explored - export your Xaero's World Map and add your discoveries to Königsburg's community map.",
 };
 
 const steps: { title: string; body: string; caption: string }[] = [
   {
     title: "Find your Xaero map folder",
-    body: "Press the Windows key + R, paste %appdata%\\.minecraft\\xaero\\world-map and hit Enter — the folder pops open. (Using CurseForge, Modrinth or Prism? Open your modpack's folder from the launcher instead, then go into xaero, then world-map.)",
+    body: "Press the Windows key + R, paste %appdata%\\.minecraft\\xaero\\world-map and hit Enter - the folder pops open. (Using CurseForge, Modrinth or Prism? Open your modpack's folder from the launcher instead, then go into xaero, then world-map.)",
     caption: "The world-map folder in Windows Explorer",
   },
   {
     title: "Select that folder below",
-    body: "Scroll down, click \"Choose folder\" and pick the world-map folder you just found. Your browser may warn about \"uploading\" the folder — that's fine: everything is read on your own computer first.",
+    body: "Scroll down, click \"Choose folder\" and pick the world-map folder you just found. Your browser may warn about \"uploading\" the folder - that's fine: everything is read on your own computer first.",
     caption: "Picking the world-map folder in the browser",
   },
   {
@@ -37,7 +37,7 @@ const steps: { title: string; body: string; caption: string }[] = [
   },
   {
     title: "Hit the button and watch",
-    body: "Your browser draws map tiles straight from the mod's own files and uploads the finished pictures. You'll see your map appear as it goes. Every area carries the date you last saw it — the shared map always keeps the newest look at each area.",
+    body: "Your browser draws map tiles straight from the mod's own files and uploads the finished pictures. You'll see your map appear as it goes. Every area carries the date you last saw it - the shared map always keeps the newest look at each area.",
     caption: "The map rendering in the browser",
   },
 ];
@@ -73,24 +73,24 @@ export default async function ContributePage() {
           </h1>
           <p className="mt-4 max-w-xl text-balance text-slate-400">
             Königsburg&apos;s map is built by its people. Your Xaero mod already
-            keeps a map of everything you&apos;ve explored — point us at its
+            keeps a map of everything you&apos;ve explored - point us at its
             folder and we&apos;ll stitch your corner of the world into
-            everyone&apos;s. It only takes a minute — no exporting, no
+            everyone&apos;s. It only takes a minute - no exporting, no
             coordinates, no tech skills.
           </p>
         </section>
 
         <GoldDivider className="w-full" />
 
-        {/* The guide — plain-language, screenshot slots fill in from /public/guide */}
+        {/* The guide - plain-language, screenshot slots fill in from /public/guide */}
         <section className="space-y-4 py-10">
           <h2 className="text-center font-display text-sm font-bold tracking-[0.3em] text-slate-300">
-            HOW IT WORKS — FOUR STEPS
+            HOW IT WORKS - FOUR STEPS
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {steps.map((step, i) => (
               <Panel key={i} className="flex flex-col overflow-hidden">
-                {/* Screenshot placeholder — drop an image at public/guide/step-N.png later */}
+                {/* Screenshot placeholder - drop an image at public/guide/step-N.png later */}
                 <div className="flex aspect-video w-full flex-col items-center justify-center gap-1.5 border-b border-slate-800 bg-gradient-to-br from-slate-800/50 to-slate-950 text-slate-600">
                   <ImageIcon className="h-7 w-7" strokeWidth={1.5} />
                   <span className="px-4 text-center text-[0.7rem] tracking-wide">{step.caption}</span>
@@ -113,7 +113,7 @@ export default async function ContributePage() {
             <span className="font-semibold text-slate-400">
               What actually gets uploaded?
             </span>{" "}
-            Only finished map pictures — one small image per 512×512 area — plus
+            Only finished map pictures - one small image per 512×512 area - plus
             the date each area was last seen. Your waypoints live in a different
             folder and are never touched. And because every area carries its own
             date, an old map can never overwrite someone&apos;s newer scouting.

@@ -8,7 +8,7 @@ import type { ActionState } from "@/lib/forms";
 
 /**
  * Renounce citizenship: strips the Discord @Citizen role, erases the player
- * record, and ends the session. Irreversible — they must petition anew.
+ * record, and ends the session. Irreversible - they must petition anew.
  */
 export async function leaveKoenigsburg(
   _prev: ActionState,
@@ -17,18 +17,18 @@ export async function leaveKoenigsburg(
   const player = await getSessionPlayer();
   if (!player) redirect("/login");
 
-  // Typed confirmation — enforced here, not just in the UI, so no stray click
+  // Typed confirmation - enforced here, not just in the UI, so no stray click
   // (or crafted request) can erase an account.
   const confirmIgn = String(formData.get("confirm_ign") ?? "").trim();
   if (confirmIgn !== player.minecraft_ign) {
     return {
-      error: `Type your Minecraft name exactly — ${player.minecraft_ign} — to confirm.`,
+      error: `Type your Minecraft name exactly - ${player.minecraft_ign} - to confirm.`,
     };
   }
 
   const supabase = getSupabase();
 
-  // Never let the last elder leave — it would lock the realm out of its own
+  // Never let the last elder leave - it would lock the realm out of its own
   // approval queue with no way back in.
   if (player.role === "admin") {
     const { count } = await supabase

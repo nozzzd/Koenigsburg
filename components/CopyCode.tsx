@@ -12,7 +12,7 @@ export function CopyCode({ code }: { code: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Clipboard blocked — the code is visible for manual copying.
+      // Clipboard blocked - the code is visible for manual copying.
     }
   }
 

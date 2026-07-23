@@ -25,7 +25,7 @@ export interface BuildProjectItem {
   required_quantity: number;
   manual_override: number | null;
   locked: boolean;
-  /** Optional responsibility — a whole team OR one player, never both. */
+  /** Optional responsibility - a whole team OR one player, never both. */
   assigned_team_id: string | null;
   assigned_player_id: string | null;
   created_at: string;
@@ -114,7 +114,7 @@ function targetFor(item: BuildProjectItem): number {
  *   2. Every remaining line, in project-priority order, takes what's left.
  *
  * Each item's stock is a single pool, so a stack promised to a high-priority
- * project can never be counted again for a lower one. Pure and deterministic —
+ * project can never be counted again for a lower one. Pure and deterministic -
  * given the same inputs it always returns the same allocation.
  */
 export function allocateBuilds(
@@ -318,7 +318,7 @@ export async function getBuildFiles(projectId: string): Promise<BuildFile[]> {
     .order("created_at", { ascending: false })
     .returns<BuildFile[]>();
   if (error) {
-    // Table may not exist until 014 is run — downloads simply don't appear.
+    // Table may not exist until 014 is run - downloads simply don't appear.
     console.error("getBuildFiles failed:", error);
     return [];
   }

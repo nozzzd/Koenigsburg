@@ -23,7 +23,7 @@ import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 import { RegisterCommandButton } from "@/components/admin/RegisterCommandButton";
 
-export const metadata: Metadata = { title: "Admin — Whitelisting Queue" };
+export const metadata: Metadata = { title: "Admin - Whitelisting Queue" };
 
 export default async function AdminPage() {
   const player = await getSessionPlayer();
@@ -40,7 +40,7 @@ export default async function AdminPage() {
     throw new Error(`Failed to load the whitelisting queue: ${error.message}`);
   }
 
-  // One-time setup: hide the installer once /verify exists. Fail OPEN — if the
+  // One-time setup: hide the installer once /verify exists. Fail OPEN - if the
   // check errors, show it, since that's exactly when you'd need to run it.
   let verifyInstalled = false;
   try {
@@ -120,7 +120,7 @@ export default async function AdminPage() {
                 THE ROLL
               </p>
               <p className="mt-1 text-sm text-slate-400">
-                Every member — revoke or kick.
+                Every member - revoke or kick.
               </p>
             </div>
             <Users className="h-5 w-5 text-gold-400" />
@@ -171,7 +171,7 @@ export default async function AdminPage() {
         <Panel className="flex flex-col gap-3 border-amber-900/50 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-display text-sm font-bold tracking-widest text-amber-300">
-              SETUP — INSTALL /VERIFY
+              SETUP - INSTALL /VERIFY
             </p>
             <p className="mt-1 text-sm text-slate-400">
               Members prove a signup code with{" "}
@@ -217,7 +217,7 @@ export default async function AdminPage() {
                         </span>
                         <span className="inline-flex items-center gap-1.5 text-xs text-slate-500">
                           <ScrollText className="h-3.5 w-3.5" />
-                          Unverified — have them run{" "}
+                          Unverified - have them run{" "}
                           <code className="font-mono text-gold-400">
                             /verify {applicant.verification_code}
                           </code>{" "}

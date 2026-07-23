@@ -27,7 +27,7 @@ function refresh() {
 
 /**
  * Create a team. If "create Discord role" is checked, mints a matching guild
- * role first. If Discord fails, the team is NOT created — the two would be out
+ * role first. If Discord fails, the team is NOT created - the two would be out
  * of sync and confusing.
  */
 export async function createTeam(
@@ -89,7 +89,7 @@ export async function createTeam(
 
 /**
  * Rename / re-describe / recolour a team. If it mirrors a Discord role, the
- * role's name and colour are updated too (best-effort — the website is the
+ * role's name and colour are updated too (best-effort - the website is the
  * source of truth, so a Discord failure doesn't roll back the DB change).
  */
 export async function updateTeam(
@@ -209,7 +209,7 @@ export async function removeTeamMember(teamId: string, playerId: string): Promis
   refresh();
 }
 
-/** A duty for a whole team — lands on every member's Ledger. */
+/** A duty for a whole team - lands on every member's Ledger. */
 export async function assignTeamTask(
   _prev: ActionState,
   formData: FormData

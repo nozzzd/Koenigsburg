@@ -1,5 +1,5 @@
 /**
- * Nation Role Alignment Quiz — the single source of truth.
+ * Nation Role Alignment Quiz - the single source of truth.
  *
  * Fully self-contained and dependency-free so it can run on the client (the
  * quiz is anonymous, no server round-trips to take it). Icons are pulled from

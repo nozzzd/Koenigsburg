@@ -92,7 +92,7 @@ export async function destroySession(): Promise<void> {
 
 // --- Discord OAuth handoff --------------------------------------------------
 // Carries the verified Discord identity from the OAuth callback to the
-// /welcome and /apply forms — signed cookie, never query params, so the
+// /welcome and /apply forms - signed cookie, never query params, so the
 // Discord ID can't be tampered with between steps.
 
 export interface DiscordHandoff {

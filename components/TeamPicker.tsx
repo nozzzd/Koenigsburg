@@ -34,7 +34,7 @@ export function TeamPicker({
   teams: Team[];
   /** Which of `teams` the citizen currently belongs to. */
   memberTeamIds: string[];
-  /** True if they belong to ANY team (self or admin-assigned) — gates auto-open. */
+  /** True if they belong to ANY team (self or admin-assigned) - gates auto-open. */
   hasAnyTeam: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -55,7 +55,7 @@ export function TeamPicker({
       if (sessionStorage.getItem("kbg-team-prompt") === "done") return;
       sessionStorage.setItem("kbg-team-prompt", "done");
     } catch {
-      /* private mode — just skip the once-per-session guard */
+      /* private mode - just skip the once-per-session guard */
     }
     ref.current?.showModal();
   }, [hasAnyTeam, teams.length]);
@@ -79,7 +79,7 @@ export function TeamPicker({
     });
   }
 
-  // Nothing the council has opened up — no card, no button.
+  // Nothing the council has opened up - no card, no button.
   if (teams.length === 0) return null;
 
   const joined = teams.filter((t) => optimisticIds.has(t.id));

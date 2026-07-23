@@ -6,7 +6,7 @@ import { IGN_HINT, type ActionState } from "@/lib/forms";
 import { ErrorBanner, inputClass, labelClass } from "@/components/ui";
 import { SubmitButton } from "@/components/SubmitButton";
 
-/** Path 2 — Discord identity already verified server-side via the handoff cookie. */
+/** Path 2 - Discord identity already verified server-side via the handoff cookie. */
 export function ApplicationForm({ pendingTeamId }: { pendingTeamId?: string | null }) {
   const [state, action] = useActionState<ActionState, FormData>(submitApplication, null);
 

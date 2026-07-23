@@ -27,7 +27,7 @@ export default async function ApplyPage({
 
   // Quiz handoff: if ?role= maps to a real team, offer to pre-join it. The key
   // resolves to a team_id server-side, so a tampered URL can only ever name an
-  // archetype we recognise — never an arbitrary team.
+  // archetype we recognise - never an arbitrary team.
   const { role } = await searchParams;
   const teamId = role ? await resolveRoleTeam(role) : null;
   let electedTeam: Team | null = null;
@@ -91,7 +91,7 @@ export default async function ApplyPage({
               <code className="rounded bg-slate-950 px-1.5 py-0.5 font-mono text-gold-300">
                 /verify
               </code>{" "}
-              with your code — the council can only approve verified petitioners.
+              with your code - the council can only approve verified petitioners.
             </p>
           </div>
 

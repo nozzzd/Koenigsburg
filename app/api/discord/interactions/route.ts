@@ -4,7 +4,7 @@ import { getSupabase, type Player } from "@/lib/supabase";
 import { generateVerificationCode } from "@/lib/codes";
 import { assignCitizenRole, hasCitizenRole } from "@/lib/discord";
 
-// node:crypto — must not run on the edge runtime.
+// node:crypto - must not run on the edge runtime.
 export const runtime = "nodejs";
 
 /** DER prefix that wraps a raw 32-byte Ed25519 key as SPKI. */
@@ -35,7 +35,7 @@ function signatureIsValid(signature: string, timestamp: string, rawBody: string)
   }
 }
 
-/** Only the invoker sees the reply — the key must never hit the channel. */
+/** Only the invoker sees the reply - the key must never hit the channel. */
 function ephemeral(content: string) {
   return Response.json({ type: 4, data: { content, flags: 64 } });
 }
@@ -113,7 +113,7 @@ async function handleVerify(interaction: Interaction) {
       return ephemeral("Something went wrong on our end. Try again shortly.");
     }
     return ephemeral(
-      `✅ Identity confirmed — **${player.minecraft_ign}** is now tied to your Discord account.\n\n` +
+      `✅ Identity confirmed - **${player.minecraft_ign}** is now tied to your Discord account.\n\n` +
         "Your petition still awaits review by the council. You'll receive the @Citizen role and your private key the moment a council member approves you."
     );
   }
@@ -144,7 +144,7 @@ async function handleVerify(interaction: Interaction) {
   return ephemeral(
     `🏰 **The gates open, ${player.minecraft_ign}.**\n\n` +
       `Your private login key: \`${newKey}\`\n\n` +
-      "⚠️ **Save it and never share it** — it's your only way back in if you lose your session. " +
+      "⚠️ **Save it and never share it** - it's your only way back in if you lose your session. " +
       "Your old signup code is now dead. You can find this key again under Settings in the portal."
   );
 }

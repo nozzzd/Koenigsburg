@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS news (
     body TEXT NOT NULL,                             -- full article
     image_url TEXT,
     author VARCHAR(120),
-    pinned BOOLEAN DEFAULT FALSE NOT NULL,          -- "important" — floats to the top
+    pinned BOOLEAN DEFAULT FALSE NOT NULL,          -- "important" - floats to the top
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 

@@ -14,7 +14,7 @@ import {
   type PaletteState,
 } from "./region";
 
-// [r, g, b, a, tintIndex] — or keyed by "prop=value" variant strings when the
+// [r, g, b, a, tintIndex] - or keyed by "prop=value" variant strings when the
 // color depends on the block state.
 type BlockEntry = number[] | Record<string, number[]>;
 type ColorTable = {
@@ -145,7 +145,7 @@ export function renderRegion(region: ParsedRegion): ImageData {
     }
 
     // Relief: compare to the block one to the north (z-1). At the region's top
-    // edge the neighbour lives in another file — leave those unshaded.
+    // edge the neighbour lives in another file - leave those unshaded.
     let shade = 1;
     if (pixel >= REGION_SIZE) {
       const north = height[pixel - REGION_SIZE];

@@ -6,13 +6,13 @@ import { getSupabase, type FunnelEvent, type Player } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
 import { GoldDivider, Panel } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Admin — Recruitment Funnel" };
+export const metadata: Metadata = { title: "Admin - Recruitment Funnel" };
 export const dynamic = "force-dynamic";
 
 type Step = { label: string; hint: string; value: number };
 
 function pct(n: number, of: number): string {
-  if (of <= 0) return "—";
+  if (of <= 0) return "-";
   return `${Math.round((n / of) * 100)}%`;
 }
 

@@ -6,7 +6,7 @@ import type { FunnelEventName } from "@/lib/supabase";
 
 /**
  * Fires one funnel event when the page mounts, exactly once (a StrictMode
- * double-mount in dev is guarded). Renders nothing. Best-effort — track()
+ * double-mount in dev is guarded). Renders nothing. Best-effort - track()
  * swallows its own errors.
  */
 export function FunnelBeacon({ event }: { event: FunnelEventName }) {

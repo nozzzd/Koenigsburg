@@ -49,7 +49,7 @@ export interface Task {
   scope: TaskScope;
   /** Whose list it sits on; null for realm-wide and team goals. */
   player_id: string | null;
-  /** Set for team tasks — the task shows on every member of this team. */
+  /** Set for team tasks - the task shows on every member of this team. */
   team_id: string | null;
   assigned_by: string | null;
   done: boolean;
@@ -120,7 +120,7 @@ export type MapDimension = "overworld" | "nether" | "end";
  * One 512x512-block region of the crowd-sourced world map. `region_x`/`region_z`
  * are Xaero region coordinates (block coord / 512, floored); the tile image lives
  * in the `map-tiles` bucket at `storage_path`. Unique per (dimension, x, z);
- * `captured_at` (the region file's own modification time) is the merge key — a
+ * `captured_at` (the region file's own modification time) is the merge key - a
  * tile is only replaced by one with a NEWER capture date.
  */
 export interface MapTile {
@@ -151,7 +151,7 @@ function normalizeSupabaseUrl(raw: string): string {
 }
 
 /**
- * Service-role client — server only, bypasses RLS. Never expose to the browser
+ * Service-role client - server only, bypasses RLS. Never expose to the browser
  * (the `server-only` import above makes bundling it client-side a build error).
  */
 export function getSupabase(): SupabaseClient {

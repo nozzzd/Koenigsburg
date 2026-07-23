@@ -20,7 +20,7 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 
 /**
  * Stitches the currently-charted tiles into one big PNG in the browser and
- * downloads it. No server render, no deps — works logged out and after the event.
+ * downloads it. No server render, no deps - works logged out and after the event.
  */
 export function DownloadMapButton({ tiles }: { tiles: DisplayTile[] }) {
   const [busy, setBusy] = useState(false);

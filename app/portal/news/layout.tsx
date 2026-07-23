@@ -1,4 +1,4 @@
-/** The newsletter: plain centred column — the Herald sidebar would be redundant. */
+/** The newsletter: plain centred column - the Herald sidebar would be redundant. */
 export default function NewsLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {

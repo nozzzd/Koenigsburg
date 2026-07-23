@@ -18,7 +18,7 @@ const actionButtonClass =
  *
  * EXTENDING THIS: new per-member data (jobs, plots, titles…) belongs in the
  * meta row below, and new admin controls go in the actions column. Both are
- * additive — nothing else in the roster needs to change.
+ * additive - nothing else in the roster needs to change.
  */
 export function MemberRow({
   member,
@@ -54,7 +54,7 @@ export function MemberRow({
 
         <p className="truncate text-sm text-slate-400">@{member.discord_username}</p>
 
-        {/* meta row — add future per-member fields here */}
+        {/* meta row - add future per-member fields here */}
         <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
           <span
             className={
@@ -97,7 +97,7 @@ export function MemberRow({
         </div>
       </div>
 
-      {/* actions — add future admin controls here */}
+      {/* actions - add future admin controls here */}
       <div className="flex shrink-0 flex-wrap items-center gap-2">
         {isPending &&
           (member.discord_id ? (
@@ -134,7 +134,7 @@ export function MemberRow({
           <form action={revokeCitizenship.bind(null, member.id)}>
             <button
               type="submit"
-              title="Strip @Citizen and send back to pending — reversible"
+              title="Strip @Citizen and send back to pending - reversible"
               className={`${actionButtonClass} border-slate-700 text-slate-400 hover:border-amber-700 hover:bg-amber-950/40 hover:text-amber-300`}
             >
               <ShieldOff className="h-3.5 w-3.5" />
@@ -147,7 +147,7 @@ export function MemberRow({
           <form action={removeMember.bind(null, member.id)}>
             <button
               type="submit"
-              title="Erase the record entirely — irreversible"
+              title="Erase the record entirely - irreversible"
               className={`${actionButtonClass} border-slate-800 text-slate-500 hover:border-red-800 hover:bg-red-950/40 hover:text-red-300`}
             >
               <Trash2 className="h-3.5 w-3.5" />

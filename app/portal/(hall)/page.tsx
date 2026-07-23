@@ -37,7 +37,7 @@ async function loadTeamPickerData(playerId: string): Promise<{
     .eq("self_assignable", true)
     .order("name")
     .returns<Team[]>();
-  if (error) return null; // unmigrated or unavailable — hide the feature
+  if (error) return null; // unmigrated or unavailable - hide the feature
 
   const { data: memberships } = await supabase
     .from("team_members")
@@ -69,7 +69,7 @@ export default async function PortalPage() {
   const facts = [
     { icon: Swords, label: "Minecraft Name", value: player.minecraft_ign },
     { icon: Crown, label: "Rank", value: ROLE_LABELS[player.role] },
-    { icon: ShieldCheck, label: "Standing", value: "Active — Whitelisted" },
+    { icon: ShieldCheck, label: "Standing", value: "Active - Whitelisted" },
     { icon: CalendarDays, label: "Sworn In", value: memberSince },
   ];
 
@@ -131,7 +131,7 @@ export default async function PortalPage() {
         </Link>
       )}
 
-      {/* Phones have no sidebars — both boards ride along at the bottom. */}
+      {/* Phones have no sidebars - both boards ride along at the bottom. */}
       <TasksWidget
         playerId={player.id}
         isAdmin={player.role === "admin"}

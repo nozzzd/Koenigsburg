@@ -1,4 +1,4 @@
-# Königsburg Web Portal — Setup Guide
+# Königsburg Web Portal - Setup Guide
 
 Follow these steps once, in order. At the end you'll have the portal running
 locally and deployed on Vercel.
@@ -14,7 +14,7 @@ locally and deployed on Vercel.
 1. Create a project at [supabase.com](https://supabase.com) (or use your existing one).
 2. Open **SQL Editor → New query**, paste the contents of
    [`supabase/schema.sql`](supabase/schema.sql), and run it. Then run each
-   numbered migration in `supabase/` (`002_…` through `012_…`) the same way —
+   numbered migration in `supabase/` (`002_…` through `012_…`) the same way -
    they're idempotent, so re-running is safe.
    - **Community map:** [`supabase/010_map_tiles.sql`](supabase/010_map_tiles.sql)
      creates the `map_tiles` table **and** a public-read Storage bucket named
@@ -23,7 +23,7 @@ locally and deployed on Vercel.
      **Storage → New bucket** (name `map-tiles`, **Public** on). The `/map` page
      stays on its empty "being surveyed" state until the first tile is uploaded.
      The in-browser renderer's block/biome color tables
-     ([`lib/xaero/colors.json`](lib/xaero/colors.json)) are pre-generated —
+     ([`lib/xaero/colors.json`](lib/xaero/colors.json)) are pre-generated -
      rerun `python scripts/generate-xaero-colors.py` after a Minecraft update
      adds new blocks or biomes.
    - **Inventory ledger:** [`supabase/011_inventory.sql`](supabase/011_inventory.sql)
@@ -35,7 +35,7 @@ locally and deployed on Vercel.
 3. Collect two values for later:
    - **Project URL** → `SUPABASE_URL` (Project Settings → Data API)
    - **service_role key** → `SUPABASE_SERVICE_ROLE_KEY` (Project Settings → API Keys).
-     This key bypasses row security — treat it like a root password.
+     This key bypasses row security - treat it like a root password.
 
 ## 2. Discord application (OAuth + bot)
 
@@ -45,7 +45,7 @@ locally and deployed on Vercel.
    - Copy the **Public Key** → `DISCORD_PUBLIC_KEY` (verifies `/verify` slash-command requests)
    - Set **Interactions Endpoint URL** to
      `https://YOUR-VERCEL-DOMAIN/api/discord/interactions`, then **Save**.
-     Discord sends a signed test ping — it only saves if `DISCORD_PUBLIC_KEY`
+     Discord sends a signed test ping - it only saves if `DISCORD_PUBLIC_KEY`
      is already set in Vercel and deployed, so do this step last.
 3. **OAuth2 tab:**
    - Copy the **Client ID** → `DISCORD_CLIENT_ID`
@@ -98,7 +98,7 @@ everyone else with one click at `/portal/admin`.
 3. Before (or right after) the first deploy, add ALL variables from
    `.env.example` under **Project → Settings → Environment Variables**, with
    `NEXT_PUBLIC_SITE_URL` set to your production domain
-   (e.g. `https://koenigsburg.vercel.app` — no trailing slash).
+   (e.g. `https://koenigsburg.vercel.app` - no trailing slash).
 4. Confirm the production redirect URL from step 2.2 matches that domain, then
    redeploy so the env vars take effect.
 

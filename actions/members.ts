@@ -25,7 +25,7 @@ async function loadTarget(playerId: string): Promise<Player> {
 
 /**
  * Guards shared by every destructive action: an admin may not act on
- * themselves from the roster, and the last elder may never be removed —
+ * themselves from the roster, and the last elder may never be removed -
  * either would lock the realm out of its own council.
  */
 async function assertRemovable(admin: Player, target: Player) {
@@ -43,7 +43,7 @@ async function assertRemovable(admin: Player, target: Player) {
   }
 }
 
-/** Best-effort strip of @Citizen — never blocks the action itself. */
+/** Best-effort strip of @Citizen - never blocks the action itself. */
 async function stripDiscordRole(target: Player) {
   if (!target.discord_id) return;
   try {

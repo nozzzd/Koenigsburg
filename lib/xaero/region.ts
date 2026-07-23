@@ -7,7 +7,7 @@
 // header, then up to 64 tile-chunks (64x64 blocks each), each 4x4 chunks of
 // 16x16 pixels. All multi-byte values are big-endian (Java streams); the pixel
 // parameter words are read LSB-first. Block states live in an in-file palette
-// of NBT compounds ({Name, Properties}) — names, not numeric ids — and biomes
+// of NBT compounds ({Name, Properties}) - names, not numeric ids - and biomes
 // in a palette of strings, so modern files are fully self-describing.
 //
 // We support region versions 4.x-7.8 (Minecraft ~1.18+). Older saves predate
@@ -46,7 +46,7 @@ export type ParsedRegion = {
   light: Uint8Array;
   /** Overlay state palette indices per pixel (water etc.), sparse. */
   overlays: (number[] | undefined)[];
-  /** Count of explored pixels — 0 means an effectively empty file. */
+  /** Count of explored pixels - 0 means an effectively empty file. */
   pixelCount: number;
 };
 
@@ -138,7 +138,7 @@ export function parseRegion(bytes: Uint8Array): ParsedRegion {
   }
   if (majorVersion > 7 || (majorVersion === 7 && minorVersion > 8)) {
     throw new XaeroFormatError(
-      `This region uses a newer Xaero format (${majorVersion}.${minorVersion}) than the site understands yet — tell an admin!`
+      `This region uses a newer Xaero format (${majorVersion}.${minorVersion}) than the site understands yet - tell an admin!`
     );
   }
   const usesColorTypes = minorVersion < 5;
@@ -218,7 +218,7 @@ export function parseRegion(bytes: Uint8Array): ParsedRegion {
 
             if (!heightInParams) pixelHeight = reader.u8();
             height[pixel] = pixelHeight;
-            if (topHeightDiffers) reader.skip(1); // topHeight — not rendered
+            if (topHeightDiffers) reader.skip(1); // topHeight - not rendered
 
             if (hasOverlays) {
               const count = reader.u8();
@@ -229,7 +229,7 @@ export function parseRegion(bytes: Uint8Array): ParsedRegion {
                 const legacyOpacity = overlayParams.next(1) === 1;
                 const customColor = overlayParams.next(1) === 1;
                 const hasOpacity = overlayParams.next(1) === 1;
-                overlayParams.skip(4); // overlay light — not rendered
+                overlayParams.skip(4); // overlay light - not rendered
                 const overlayColorType = usesColorTypes
                   ? overlayParams.next(2)
                   : (overlayParams.skip(2), 0);

@@ -13,7 +13,7 @@ export function ProjectForm({ project }: { project?: Project }) {
     project ? updateProject : createProject,
     null
   );
-  // Several of these forms render on one page — keep input ids unique.
+  // Several of these forms render on one page - keep input ids unique.
   const uid = project?.id ?? "new";
 
   return (

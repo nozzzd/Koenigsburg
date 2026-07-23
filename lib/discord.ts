@@ -59,7 +59,7 @@ export async function fetchDiscordUser(accessToken: string): Promise<DiscordUser
 /**
  * Add the user to the guild using their OAuth access token (which carries their
  * consent via the guilds.join scope) plus the bot's authority. Returns true if
- * they were just added, false if they were already in the server (204) — both
+ * they were just added, false if they were already in the server (204) - both
  * are success. Requires the bot to have the "Create Instant Invite" permission.
  * Throws only on a real failure so callers can log and carry on.
  */
@@ -150,7 +150,7 @@ export async function assignCitizenRole(discordUserId: string): Promise<void> {
 }
 
 // Whether /verify is installed. Cached so the admin page doesn't hit Discord
-// on every load — it's a one-time setup step that then never changes.
+// on every load - it's a one-time setup step that then never changes.
 let commandCache: { registered: boolean; at: number } | null = null;
 const COMMAND_CACHE_TTL_MS = 5 * 60_000;
 
@@ -203,7 +203,7 @@ export async function createGuildRole(name: string, color?: string | null): Prom
   return role.id;
 }
 
-/** Renames / recolours an existing guild role. 404 is fine — role is gone. */
+/** Renames / recolours an existing guild role. 404 is fine - role is gone. */
 export async function editGuildRole(
   roleId: string,
   fields: { name?: string; color?: string | null }
@@ -227,7 +227,7 @@ export async function editGuildRole(
   }
 }
 
-/** Deletes a guild role. 404 is fine — already gone. */
+/** Deletes a guild role. 404 is fine - already gone. */
 export async function deleteGuildRole(roleId: string): Promise<void> {
   const res = await fetch(
     `${API}/guilds/${env("DISCORD_GUILD_ID")}/roles/${roleId}`,
@@ -315,8 +315,8 @@ export async function listGuildMembership(): Promise<Map<string, string[]>> {
 
 /**
  * DM a user via the bot. Opens (or reuses) a DM channel, then posts. Returns
- * false rather than throwing when the DM can't be sent — most often because the
- * user has DMs closed or shares no server with the bot — so callers can carry
+ * false rather than throwing when the DM can't be sent - most often because the
+ * user has DMs closed or shares no server with the bot - so callers can carry
  * on through a batch. A 403/404 is an expected "couldn't reach them", not a bug.
  */
 export async function sendDirectMessage(
@@ -347,7 +347,7 @@ export async function sendDirectMessage(
   return true;
 }
 
-/** Strips @Citizen — used when a player renounces their citizenship. */
+/** Strips @Citizen - used when a player renounces their citizenship. */
 export async function removeCitizenRole(discordUserId: string): Promise<void> {
   const res = await fetch(
     `${API}/guilds/${env("DISCORD_GUILD_ID")}/members/${discordUserId}/roles/${env(

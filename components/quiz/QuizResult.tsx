@@ -16,7 +16,7 @@ import { RadarChart } from "./RadarChart";
 /**
  * The payoff screen: radar chart of all six axes, the winning archetype called
  * out, the top three with their blurbs, and the big Sign Up CTA. The CTA
- * carries only the archetype KEY in the URL (?role=builder) — the server
+ * carries only the archetype KEY in the URL (?role=builder) - the server
  * resolves that to a real team, so the client can never inject a team id.
  *
  * `mappedRoles` is the set of archetypes an admin has wired to a real team;
@@ -67,14 +67,14 @@ export function QuizResult({
         setTimeout(() => setShared(false), 2500);
       }
     } catch {
-      // User dismissed the share sheet, or clipboard blocked — no-op.
+      // User dismissed the share sheet, or clipboard blocked - no-op.
     }
   }
 
   return (
     <div className="page-in space-y-10">
       <div className="grid gap-6 lg:grid-cols-2 lg:items-center lg:gap-10">
-        {/* Chart — left on desktop, below the reveal on mobile. */}
+        {/* Chart - left on desktop, below the reveal on mobile. */}
         <Panel className="order-2 p-6 lg:order-1">
           <RadarChart scores={result.scores} />
           <div className="mt-4 flex flex-wrap justify-center gap-2">
@@ -111,7 +111,7 @@ export function QuizResult({
           </div>
         </Panel>
 
-        {/* Reveal + the sign-up ask — first on mobile, right on desktop. */}
+        {/* Reveal + the sign-up ask - first on mobile, right on desktop. */}
         <div className="order-1 flex flex-col gap-6 text-center lg:order-2 lg:text-left">
           <div>
             <p className="font-display text-xs font-semibold tracking-[0.4em] text-gold-500">

@@ -12,12 +12,12 @@ export type RegionFile = {
 };
 
 export type WorldGroup = {
-  /** Full parent-directory path — unique per group. */
+  /** Full parent-directory path - unique per group. */
   key: string;
   /** Friendly name shown in the picker, e.g. "play.example.com". */
   label: string;
   files: RegionFile[];
-  /** Newest file date in the group (ms) — used to preselect the right world. */
+  /** Newest file date in the group (ms) - used to preselect the right world. */
   newestMs: number;
 };
 
@@ -43,7 +43,7 @@ function labelOf(segments: string[]): string {
       : segments[segments.length - 1] ?? "your map";
   if (label.startsWith("Multiplayer_")) label = label.slice("Multiplayer_".length);
   // Multiworld servers nest one more level (e.g. mw$default) below the dim
-  // folder — surface it so two entries never look identical.
+  // folder - surface it so two entries never look identical.
   const extra = dimIndex >= 0 ? segments.slice(dimIndex + 1) : [];
   if (extra.length > 0) label += ` · ${extra.join("/")}`;
   return label;

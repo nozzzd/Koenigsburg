@@ -8,7 +8,7 @@ import { addTeamMemberById, removeTeamMember } from "@/actions/teams";
 /**
  * Click-to-toggle team membership. Every active member is listed; the ones on
  * the team are ticked. Clicking a name flips them in or out immediately
- * (useOptimistic) and syncs in the background — no Add button, no reload wait.
+ * (useOptimistic) and syncs in the background - no Add button, no reload wait.
  */
 export function TeamRoster({
   teamId,

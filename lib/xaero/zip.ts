@@ -1,6 +1,6 @@
 // Minimal zip reader for Xaero region files (browser-only, no deps).
 // A region file is a tiny zip archive holding a single "region.xaero" entry,
-// written by Java's ZipOutputStream — which streams, so the LOCAL headers may
+// written by Java's ZipOutputStream - which streams, so the LOCAL headers may
 // carry zero sizes and the truth lives in the central directory. We therefore
 // parse the end-of-central-directory record, walk the central directory, and
 // inflate with the browser's native DecompressionStream.

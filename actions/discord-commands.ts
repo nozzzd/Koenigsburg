@@ -51,10 +51,10 @@ export async function registerDiscordCommands(): Promise<ResultState> {
       return { error: `Discord rejected it (${res.status}). ${detail.slice(0, 160)}` };
     }
 
-    // Setup is done — drop the cached "not registered" so the panel vanishes.
+    // Setup is done - drop the cached "not registered" so the panel vanishes.
     clearCommandCache();
     revalidatePath("/portal/admin");
-    return { ok: "/verify is registered — try it in your Discord server." };
+    return { ok: "/verify is registered - try it in your Discord server." };
   } catch (err) {
     console.error("Command registration threw:", err);
     return { error: "Could not reach Discord. Check the bot token and try again." };

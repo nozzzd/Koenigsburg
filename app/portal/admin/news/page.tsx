@@ -8,7 +8,7 @@ import { deleteNews } from "@/actions/news";
 import { GoldDivider, Panel } from "@/components/ui";
 import { NewsForm } from "@/components/forms/NewsForm";
 
-export const metadata: Metadata = { title: "Admin — The Herald" };
+export const metadata: Metadata = { title: "Admin - The Herald" };
 
 const summaryClass =
   "flex cursor-pointer list-none items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-gold-500/50 hover:text-gold-300 [&::-webkit-details-marker]:hidden";
@@ -24,7 +24,7 @@ export default async function AdminNewsPage() {
     .order("created_at", { ascending: false })
     .returns<NewsPost[]>();
 
-  // The table won't exist until the migration is run — say so instead of crashing.
+  // The table won't exist until the migration is run - say so instead of crashing.
   if (error) {
     return (
       <div className="space-y-6">
@@ -100,7 +100,7 @@ export default async function AdminNewsPage() {
             NO DISPATCHES YET
           </p>
           <p className="text-sm text-slate-500">
-            Write the first one above — it appears on every dashboard at once.
+            Write the first one above - it appears on every dashboard at once.
           </p>
         </Panel>
       ) : (

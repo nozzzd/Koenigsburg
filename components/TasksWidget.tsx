@@ -10,7 +10,7 @@ import { TaskBoard } from "@/components/TaskBoard";
 const getTasks = cache(async function getTasks(playerId: string): Promise<Task[]> {
   const supabase = getSupabase();
 
-  // The teams this player belongs to — their team tasks show on the Ledger too.
+  // The teams this player belongs to - their team tasks show on the Ledger too.
   const { data: memberships } = await supabase
     .from("team_members")
     .select("team_id")

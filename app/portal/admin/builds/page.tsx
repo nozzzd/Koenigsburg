@@ -18,7 +18,7 @@ import { CreateBuildProjectForm } from "@/components/forms/BuildForms";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Admin — The Master Plan" };
+export const metadata: Metadata = { title: "Admin - The Master Plan" };
 
 function pct(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value * 100)));
@@ -93,7 +93,7 @@ export default async function AdminBuildsPage() {
         {!receiverConfigured && (
           <p className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-900/50 bg-amber-950/20 px-3 py-2 text-xs text-amber-300">
             <TriangleAlert className="h-3.5 w-3.5 shrink-0" />
-            No QMSync server configured — every requirement will read as missing until stock
+            No QMSync server configured - every requirement will read as missing until stock
             syncs.
           </p>
         )}

@@ -17,7 +17,7 @@ export async function acknowledgeKey(): Promise<void> {
 
   if (error) {
     // Most likely the key_saved column is missing (run supabase/003_login_key.sql).
-    // Never crash the dashboard over a dismissable banner — log and move on.
+    // Never crash the dashboard over a dismissable banner - log and move on.
     console.error(
       "acknowledgeKey failed (has supabase/003_login_key.sql been run?):",
       error

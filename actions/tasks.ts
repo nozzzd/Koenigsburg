@@ -108,7 +108,7 @@ export async function toggleTask(id: string): Promise<void> {
 
 /**
  * Remove a task. A member may bin their own to-dos, but NOT one an elder set
- * for them — otherwise "assigned" would mean nothing.
+ * for them - otherwise "assigned" would mean nothing.
  */
 export async function deleteTask(id: string): Promise<void> {
   const me = await requireActiveMember();
@@ -150,7 +150,7 @@ export async function assignTask(
 }
 
 /**
- * A goal for the whole realm — every citizen sees it.
+ * A goal for the whole realm - every citizen sees it.
  *
  * EXTENDING THIS: once jobs exist (worker, mason…), a role-targeted goal is a
  * `target_role` column plus one more scope; nothing else here needs to change.

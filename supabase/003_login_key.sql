@@ -2,7 +2,7 @@
 -- Run once in the Supabase SQL editor. Safe to run repeatedly.
 --
 -- Why: a manual signup posts their code publicly in #immigration to prove
--- ownership. That made the code public — and it was ALSO the login key, so
+-- ownership. That made the code public - and it was ALSO the login key, so
 -- anyone reading the channel could sign in as them. Now the code is rotated
 -- the moment they're approved: the posted one dies, and they are issued a
 -- fresh private key which they must acknowledge saving.

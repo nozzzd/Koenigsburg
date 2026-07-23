@@ -21,7 +21,7 @@ function applyTheme(theme: Theme) {
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {
-    // Private mode / storage blocked — the choice just won't persist.
+    // Private mode / storage blocked - the choice just won't persist.
   }
 }
 
@@ -41,7 +41,7 @@ function useTheme() {
   return { theme, choose };
 }
 
-/** Compact icon toggle for page headers — shows the theme you'd switch TO. */
+/** Compact icon toggle for page headers - shows the theme you'd switch TO. */
 export function ThemeToggleButton({ className = "" }: { className?: string }) {
   const { theme, choose } = useTheme();
   const next: Theme = theme === "dark" ? "light" : "dark";
