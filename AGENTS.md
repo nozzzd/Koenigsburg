@@ -30,9 +30,10 @@ This project uses a newer Next.js version with breaking changes from older relea
 
 ## Git workflow
 
-- Treat `main` as reviewed and deployable. Use a short-lived task branch for substantive work.
-- Keep changes focused, inspect the complete diff, and run safe available checks before handing work back.
-- Do not commit or push unless the user explicitly requests it. Report the exact files changed and verification results.
+- Work directly on `main`. Do NOT create task branches or open pull requests unless the user explicitly asks for one.
+- The owner commits and syncs from their own Git client, so leave finished work as uncommitted changes in the `main` working tree. Do not commit or push unless the user explicitly requests it.
+- `main` auto-deploys to production via Vercel, so only hand back changes that build cleanly.
+- Keep changes focused, inspect the complete diff, and run safe available checks (build/lint/tsc) before handing work back. Report the exact files changed and verification results.
 - Only one AI should edit this working tree at a time.
 
 ## Source precedence
