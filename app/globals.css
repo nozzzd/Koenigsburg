@@ -12,6 +12,7 @@
   --font-display: var(--font-cinzel), ui-serif, Georgia, serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-pixel: var(--font-pixel), ui-monospace, monospace;
 }
 
 body {
@@ -334,4 +335,65 @@ html {
   .modal::backdrop {
     transition-duration: 1ms;
   }
+}
+
+/* ── Minecraft-style inventory ──────────────────────────────────────────────
+   A tasteful nod to the game's GUI: crisp pixelated item textures, recessed
+   slots with a bevelled well, blocky stack counts, and the classic dark
+   item tooltip with its purple border. Tuned to sit inside the dark theme. */
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* The outer GUI frame — a raised, panelled surface like a chest window. */
+.mc-panel {
+  background-color: #23252b;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(0, 0, 0, 0.12));
+  box-shadow:
+    inset 3px 3px 0 rgba(255, 255, 255, 0.14),
+    inset -3px -3px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* A single recessed inventory slot. */
+.mc-slot {
+  position: relative;
+  background-color: #14161c;
+  box-shadow:
+    inset 2px 2px 0 rgba(0, 0, 0, 0.65),
+    inset -2px -2px 0 rgba(255, 255, 255, 0.08);
+  transition: background-color 120ms ease;
+}
+
+.mc-slot:hover {
+  background-color: #1f2530;
+}
+
+/* The white number in a slot's lower-right, with the game's drop shadow. */
+.mc-count {
+  font-family: var(--font-pixel);
+  color: #ffffff;
+  line-height: 1;
+  text-shadow: 1.5px 1.5px 0 rgba(0, 0, 0, 0.85);
+  letter-spacing: 0.02em;
+}
+
+/* Item tooltip — dark fill, thin black frame, inner purple border. */
+.mc-tooltip {
+  background-color: rgba(16, 0, 16, 0.94);
+  border: 1px solid #0a000a;
+  box-shadow:
+    inset 0 0 0 1px rgba(80, 0, 160, 0.9),
+    0 6px 20px rgba(0, 0, 0, 0.6);
+}
+
+.mc-tooltip-title {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.02em;
+}
+
+/* Light-mode: keep the slots dark — an inventory reads as a dark GUI. */
+:root[data-theme="light"] .mc-panel {
+  background-color: #2b2e36;
 }

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
 import { InventoryAutoRefresh } from "@/components/InventoryAutoRefresh";
+import { InventoryGrid, type InventorySlot } from "@/components/InventoryGrid";
 import {
   getInventoryLedger,
   type InventorySearchResult,
@@ -85,43 +86,16 @@ function dimensionName(value: string): string {
   return readableId(value);
 }
 
-function ResultRow({ result }: { result: InventorySearchResult }) {
-  const container = result.container_name || readableId(result.container_type);
-
-  return (
-    <li>
-      <Panel className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-5">
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h3 className="font-display text-base font-bold tracking-wide text-slate-100">
-              {result.display_name}
-            </h3>
-            <span className="font-display text-lg font-bold text-gold-300">
-              ×{formatCount(result.quantity)}
-            </span>
-          </div>
-          <p className="mt-1 truncate font-mono text-xs text-slate-500">
-            {result.item_id}
-          </p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400">
-            <span className="inline-flex items-center gap-1.5">
-              <Boxes className="h-3.5 w-3.5 text-gold-500" />
-              {container}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-gold-500" />
-              {dimensionName(result.dimension)} · {result.block_x}, {result.block_y},{" "}
-              {result.block_z}
-            </span>
-          </div>
-        </div>
-        <p className="text-xs text-slate-600 sm:text-right">
-          Counted
-          <br className="hidden sm:block" /> {formatDate(result.observed_at)}
-        </p>
-      </Panel>
-    </li>
-  );
+function toSlot(result: InventorySearchResult): InventorySlot {
+  return {
+    key: `${result.container_id}:${result.item_id}:${result.display_name}`,
+    itemId: result.item_id,
+    displayName: result.display_name,
+    count: formatCount(result.quantity),
+    container: result.container_name || readableId(result.container_type),
+    location: `${dimensionName(result.dimension)} · ${result.block_x}, ${result.block_y}, ${result.block_z}`,
+    counted: formatDate(result.observed_at),
+  };
 }
 
 export default async function InventoryPage({
@@ -376,14 +350,7 @@ export default async function InventoryPage({
                     </Link>
                   )}
                 </div>
-                <ul className="space-y-3">
-                  {ledger.results.map((result) => (
-                    <ResultRow
-                      key={`${result.container_id}:${result.item_id}:${result.display_name}`}
-                      result={result}
-                    />
-                  ))}
-                </ul>
+                <InventoryGrid slots={ledger.results.map(toSlot)} />
                 {ledger.results.length === 100 && (
                   <p className="mt-4 text-center text-xs text-slate-600">
                     Showing the first 100 locations. Add more detail to narrow the search.

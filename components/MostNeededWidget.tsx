@@ -2,6 +2,7 @@ import { cache } from "react";
 import Link from "next/link";
 import { ArrowRight, Boxes, Database, PackageOpen } from "lucide-react";
 import { getBuildOverview, type BuildOverview } from "@/lib/builds";
+import { ItemIcon } from "@/components/ItemIcon";
 import { Panel, navButtonClass } from "@/components/ui";
 
 /**
@@ -92,7 +93,16 @@ export async function MostNeededWidget({
               return (
                 <li key={s.item_id} className="px-5 py-2.5">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="truncate text-sm text-slate-200">{s.display_name}</span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[3px] mc-slot">
+                        <ItemIcon
+                          itemId={s.item_id}
+                          label={s.display_name}
+                          className="h-5 w-5"
+                        />
+                      </span>
+                      <span className="truncate text-sm text-slate-200">{s.display_name}</span>
+                    </span>
                     <span className="shrink-0 font-mono text-xs font-semibold text-amber-400">
                       {count(s.missing)}
                     </span>

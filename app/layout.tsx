@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Geist, Geist_Mono } from "next/font/google";
+import { Cinzel, Geist, Geist_Mono, VT323 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -16,6 +16,13 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// Pixel font for the Minecraft-styled inventory slots, counts, and tooltips.
+const pixel = VT323({
+  variable: "--font-pixel",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -36,7 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${cinzel.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${cinzel.variable} ${geistSans.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
     >
       <head>
         {/*

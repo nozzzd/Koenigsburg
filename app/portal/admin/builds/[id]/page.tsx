@@ -32,6 +32,7 @@ import {
   toggleBuildItemLock,
 } from "@/actions/builds";
 import { GoldDivider, Panel } from "@/components/ui";
+import { ItemIcon } from "@/components/ItemIcon";
 import {
   AddBuildItemForm,
   AssignItemForm,
@@ -213,7 +214,15 @@ export default async function AdminBuildDetailPage({
               <li key={item.id}>
                 <Panel className="p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0">
+                    <div className="flex min-w-0 gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[3px] mc-slot">
+                        <ItemIcon
+                          itemId={item.item_id}
+                          label={item.display_name}
+                          className="h-8 w-8"
+                        />
+                      </div>
+                      <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="font-semibold text-slate-100">{item.display_name}</p>
                         {item.locked && (
@@ -258,6 +267,7 @@ export default async function AdminBuildDetailPage({
                           <span className="text-sky-300"> · override {count(item.override)}</span>
                         )}
                       </p>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-1.5">

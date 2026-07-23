@@ -17,6 +17,7 @@ import {
   getBuildProject,
 } from "@/lib/builds";
 import { GoldDivider, Panel } from "@/components/ui";
+import { ItemIcon } from "@/components/ItemIcon";
 
 export const dynamic = "force-dynamic";
 
@@ -170,7 +171,15 @@ export default async function CitizenBuildDetailPage({
                 <li key={item.id}>
                   <Panel className="p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
+                      <div className="flex min-w-0 gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[3px] mc-slot">
+                          <ItemIcon
+                            itemId={item.item_id}
+                            label={item.display_name}
+                            className="h-8 w-8"
+                          />
+                        </div>
+                        <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <p className="font-semibold text-slate-100">{item.display_name}</p>
                           {assignee && (
@@ -195,6 +204,7 @@ export default async function CitizenBuildDetailPage({
                           gathered{" "}
                           <span className="text-slate-300">{count(item.allocated)}</span>
                         </p>
+                        </div>
                       </div>
                       <div className="w-full sm:w-40">
                         <div className="h-1.5 overflow-hidden rounded-full bg-slate-800">
