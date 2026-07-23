@@ -20,12 +20,14 @@ export function MarkerGlyph({
   size?: number;
 }) {
   if (kind === "item") {
+    // No slot background on the map - just the icon, with a shadow so it stays
+    // readable over any terrain.
     return (
       <span
-        className="flex items-center justify-center rounded-[3px] mc-slot"
+        className="flex items-center justify-center drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
         style={{ width: size, height: size }}
       >
-        <ItemIcon itemId={icon || "minecraft:map"} label={icon} className="h-[78%] w-[78%]" />
+        <ItemIcon itemId={icon || "minecraft:map"} label={icon} className="h-full w-full" />
       </span>
     );
   }

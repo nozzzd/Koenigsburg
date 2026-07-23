@@ -200,10 +200,19 @@ export function AtlasMap({
     });
   }, []);
 
-  function onWheel(e: React.WheelEvent) {
-    const r = viewportRef.current?.getBoundingClientRect();
-    zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, r ? e.clientX - r.left : undefined, r ? e.clientY - r.top : undefined);
-  }
+  // Wheel must be a NON-passive native listener, otherwise preventDefault() is
+  // ignored and the page scrolls while you zoom the map.
+  useEffect(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const r = vp.getBoundingClientRect();
+      zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
+    };
+    vp.addEventListener("wheel", onWheel, { passive: false });
+    return () => vp.removeEventListener("wheel", onWheel);
+  }, [zoomAt]);
 
   // ---- pointer (pan / place / draw) ----
   function onPointerDown(e: React.PointerEvent) {
@@ -403,7 +412,6 @@ export function AtlasMap({
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerLeave={onPointerLeave}
-        onWheel={onWheel}
         className="h-full w-full touch-none select-none"
         style={{
           cursor: "none",
@@ -412,26 +420,27 @@ export function AtlasMap({
           backgroundSize: "32px 32px",
         }}
       >
-        {/* Tiles: rendered in screen space (same maths as the markers) so they
-           always paint - a zero-size transformed layer failed to in some
-           browsers. Each region is placed by its block-coordinate corner. */}
-        <div className="absolute inset-0 overflow-hidden">
-          {tiles.map((t) => {
-            const s = screenOf(t.rx * 512, t.rz * 512);
-            const size = CELL * zoom;
-            if (s.x > vpSize.w || s.y > vpSize.h || s.x + size < 0 || s.y + size < 0) return null;
-            return (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={`${t.rx}_${t.rz}`}
-                src={t.url}
-                alt={`Region ${t.rx}, ${t.rz}`}
-                draggable={false}
-                className="absolute [image-rendering:pixelated]"
-                style={{ left: s.x, top: s.y, width: size, height: size }}
-              />
-            );
-          })}
+        {/* Tiles live in ONE transformed pane (translate+scale). Because every
+           tile is an integer-positioned box inside the same scaled context,
+           neighbouring tiles share their edges exactly - no sub-pixel seams.
+           The pane is inset-0 (viewport-sized, non-zero) so it always paints;
+           a zero-size pane silently failed to render in some browsers. The +1
+           on each tile hides any residual hairline at fractional zooms. */}
+        <div
+          className="absolute inset-0 origin-top-left"
+          style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})` }}
+        >
+          {tiles.map((t) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={`${t.rx}_${t.rz}`}
+              src={t.url}
+              alt={`Region ${t.rx}, ${t.rz}`}
+              draggable={false}
+              className="absolute [image-rendering:pixelated]"
+              style={{ left: t.rx * CELL, top: t.rz * CELL, width: CELL + 1, height: CELL + 1 }}
+            />
+          ))}
         </div>
 
         {/* Claims + draft (screen-space SVG) */}

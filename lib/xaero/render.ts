@@ -105,6 +105,9 @@ function tintColor(tint: Tint, biome: number[][]): number[] {
 // Relief shading factors (vs. the pixel one block north).
 const SHADE_RAISED = 1.14;
 const SHADE_SUNKEN = 0.8;
+// Water reads far too bright and grainy at full strength (the relief shade
+// speckles the surface). Dim it and render it flat so seas look calm.
+const WATER_DIM = 0.7;
 
 /** Renders a parsed region to 512x512 RGBA. Unexplored pixels stay transparent. */
 export function renderRegion(region: ParsedRegion): ImageData {
@@ -127,11 +130,13 @@ export function renderRegion(region: ParsedRegion): ImageData {
     let r = (base.rgba[0] * baseTint[0]) / 255;
     let g = (base.rgba[1] * baseTint[1]) / 255;
     let b = (base.rgba[2] * baseTint[2]) / 255;
+    let water = base.tint === Tint.Water;
 
     const overlayList = overlays[pixel];
     if (overlayList) {
       for (const overlayState of overlayList) {
         const overlay = stateCache[overlayState];
+        if (overlay.tint === Tint.Water) water = true;
         const overlayTint = tintColor(overlay.tint, biome);
         const alpha = (overlay.rgba[3] ?? 255) / 255;
         r += (overlay.rgba[0] * overlayTint[0] * alpha) / 255;
@@ -145,9 +150,10 @@ export function renderRegion(region: ParsedRegion): ImageData {
     }
 
     // Relief: compare to the block one to the north (z-1). At the region's top
-    // edge the neighbour lives in another file - leave those unshaded.
+    // edge the neighbour lives in another file - leave those unshaded. Water is
+    // kept flat so its surface doesn't speckle.
     let shade = 1;
-    if (pixel >= REGION_SIZE) {
+    if (!water && pixel >= REGION_SIZE) {
       const north = height[pixel - REGION_SIZE];
       const here = height[pixel];
       if (north !== NO_HEIGHT && here !== NO_HEIGHT && north !== here) {
@@ -155,10 +161,12 @@ export function renderRegion(region: ParsedRegion): ImageData {
       }
     }
 
+    // Calm, dimmer seas.
+    const dim = water ? WATER_DIM : 1;
     const offset = pixel * 4;
-    data[offset] = Math.min(255, r * shade);
-    data[offset + 1] = Math.min(255, g * shade);
-    data[offset + 2] = Math.min(255, b * shade);
+    data[offset] = Math.min(255, r * shade * dim);
+    data[offset + 1] = Math.min(255, g * shade * dim);
+    data[offset + 2] = Math.min(255, b * shade * dim);
     data[offset + 3] = 255;
   }
 
