@@ -14,6 +14,7 @@ import { GoldDivider, Panel, cardLinkClass } from "@/components/ui";
 import { SaveKeyWarning } from "@/components/SaveKeyWarning";
 import { NewsWidget } from "@/components/NewsWidget";
 import { TasksWidget } from "@/components/TasksWidget";
+import { MostNeededWidget } from "@/components/MostNeededWidget";
 import { TeamPicker } from "@/components/TeamPicker";
 
 export const metadata: Metadata = { title: "Citizen's Hall" };
@@ -111,6 +112,8 @@ export default async function PortalPage() {
           hasAnyTeam={teamPicker.hasAnyTeam}
         />
       )}
+
+      <MostNeededWidget isAdmin={player.role === "admin"} />
 
       {player.role === "admin" && (
         <Link href="/portal/admin" className="block">
