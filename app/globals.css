@@ -370,13 +370,15 @@ html {
   background-color: #1f2530;
 }
 
-/* The white number in a slot's lower-right, with the game's drop shadow. */
+/* The white number in a slot's lower-right, with the game's drop shadow.
+   VT323 runs small for its point size, so the base is nudged up. */
 .mc-count {
   font-family: var(--font-pixel);
   color: #ffffff;
   line-height: 1;
-  text-shadow: 1.5px 1.5px 0 rgba(0, 0, 0, 0.85);
-  letter-spacing: 0.02em;
+  font-size: 1.2em;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.03em;
 }
 
 /* Item tooltip — dark fill, thin black frame, inner purple border. */
@@ -393,7 +395,13 @@ html {
   letter-spacing: 0.02em;
 }
 
-/* Light-mode: keep the slots dark — an inventory reads as a dark GUI. */
+/* Light-mode: keep the GUI dark — an inventory reads as a dark window — but
+   frame it so it sits deliberately on the light page instead of floating. */
 :root[data-theme="light"] .mc-panel {
+  border: 1px solid rgba(15, 23, 42, 0.18);
+  box-shadow:
+    inset 3px 3px 0 rgba(255, 255, 255, 0.14),
+    inset -3px -3px 0 rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(15, 23, 42, 0.12);
   background-color: #2b2e36;
 }

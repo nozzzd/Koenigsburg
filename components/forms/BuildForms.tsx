@@ -183,6 +183,7 @@ export function AddBuildItemForm({ projectId }: { projectId: string }) {
           id="item-id"
           name="item_id"
           maxLength={160}
+          list="mc-item-ids"
           placeholder="minecraft:oak_planks"
           className={`${inputClass} font-mono text-sm`}
         />

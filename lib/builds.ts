@@ -164,6 +164,15 @@ export function allocateBuilds(
       }
     );
 
+    // Smartest-first: the largest outstanding gaps rise to the top, bigger
+    // requirements break ties, and fully-covered lines sink to the bottom.
+    items.sort(
+      (a, b) =>
+        b.missing - a.missing ||
+        b.required - a.required ||
+        a.display_name.localeCompare(b.display_name)
+    );
+
     const requiredTotal = items.reduce((sum, i) => sum + i.required, 0);
     const allocatedTotal = items.reduce((sum, i) => sum + i.allocated, 0);
     const missingTotal = items.reduce((sum, i) => sum + i.missing, 0);

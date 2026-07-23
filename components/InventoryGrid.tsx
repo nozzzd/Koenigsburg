@@ -32,7 +32,7 @@ export function InventoryGrid({ slots }: { slots: InventorySlot[] }) {
               label={slot.displayName}
               className="h-[78%] w-[78%]"
             />
-            <span className="mc-count pointer-events-none absolute right-1 bottom-0.5 text-sm">
+            <span className="mc-count pointer-events-none absolute right-1 bottom-0 text-xl">
               {slot.count}
             </span>
 

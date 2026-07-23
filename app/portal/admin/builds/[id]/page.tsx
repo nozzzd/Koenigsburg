@@ -33,6 +33,7 @@ import {
 } from "@/actions/builds";
 import { GoldDivider, Panel } from "@/components/ui";
 import { ItemIcon } from "@/components/ItemIcon";
+import { MINECRAFT_ITEM_IDS } from "@/lib/minecraft-items";
 import {
   AddBuildItemForm,
   AssignItemForm,
@@ -340,6 +341,13 @@ export default async function AdminBuildDetailPage({
           <div className="mt-4">
             <AddBuildItemForm projectId={project.id} />
           </div>
+          {/* Real item ids, for the add form's autocomplete. Server-rendered so
+              the 1,300-entry list stays out of the client JS bundle. */}
+          <datalist id="mc-item-ids">
+            {MINECRAFT_ITEM_IDS.map((id) => (
+              <option key={id} value={`minecraft:${id}`} />
+            ))}
+          </datalist>
         </Panel>
 
         <Panel className="p-5">

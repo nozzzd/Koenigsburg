@@ -7,6 +7,7 @@ import { getSessionPlayer } from "@/lib/session";
 import type { ActionState } from "@/lib/forms";
 import type { BuildStatus } from "@/lib/builds";
 import { parseMaterialList, slugToItemId } from "@/lib/litematica";
+import { isRealMinecraftItem } from "@/lib/minecraft-items";
 
 const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB
 const ALLOWED_FILE_EXT = [".litematic", ".schem", ".schematic", ".nbt"];
@@ -161,6 +162,12 @@ export async function addBuildItem(
   const display_name = (displayInput || idInput).slice(0, MAX_DISPLAY);
   const item_id = (idInput || slugToItemId(displayInput)).toLowerCase().slice(0, MAX_ITEM_ID);
 
+  if (!isRealMinecraftItem(item_id)) {
+    return {
+      error: `“${item_id}” isn't a real Minecraft item. Enter the exact id, e.g. minecraft:oak_log.`,
+    };
+  }
+
   const { error } = await getSupabase()
     .from("build_project_items")
     .upsert(
@@ -291,12 +298,23 @@ export async function importMaterials(
     return { error: "Couldn't read any items from that. Check the format and try again." };
   }
 
-  const rows = parsed.map((m) => ({
+  const allRows = parsed.map((m) => ({
     project_id: projectId,
     item_id: m.item_id.toLowerCase().slice(0, MAX_ITEM_ID),
     display_name: m.display_name.slice(0, MAX_DISPLAY),
     required_quantity: Math.min(m.quantity, MAX_QTY),
   }));
+
+  // Drop anything that isn't a real Minecraft item so a mis-parsed line can
+  // never mint phantom demand that no stock could ever satisfy.
+  const rows = allRows.filter((r) => isRealMinecraftItem(r.item_id));
+  const skipped = allRows.length - rows.length;
+  if (rows.length === 0) {
+    return {
+      error:
+        "None of those lines matched a real Minecraft item. Check the ids (e.g. minecraft:oak_log) and try again.",
+    };
+  }
 
   const { error } = await getSupabase()
     .from("build_project_items")
@@ -306,7 +324,9 @@ export async function importMaterials(
     return { error: "Could not import that list. Please try again." };
   }
   refresh(projectId);
-  return null;
+  return skipped > 0
+    ? { error: `Imported ${rows.length} item${rows.length === 1 ? "" : "s"}; skipped ${skipped} that didn't match a real Minecraft item.` }
+    : null;
 }
 
 function safeFileName(name: string): string {
