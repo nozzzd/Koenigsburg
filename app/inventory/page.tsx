@@ -244,8 +244,8 @@ export default async function InventoryPage({
         </section>
 
         <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <Panel className="min-h-[30rem] overflow-hidden">
-            <div className="border-b border-slate-800 p-4 sm:p-5">
+          <Panel className="min-h-[30rem]">
+            <div className="rounded-t-xl border-b border-slate-800 p-4 sm:p-5">
               <form action="/inventory" method="get">
                 <label
                   htmlFor="inventory-search"
