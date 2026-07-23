@@ -15,8 +15,10 @@ import {
   outlineButtonClass,
 } from "@/components/ui";
 import { ThemeToggleButton } from "@/components/ThemeToggle";
-import { MapCanvas, type DisplayTile } from "@/components/map/MapCanvas";
+import { AtlasMap } from "@/components/map/atlas/AtlasMap";
 import { DownloadMapButton } from "@/components/map/DownloadMapButton";
+import { getAtlas, type DisplayTile } from "@/lib/atlas";
+import { getSessionPlayer } from "@/lib/session";
 
 // Regenerated when a contributor uploads (revalidatePath('/map') in actions/map.ts);
 // this is the safety-net refresh in case that ever misses.
@@ -53,7 +55,13 @@ async function getTiles(): Promise<DisplayTile[]> {
 }
 
 export default async function MapPage() {
-  const tiles = await getTiles();
+  const player = await getSessionPlayer();
+  // "In our nation" = an active citizen. Only they (and admins) ever receive
+  // secret annotations; outsiders never get them in the page payload at all.
+  const canSeeSecret = player?.status === "active";
+  const isAdmin = player?.role === "admin" && player?.status === "active";
+
+  const [tiles, atlas] = await Promise.all([getTiles(), getAtlas(canSeeSecret)]);
 
   return (
     <>
@@ -104,7 +112,7 @@ export default async function MapPage() {
           </section>
         ) : (
           <section className="w-full space-y-5 py-10">
-            <MapCanvas tiles={tiles} />
+            <AtlasMap tiles={tiles} atlas={atlas} isAdmin={isAdmin} />
             <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
               <DownloadMapButton tiles={tiles} />
               <Link href="/map/contribute" className={`${goldButtonClass} sm:w-auto`}>

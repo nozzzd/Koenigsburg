@@ -1,0 +1,65 @@
+import {
+  Castle,
+  Home,
+  Landmark,
+  Mountain,
+  Trees,
+  Anchor,
+  Pickaxe,
+  Swords,
+  Flag,
+  Skull,
+  Gem,
+  Wheat,
+  Tent,
+  Ship,
+  Crown,
+  Store,
+  Factory,
+  Bell,
+  Church,
+  Warehouse,
+  Fish,
+  Sword,
+  Shield,
+  Tractor,
+  DoorOpen,
+  Waypoints,
+  type LucideIcon,
+} from "lucide-react";
+
+/** The curated map-symbol set. `key` is what's stored in map_markers.icon. */
+export const MAP_SYMBOLS: { key: string; label: string; Icon: LucideIcon }[] = [
+  { key: "castle", label: "Castle", Icon: Castle },
+  { key: "home", label: "House", Icon: Home },
+  { key: "landmark", label: "Landmark", Icon: Landmark },
+  { key: "church", label: "Temple", Icon: Church },
+  { key: "crown", label: "Capital", Icon: Crown },
+  { key: "flag", label: "Flag", Icon: Flag },
+  { key: "shield", label: "Fort", Icon: Shield },
+  { key: "swords", label: "Battle", Icon: Swords },
+  { key: "sword", label: "Outpost", Icon: Sword },
+  { key: "skull", label: "Danger", Icon: Skull },
+  { key: "mountain", label: "Mountain", Icon: Mountain },
+  { key: "trees", label: "Forest", Icon: Trees },
+  { key: "wheat", label: "Farm", Icon: Wheat },
+  { key: "tractor", label: "Fields", Icon: Tractor },
+  { key: "pickaxe", label: "Mine", Icon: Pickaxe },
+  { key: "gem", label: "Riches", Icon: Gem },
+  { key: "factory", label: "Industry", Icon: Factory },
+  { key: "warehouse", label: "Storage", Icon: Warehouse },
+  { key: "store", label: "Market", Icon: Store },
+  { key: "anchor", label: "Harbour", Icon: Anchor },
+  { key: "ship", label: "Port", Icon: Ship },
+  { key: "fish", label: "Fishery", Icon: Fish },
+  { key: "bell", label: "Village", Icon: Bell },
+  { key: "tent", label: "Camp", Icon: Tent },
+  { key: "door", label: "Portal", Icon: DoorOpen },
+  { key: "waypoint", label: "Point", Icon: Waypoints },
+];
+
+const BY_KEY = new Map(MAP_SYMBOLS.map((s) => [s.key, s.Icon]));
+
+export function symbolIcon(key: string): LucideIcon {
+  return BY_KEY.get(key) ?? Flag;
+}

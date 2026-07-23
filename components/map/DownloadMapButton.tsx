@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
-import type { DisplayTile } from "./MapCanvas";
+import type { DisplayTile } from "@/lib/atlas";
 import { outlineButtonClass } from "@/components/ui";
 
 // Full-resolution region size for the exported composite (1px = 1 block).
