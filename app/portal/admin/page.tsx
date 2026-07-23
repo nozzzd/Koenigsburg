@@ -4,6 +4,7 @@ import {
   Check,
   ClipboardList,
   Compass,
+  Hammer,
   ImageIcon,
   Lock,
   Newspaper,
@@ -86,6 +87,19 @@ export default async function AdminPage() {
               <p className="mt-1 text-sm text-slate-400">Assign duties &amp; goals.</p>
             </div>
             <ClipboardList className="h-5 w-5 shrink-0 text-gold-400" />
+          </Panel>
+        </Link>
+        <Link href="/portal/admin/builds" className="block">
+          <Panel className={`${cardLinkClass} flex items-center justify-between p-5`}>
+            <div>
+              <p className="font-display text-sm font-bold tracking-widest text-gold-300">
+                THE MASTER PLAN
+              </p>
+              <p className="mt-1 text-sm text-slate-400">
+                Plan builds against live stock.
+              </p>
+            </div>
+            <Hammer className="h-5 w-5 shrink-0 text-gold-400" />
           </Panel>
         </Link>
         <Link href="/portal/admin/news" className="block">
