@@ -105,9 +105,18 @@ function tintColor(tint: Tint, biome: number[][]): number[] {
 // Relief shading factors (vs. the pixel one block north).
 const SHADE_RAISED = 1.14;
 const SHADE_SUNKEN = 0.8;
-// Water reads far too bright and grainy at full strength (the relief shade
-// speckles the surface). Dim it and render it flat so seas look calm.
-const WATER_DIM = 0.7;
+
+// Sea rendering. Xaero stores water as a translucent overlay over the seafloor,
+// so raw pixels show the bottom and look washed out. Instead we paint water by
+// DEPTH (sea level minus the seafloor height it records): shallows keep the
+// biome's bright blue and hint at the floor, while deep water fades to a dark
+// navy that hides the bottom - giving proper depth perception.
+const SEA_LEVEL = 62;
+const WATER_MAX_DEPTH = 28;
+// How dark/blue the deepest water gets, as a multiple of the shallow tint.
+const DEEP_R = 0.3;
+const DEEP_G = 0.42;
+const DEEP_B = 0.62;
 
 /** Renders a parsed region to 512x512 RGBA. Unexplored pixels stay transparent. */
 export function renderRegion(region: ParsedRegion): ImageData {
@@ -149,9 +158,26 @@ export function renderRegion(region: ParsedRegion): ImageData {
       b /= n;
     }
 
+    // Depth-aware water: fade from bright shallow blue to opaque deep navy so
+    // the seabed is hidden in deep water and only hinted at in the shallows.
+    if (water) {
+      const floor = height[pixel];
+      const depth = floor === NO_HEIGHT ? 12 : Math.max(0, SEA_LEVEL - floor);
+      const t = Math.min(1, depth / WATER_MAX_DEPTH); // 0 shallow .. 1 deep
+      const wc = tintColor(Tint.Water, biome);
+      const wr = wc[0] * (1 + (DEEP_R - 1) * t);
+      const wg = wc[1] * (1 + (DEEP_G - 1) * t);
+      const wb = wc[2] * (1 + (DEEP_B - 1) * t);
+      // Deeper water hides more of the floor beneath it.
+      const cover = 0.62 + 0.36 * t;
+      r = r * (1 - cover) + wr * cover;
+      g = g * (1 - cover) + wg * cover;
+      b = b * (1 - cover) + wb * cover;
+    }
+
     // Relief: compare to the block one to the north (z-1). At the region's top
     // edge the neighbour lives in another file - leave those unshaded. Water is
-    // kept flat so its surface doesn't speckle.
+    // kept flat so its surface doesn't speckle (its depth shading is enough).
     let shade = 1;
     if (!water && pixel >= REGION_SIZE) {
       const north = height[pixel - REGION_SIZE];
@@ -161,12 +187,10 @@ export function renderRegion(region: ParsedRegion): ImageData {
       }
     }
 
-    // Calm, dimmer seas.
-    const dim = water ? WATER_DIM : 1;
     const offset = pixel * 4;
-    data[offset] = Math.min(255, r * shade * dim);
-    data[offset + 1] = Math.min(255, g * shade * dim);
-    data[offset + 2] = Math.min(255, b * shade * dim);
+    data[offset] = Math.min(255, r * shade);
+    data[offset + 1] = Math.min(255, g * shade);
+    data[offset + 2] = Math.min(255, b * shade);
     data[offset + 3] = 255;
   }
 
