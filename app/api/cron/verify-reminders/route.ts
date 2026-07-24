@@ -1,6 +1,15 @@
+import { timingSafeEqual } from "crypto";
 import { getSupabase, type Player } from "@/lib/supabase";
 import { sendDirectMessage } from "@/lib/discord";
 import { env } from "@/lib/env";
+
+/** Length-guarded constant-time string compare - avoids leaking the secret via
+ *  early-exit timing on a plain `!==`. */
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ab.length === bb.length && timingSafeEqual(ab, bb);
+}
 
 // node:crypto / bot fetches - keep off the edge runtime.
 export const runtime = "nodejs";
@@ -30,7 +39,7 @@ export async function GET(request: Request) {
     // No secret configured - refuse rather than run unauthenticated.
     return new Response("cron not configured", { status: 503 });
   }
-  if (auth !== expected) {
+  if (!auth || !safeEqual(auth, expected)) {
     return new Response("unauthorized", { status: 401 });
   }
 

@@ -102,9 +102,19 @@ function tintColor(tint: Tint, biome: number[][]): number[] {
   }
 }
 
-// Relief shading factors (vs. the pixel one block north).
-const SHADE_RAISED = 1.14;
-const SHADE_SUNKEN = 0.8;
+// Relief / hillshade. The map is lit from the north-west (the vanilla-map
+// convention): a pixel higher than its north + west neighbours faces the light
+// and brightens, one lower falls into shadow. Crucially the strength scales
+// with how STEEP the terrain is, so tall mountain faces get real contrast and a
+// sense of volume, while flat ground stays clean - unlike the old binary
+// one-block edge line that made everything look flat.
+//
+// RELIEF_SPAN is the combined N+W rise (in blocks) at which shading saturates;
+// shadows run a touch stronger than highlights because the eye reads darkness
+// as depth.
+const RELIEF_SPAN = 7;
+const RELIEF_LIGHT = 0.16;
+const RELIEF_DARK = 0.26;
 
 // Sea rendering. Xaero stores water as a translucent overlay over the seafloor,
 // so raw pixels show the bottom and look washed out. Instead we paint water by
@@ -175,15 +185,28 @@ export function renderRegion(region: ParsedRegion): ImageData {
       b = b * (1 - cover) + wb * cover;
     }
 
-    // Relief: compare to the block one to the north (z-1). At the region's top
-    // edge the neighbour lives in another file - leave those unshaded. Water is
+    // Relief: hillshade lit from the north-west. We take the drop toward the
+    // north AND the west neighbour and scale the shade by the combined slope,
+    // so a tall mountain face reads far stronger than a one-block step and
+    // east-west ridges get shaded too (the old code only saw north edges, which
+    // left slopes looking flat). Region-edge neighbours live in another file;
+    // treat a missing side as level rather than skipping the pixel. Water is
     // kept flat so its surface doesn't speckle (its depth shading is enough).
     let shade = 1;
-    if (!water && pixel >= REGION_SIZE) {
-      const north = height[pixel - REGION_SIZE];
-      const here = height[pixel];
-      if (north !== NO_HEIGHT && here !== NO_HEIGHT && north !== here) {
-        shade = here > north ? SHADE_RAISED : SHADE_SUNKEN;
+    const here = height[pixel];
+    if (!water && here !== NO_HEIGHT) {
+      const northPx = pixel - REGION_SIZE;
+      const westPx = pixel % REGION_SIZE === 0 ? -1 : pixel - 1;
+      const north = northPx >= 0 ? height[northPx] : NO_HEIGHT;
+      const west = westPx >= 0 ? height[westPx] : NO_HEIGHT;
+      const dNorth = north === NO_HEIGHT ? 0 : here - north;
+      const dWest = west === NO_HEIGHT ? 0 : here - west;
+      const slope = dNorth + dWest; // >0 faces the NW light, <0 in shadow
+      if (slope !== 0) {
+        // Saturating response: the first few blocks of relief carry most of the
+        // shading, so cliffs don't blow out to pure white/black.
+        const t = Math.max(-1, Math.min(1, slope / RELIEF_SPAN));
+        shade = 1 + t * (t > 0 ? RELIEF_LIGHT : RELIEF_DARK);
       }
     }
 

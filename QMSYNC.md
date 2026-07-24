@@ -28,6 +28,12 @@ endpoint.
    `multiplayer/play_example_com`, not a display name.
 3. Optionally set `QMSYNC_SERVER_NAME` to the friendly realm name shown on the
    inventory page, then redeploy.
+3a. Set `QMSYNC_API_KEY` in Vercel to the SAME value configured as the mod's
+   `QMSYNC_API_KEY`. When present, the receiver rejects any handshake/sync that
+   does not carry it (401). The `serverId` is public and guessable, so this key
+   is the real authentication; leave it unset only during initial rollout.
+   The key may be sent as `Authorization: Bearer <key>`, an `x-api-key` header,
+   or an `apiKey` field in the JSON body - the receiver accepts any of them.
 4. Make sure the connecting player's portal record is `active` and its
    `minecraft_ign` exactly matches the in-game name.
 5. In Minecraft, run:
@@ -40,8 +46,9 @@ On the first approved handshake, the website links the Mojang UUID to the
 active portal record with the same IGN. Later requests authorize by UUID, so
 changing an IGN does not create another player.
 
-QMSync v1 has no API-key or bearer-token field. Do not put Supabase credentials
-or another website secret in the client mod.
+Authentication: set `QMSYNC_API_KEY` (see step 3a) to the shared key your mod
+build sends. Never put Supabase credentials or any other website secret in the
+client mod - the QMSync API key is the only secret it should hold.
 
 ## Handshake contract
 

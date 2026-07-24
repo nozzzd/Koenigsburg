@@ -7,6 +7,8 @@ import {
   type MapDimension,
 } from "@/lib/supabase";
 import { getSessionPlayer } from "@/lib/session";
+import { checkRateLimit, ipFromHeaders } from "@/lib/ratelimit";
+import { headers } from "next/headers";
 
 /** Result of a tile-upload batch, reported back to the client uploader. */
 export type SubmitTilesResult =
@@ -72,6 +74,21 @@ export async function submitTiles(
   if (player.status !== "active") {
     return {
       error: "Active citizenship is required to contribute map tiles.",
+    };
+  }
+
+  // Bound how fast one contributor can overwrite tiles. Because "newest capture
+  // wins" lets any citizen replace existing scouting, an unbounded uploader
+  // could deface the whole map; this caps the blast radius per person and per
+  // IP. Legit contribution (16 tiles/batch) has ample headroom.
+  const ip = ipFromHeaders(await headers());
+  const [byPlayer, byIp] = await Promise.all([
+    checkRateLimit(`tiles:p:${player.id}`, 40, 10 * 60 * 1000),
+    checkRateLimit(`tiles:ip:${ip}`, 40, 10 * 60 * 1000),
+  ]);
+  if (!byPlayer.ok || !byIp.ok) {
+    return {
+      error: "You're uploading tiles too quickly. Please wait a few minutes and try again.",
     };
   }
 

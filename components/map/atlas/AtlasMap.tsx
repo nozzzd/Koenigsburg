@@ -92,6 +92,10 @@ export function AtlasMap({
   const [activeLayerId, setActiveLayerId] = useState<string>(atlas.layers[0]?.id ?? "");
   const [markerKind, setMarkerKind] = useState<MarkerIconKind>("waypoint");
   const [draft, setDraft] = useState<ClaimPoint[]>([]);
+  // A marker being placed but not yet committed. Clicking in marker mode only
+  // drops this preview - nothing hits the database until "Place" - so a stray
+  // click or a fumbled aim never litters the map with junk markers.
+  const [pending, setPending] = useState<{ x: number; z: number } | null>(null);
   const [sel, setSel] = useState<Selection>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
@@ -99,6 +103,7 @@ export function AtlasMap({
   const panStart = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
   const moved = useRef(false);
   const markerDrag = useRef<{ id: string; moved: boolean } | null>(null);
+  const pendingDrag = useRef(false);
 
   const layerById = useMemo(() => new Map(layers.map((l) => [l.id, l])), [layers]);
   const activeLayer = layerById.get(activeLayerId) ?? null;
@@ -181,6 +186,7 @@ export function AtlasMap({
       if (e.key === "Escape") {
         setDraft([]);
         setSel(null);
+        setPending(null);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -244,7 +250,8 @@ export function AtlasMap({
     if (moved.current) return; // was a pan, not a click
     const b = blockAt(e.clientX, e.clientY);
     if (isAdmin && mode === "marker") {
-      placeMarker(b.x, b.z);
+      // Drop / reposition the preview only; committing happens via "Place".
+      setPending({ x: b.x, z: b.z });
     } else if (isAdmin && mode === "claim") {
       setDraft((d) => [...d, [b.x, b.z]]);
     } else {
@@ -294,6 +301,18 @@ export function AtlasMap({
       setMarkers((ms) => [...ms, res.data]);
       setSel({ type: "marker", id: res.data.id });
     });
+  }
+
+  // Commit the preview marker. Only reached via the explicit "Place" action, so
+  // the database write is always intentional.
+  function confirmPending() {
+    if (!pending) return;
+    if (!activeLayerId) {
+      setError("Create a layer first, then place markers on it.");
+      return;
+    }
+    placeMarker(pending.x, pending.z);
+    setPending(null);
   }
 
   function finishClaim() {
@@ -532,6 +551,44 @@ export function AtlasMap({
           })}
         </div>
 
+        {/* Pending marker preview - drag to nudge, or click elsewhere to move it.
+           Nothing is written until "Place", so misclicks are free. */}
+        {isAdmin && mode === "marker" && pending && (() => {
+          const s = screenOf(pending.x, pending.z);
+          const ghostIcon =
+            markerKind === "symbol" ? "flag" : markerKind === "item" ? "minecraft:map" : "";
+          return (
+            <div className="pointer-events-none absolute inset-0 z-10">
+              <div
+                className="pointer-events-auto absolute flex flex-col items-center"
+                style={{ left: s.x, top: s.y, transform: "translate(-50%, -100%)", cursor: "grab" }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  (e.target as Element).setPointerCapture?.(e.pointerId);
+                  pendingDrag.current = true;
+                }}
+                onPointerMove={(e) => {
+                  if (!pendingDrag.current) return;
+                  const b = blockAt(e.clientX, e.clientY);
+                  setPending({ x: b.x, z: b.z });
+                }}
+                onPointerUp={(e) => {
+                  if (!pendingDrag.current) return;
+                  e.stopPropagation();
+                  pendingDrag.current = false;
+                }}
+              >
+                <div className="animate-pulse opacity-80">
+                  <MarkerGlyph kind={markerKind} icon={ghostIcon} color={activeLayer?.color ?? "#e2e8f0"} size={30} />
+                </div>
+                <span className="mt-1 rounded bg-slate-950/85 px-1.5 py-0.5 font-mono text-[0.65rem] text-gold-300 ring-1 ring-black/40">
+                  {pending.x}, {pending.z}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Minecraft crosshair */}
         {mouse && (
           <div
@@ -656,13 +713,13 @@ export function AtlasMap({
       {/* Admin toolbar */}
       {isAdmin && (
         <div className="absolute left-1/2 top-3 z-20 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-slate-700 bg-slate-950/90 p-1 shadow-xl backdrop-blur">
-          <ToolButton active={mode === "select"} onClick={() => { setMode("select"); setDraft([]); }} label="Select">
+          <ToolButton active={mode === "select"} onClick={() => { setMode("select"); setDraft([]); setPending(null); }} label="Select">
             <MousePointer2 className="h-4 w-4" />
           </ToolButton>
-          <ToolButton active={mode === "marker"} onClick={() => { setMode("marker"); setDraft([]); }} label="Add marker">
+          <ToolButton active={mode === "marker"} onClick={() => { setMode("marker"); setDraft([]); setPending(null); }} label="Add marker">
             <MapPin className="h-4 w-4" />
           </ToolButton>
-          <ToolButton active={mode === "claim"} onClick={() => setMode("claim")} label="Draw claim">
+          <ToolButton active={mode === "claim"} onClick={() => { setMode("claim"); setPending(null); }} label="Draw claim">
             <Pentagon className="h-4 w-4" />
           </ToolButton>
           <div className="mx-1 h-5 w-px bg-slate-700" />
@@ -688,6 +745,16 @@ export function AtlasMap({
               <option value="symbol">Symbol</option>
               <option value="item">MC item</option>
             </select>
+          )}
+          {mode === "marker" && pending && (
+            <>
+              <button type="button" onClick={confirmPending} className="pressable inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500">
+                <Check className="h-3.5 w-3.5" /> Place
+              </button>
+              <button type="button" onClick={() => setPending(null)} className="pressable inline-flex items-center rounded-md border border-slate-700 px-2 py-1.5 text-xs text-slate-300">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </>
           )}
           {mode === "claim" && draft.length > 0 && (
             <>

@@ -1,7 +1,9 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getSupabase, type Player, type PlayerRole, type PlayerStatus } from "@/lib/supabase";
+import { checkRateLimit, ipFromHeaders } from "@/lib/ratelimit";
 import { joinTeam } from "@/lib/teams";
 import { generateVerificationCode } from "@/lib/codes";
 import { IGN_HINT, IGN_PATTERN, type ActionState } from "@/lib/forms";
@@ -11,6 +13,20 @@ import {
   destroySession,
   getDiscordHandoff,
 } from "@/lib/session";
+
+/** Throttle by client IP. Returns an ActionState error when over budget. */
+async function throttle(
+  bucket: string,
+  limit: number,
+  windowMs: number,
+  message: string
+): Promise<{ error: string } | null> {
+  const ip = ipFromHeaders(await headers());
+  const { ok, retryAfterSeconds } = await checkRateLimit(`${bucket}:${ip}`, limit, windowMs);
+  if (ok) return null;
+  const wait = retryAfterSeconds > 60 ? `${Math.ceil(retryAfterSeconds / 60)} minutes` : "a moment";
+  return { error: `${message} Try again in ${wait}.` };
+}
 
 function readIgn(formData: FormData): string | null {
   const ign = String(formData.get("ign") ?? "").trim();
@@ -78,6 +94,14 @@ export async function manualSignup(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
+  const limited = await throttle(
+    "signup",
+    5,
+    60 * 60 * 1000,
+    "Too many signups from your connection."
+  );
+  if (limited) return limited;
+
   const ign = readIgn(formData);
   if (!ign) return { error: `Enter a valid Minecraft name (${IGN_HINT}).` };
   const discordUsername = String(formData.get("discord_username") ?? "").trim();
@@ -167,6 +191,14 @@ export async function manualLogin(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
+  const limited = await throttle(
+    "login",
+    10,
+    10 * 60 * 1000,
+    "Too many login attempts."
+  );
+  if (limited) return limited;
+
   const ign = String(formData.get("ign") ?? "").trim();
   const code = String(formData.get("code") ?? "").trim().toUpperCase();
   if (!ign || !code) {

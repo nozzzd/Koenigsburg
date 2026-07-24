@@ -1,8 +1,17 @@
 import "server-only";
 
+import { timingSafeEqual } from "crypto";
 import { revalidatePath } from "next/cache";
 import { getSupabase } from "@/lib/supabase";
 import { ensureActiveCitizenship } from "@/lib/citizenship";
+import { checkRateLimit, ipFromHeaders } from "@/lib/ratelimit";
+
+// Per-source flood guard for the ingestion endpoints. A real game server syncs
+// a handful of times a minute; this leaves generous headroom while capping a
+// flood of heavy snapshot writes (each fires the replace_inventory_snapshot
+// RPC). Best-effort - see lib/ratelimit.ts.
+const QMSYNC_RATE_LIMIT = 120;
+const QMSYNC_RATE_WINDOW_MS = 60_000;
 
 const PROTOCOL_VERSION = 1;
 const MAX_BODY_BYTES = 4 * 1024 * 1024;
@@ -71,6 +80,39 @@ function json(body: Record<string, unknown>, status = 200): Response {
 
 function qmsyncStatus(status: "SYNCED" | "ACCESS_DENIED"): Response {
   return json({ status });
+}
+
+/** Length-guarded constant-time compare for the shared server id. NOTE: the
+ *  server id is a low-entropy, guessable value (see QMSYNC_SERVER_ID in
+ *  .env.example) - this only removes the timing side-channel; it is NOT a
+ *  substitute for a real secret token on this endpoint (tracked separately). */
+function safeEqual(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ab.length === bb.length && timingSafeEqual(ab, bb);
+}
+
+/**
+ * Pulls the QMSync API key out of a request, tolerant of however the mod sends
+ * it: `Authorization: Bearer <key>` (or a bare Authorization value), a
+ * dedicated header, or an `apiKey`/`api_key` field in the JSON body. This keeps
+ * the receiver working whichever transport the mod build uses.
+ */
+function extractApiKey(request: Request, payload: JsonObject): string {
+  const auth = request.headers.get("authorization")?.trim();
+  if (auth) {
+    const bearer = /^Bearer\s+(.+)$/i.exec(auth);
+    return (bearer ? bearer[1] : auth).trim();
+  }
+  const header = (name: string) => request.headers.get(name)?.trim() ?? "";
+  const fromHeader =
+    header("x-api-key") ||
+    header("x-qmsync-api-key") ||
+    header("x-qmsync-key") ||
+    header("qmsync-api-key");
+  if (fromHeader) return fromHeader;
+  const body = payload.apiKey ?? payload.api_key ?? payload.apikey;
+  return typeof body === "string" ? body.trim() : "";
 }
 
 function object(value: unknown): JsonObject | null {
@@ -238,6 +280,21 @@ async function parseRequest(
   const parsed = await readPayload(request);
   if (!parsed.ok) return parsed;
   const payload = parsed.payload;
+
+  // Real authentication for the ingestion endpoints. The serverId is a
+  // guessable public value, so the actual gate is the shared QMSYNC_API_KEY the
+  // mod is configured with. Enforced only when the env var is set, so setting
+  // it (once the mod sends the key) is a clean cut-over that never breaks an
+  // unconfigured deployment.
+  const expectedApiKey = (
+    process.env.QMSYNC_API_KEY ?? process.env.QMSYNC_TOKEN
+  )?.trim();
+  if (expectedApiKey) {
+    const provided = extractApiKey(request, payload);
+    if (!provided || !safeEqual(provided, expectedApiKey)) {
+      return { ok: false, response: json({ error: "Unauthorized." }, 401) };
+    }
+  }
   const protocolVersion = integer(payload.protocolVersion);
   if (protocolVersion !== PROTOCOL_VERSION) {
     return {
@@ -262,7 +319,7 @@ async function parseRequest(
       response: json({ error: "QMSync identity fields are invalid." }, 400),
     };
   }
-  if (serverId !== expectedServerId) {
+  if (!safeEqual(serverId, expectedServerId)) {
     return { ok: false, response: qmsyncStatus("ACCESS_DENIED") };
   }
 
@@ -482,9 +539,19 @@ function playerFailure(
     : json({ error: result.error ?? "Player verification failed." }, 503);
 }
 
+async function qmsyncRateLimited(request: Request): Promise<Response | null> {
+  const key = `qmsync:${ipFromHeaders(request.headers)}`;
+  const limited = await checkRateLimit(key, QMSYNC_RATE_LIMIT, QMSYNC_RATE_WINDOW_MS);
+  if (limited.ok) return null;
+  return json({ error: "Too many QMSync requests. Slow down." }, 429);
+}
+
 export async function handleQMSyncHandshake(
   request: Request
 ): Promise<Response> {
+  const throttled = await qmsyncRateLimited(request);
+  if (throttled) return throttled;
+
   const parsed = await parseRequest(request);
   if (!parsed.ok) return parsed.response;
 
@@ -494,6 +561,9 @@ export async function handleQMSyncHandshake(
 
 export async function handleQMSyncSync(request: Request): Promise<Response> {
   const receivedAt = Date.now();
+  const throttled = await qmsyncRateLimited(request);
+  if (throttled) return throttled;
+
   const parsed = await parseRequest(request);
   if (!parsed.ok) return parsed.response;
 

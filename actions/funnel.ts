@@ -1,8 +1,9 @@
 "use server";
 
 import { randomBytes } from "crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getSupabase, type FunnelEventName } from "@/lib/supabase";
+import { checkRateLimit, ipFromHeaders } from "@/lib/ratelimit";
 
 const VISIT_COOKIE = "kbg_visit";
 const VISIT_TTL_SECONDS = 60 * 60 * 24 * 90; // 90 days
@@ -39,6 +40,10 @@ async function visitId(): Promise<string> {
 export async function track(event: string): Promise<void> {
   try {
     if (!VALID.has(event)) return;
+    // This is an unauthenticated write, so cap it per IP to stop the
+    // funnel_events table being flooded. Real visits fire only a few events.
+    const ip = ipFromHeaders(await headers());
+    if (!(await checkRateLimit(`track:${ip}`, 60, 10 * 60 * 1000)).ok) return;
     const visit_id = await visitId();
     await getSupabase().from("funnel_events").insert({ event, visit_id });
   } catch {
